@@ -19,15 +19,15 @@
 	<properties>
 		<dist.key>DATAHC</dist.key>
 		<hazelcast>3.3</hazelcast>
-		<springdata.commons>1.10.0.BUILD-SNAPSHOT</springdata.commons>
+		<springdata.keyvalue>0.1.0.BUILD-SNAPSHOT</springdata.keyvalue>
 	</properties>
 
 	<dependencies>
 
 		<dependency>
 			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-commons</artifactId>
-			<version>${springdata.commons}</version>
+			<artifactId>spring-data-keyvalue</artifactId>
+			<version>${springdata.keyvalue}</version>
 		</dependency>
 		
 		<dependency>

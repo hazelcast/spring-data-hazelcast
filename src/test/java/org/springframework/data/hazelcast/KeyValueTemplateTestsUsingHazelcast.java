@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Persistent;
 import org.springframework.data.keyvalue.annotation.KeySpace;
@@ -41,8 +41,12 @@ import com.hazelcast.query.Predicate;
 import com.hazelcast.query.PredicateBuilder;
 
 /**
+ * Unit tests for {@link KeyValueTemplate} using a {@link HazelcastKeyValueAdapter}.
+ * 
  * @author Christoph Strobl
+ * @author Oliver Gierke
  */
+@SuppressWarnings("serial")
 public class KeyValueTemplateTestsUsingHazelcast {
 
 	private static final Foo FOO_ONE = new Foo("one");
@@ -82,7 +86,7 @@ public class KeyValueTemplateTestsUsingHazelcast {
 		operations.insert("some-id", null);
 	}
 
-	@Test(expected = InvalidDataAccessApiUsageException.class)
+	@Test(expected = DuplicateKeyException.class)
 	public void insertShouldThrowExecptionWhenObjectOfSameTypeAlreadyExists() {
 
 		operations.insert("1", FOO_ONE);
