@@ -8,18 +8,19 @@
 	<version>1.0.0.BUILD-SNAPSHOT</version>
 
 	<name>Spring Data Hazelcast</name>
+  	<description>Spring Data module for Hazelcast repositories.</description>  
 
 	<parent>
 		<groupId>org.springframework.data.build</groupId>
 		<artifactId>spring-data-parent</artifactId>
-		<version>1.6.0.BUILD-SNAPSHOT</version>
-		<relativePath>../spring-data-build/parent/pom.xml</relativePath>
+		<version>1.6.2.RELEASE</version>
 	</parent>
 
 	<properties>
 		<dist.key>DATAHC</dist.key>
-		<hazelcast>3.3</hazelcast>
-		<springdata.keyvalue>0.1.0.BUILD-SNAPSHOT</springdata.keyvalue>
+		<hazelcast>3.5.1</hazelcast>
+  		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<springdata.keyvalue>1.0.0.BUILD-SNAPSHOT</springdata.keyvalue>
 	</properties>
 
 	<dependencies>
@@ -28,15 +29,6 @@
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-keyvalue</artifactId>
 			<version>${springdata.keyvalue}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
 		</dependency>
 		
 		<dependency>
@@ -59,7 +51,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>1.3.1</version>
+				<version>1.4</version>
 				<executions>
 					<execution>
 						<id>enforce-rules</id>
@@ -93,6 +85,7 @@
 		</plugins>
 	</build>
 
+	<!-- Remove once spring-data-keyvalue on Maven Central -->
 	<repositories>
 		<repository>
 			<id>spring-libs-snapshot</id>
@@ -100,6 +93,7 @@
 		</repository>
 	</repositories>
 
+	<!-- For Spring Bundlor plugin -->
 	<pluginRepositories>
 		<pluginRepository>
 			<id>spring-plugins-release</id>
