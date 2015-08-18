@@ -159,7 +159,7 @@ public class KeyValueTemplateTestsUsingHazelcast {
 		operations.insert("2", FOO_TWO);
 		operations.insert("3", FOO_THREE);
 
-		assertThat(operations.findInRange(5, 5, Foo.class), empty());
+		assertThat(operations.findInRange(5, 5, Foo.class), emptyIterable());
 	}
 
 	@Test

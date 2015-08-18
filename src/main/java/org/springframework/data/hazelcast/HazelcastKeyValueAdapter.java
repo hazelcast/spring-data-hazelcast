@@ -17,9 +17,11 @@ package org.springframework.data.hazelcast;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Map.Entry;
 
 import org.springframework.data.hazelcast.HazelcastQueryEngine;
 import org.springframework.data.keyvalue.core.AbstractKeyValueAdapter;
+import org.springframework.data.util.CloseableIterator;
 import org.springframework.util.Assert;
 
 import com.hazelcast.core.Hazelcast;
@@ -94,6 +96,18 @@ public class HazelcastKeyValueAdapter extends AbstractKeyValueAdapter {
 	@Override
 	public void destroy() throws Exception {
 		hzInstance.shutdown();
+	}
+
+	@Override
+	public long count(Serializable arg0) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CloseableIterator<Entry<Serializable, Object>> entries(Serializable arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

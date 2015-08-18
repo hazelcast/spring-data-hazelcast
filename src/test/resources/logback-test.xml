@@ -8,6 +8,7 @@
 	</appender>
 
 	<logger name="org.springframework.data" level="warn" />
+	<logger name="org.springframework.data.hazelcast" level="debug" />
 
 	<root level="warn">
 		<appender-ref ref="console" />

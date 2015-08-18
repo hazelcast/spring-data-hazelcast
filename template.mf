@@ -3,9 +3,9 @@ Bundle-Name: ${project.name}
 Bundle-Vendor: Hazelcast, Inc., Pivotal Software, Inc.
 Bundle-Version: ${project.version}
 Bundle-ManifestVersion: 2
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Template:
  com.hazelcast.*;version="${hazelcast:[=.=.=,+1.0.0)}";resolution:=optional,
  org.springframework.*;version="${spring:[=.=.=,+1.0.0)}",
- org.springframework.data.*;version="${springdata.commons:[=.=.=,+1.0.0)}"
+ org.springframework.data.*;version="${springdata.keyvalue:[=.=.=,+1.0.0)}"
 DynamicImport-Package: *
