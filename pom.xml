@@ -18,9 +18,10 @@
 
 	<properties>
 		<dist.key>DATAHC</dist.key>
-		<hazelcast>3.5.1</hazelcast>
+		<hazelcast>3.6-SNAPSHOT</hazelcast>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<springdata.keyvalue>1.0.0.BUILD-SNAPSHOT</springdata.keyvalue>
+		<springdata.keyvalue>1.0.0.RELEASE</springdata.keyvalue>
 	</properties>
 
 	<dependencies>
@@ -47,6 +48,57 @@
 
 	<build>
 		<plugins>
+
+  			<plugin>
+  				<artifactId>maven-antrun-plugin</artifactId>
+  				<version>1.8</version>
+  				<configuration>
+  					<target>
+	  					<property name="escapeDollar" value="$$"/>
+  						<echo>TODO: Update ${escapeDollar}{project.version}</echo>
+  						<echo>TODO: Remove sonatype-snapshot repository once Hazelcast 3.6 released.</echo>
+  						<echo>TODO  Update template.mf for ${escapeDollar}{hazelcast:[=.=.=,+1.0.0)}</echo>
+  						<echo>TODO: Update checkstyle to enforce</echo>
+  					</target>
+  				</configuration>
+  				<executions>
+  					<execution>
+  						<phase>package</phase>
+  						<goals>
+  							<goal>run</goal>
+  						</goals>
+  					</execution>
+  				</executions>
+  			</plugin>
+
+  			<plugin>
+  				<artifactId>maven-checkstyle-plugin</artifactId>
+  				<version>2.16</version>
+  				<configuration>
+  				    <!--  Checkstyle file copied from https://github.com/hazelcast/hazelcast/tree/master/checkstyle -->
+  					<failOnViolation>false</failOnViolation>
+  					<failsOnError>false</failsOnError>
+      				<configLocation>${project.basedir}/checkstyle/checkstyle.xml</configLocation>
+                    <propertyExpansion>main.basedir=${project.basedir}</propertyExpansion>
+  				</configuration>
+  				<executions>
+  					<execution>
+  						<phase>compile</phase>
+  						<goals>
+  							<goal>check</goal>
+  						</goals>
+  					</execution>
+  				</executions>
+  			</plugin>
+
+  			<plugin>
+  				<artifactId>maven-compiler-plugin</artifactId>
+  				<version>3.3</version>
+  				<configuration>
+  					<source>1.8</source>
+  					<target>1.8</target>
+  				</configuration>
+  			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -82,14 +134,34 @@
 				<artifactId>asciidoctor-maven-plugin</artifactId>
 			</plugin>
 
+ 			<plugin>
+ 				<groupId>org.codehaus.mojo</groupId>
+ 				<artifactId>findbugs-maven-plugin</artifactId>
+ 				<version>3.0.1</version>
+ 				<configuration>
+ 					<failOnError>true</failOnError>
+ 				</configuration>
+ 				<executions>
+ 					<execution>
+ 						<phase>compile</phase>
+ 						<goals>
+ 							<goal>check</goal>
+ 						</goals>
+ 					</execution>
+ 				</executions>
+ 			</plugin>
+
 		</plugins>
 	</build>
 
-	<!-- Remove once spring-data-keyvalue on Maven Central -->
+	<!-- For Hazelcast 3.6-SNAPSHOT -->
 	<repositories>
 		<repository>
-			<id>spring-libs-snapshot</id>
-			<url>http://repo.spring.io/libs-snapshot</url>
+			<id>sonatype-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 

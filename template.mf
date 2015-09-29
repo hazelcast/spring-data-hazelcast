@@ -5,7 +5,8 @@ Bundle-Version: ${project.version}
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Template:
- com.hazelcast.*;version="${hazelcast:[=.=.=,+1.0.0)}";resolution:=optional,
+ org.slf4j.*;version="1.7.12";resolution:=optional,
  org.springframework.*;version="${spring:[=.=.=,+1.0.0)}",
  org.springframework.data.*;version="${springdata.keyvalue:[=.=.=,+1.0.0)}"
 DynamicImport-Package: *
+Excluded-Imports: com.hazelcast.*
