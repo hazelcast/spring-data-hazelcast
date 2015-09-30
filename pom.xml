@@ -18,6 +18,7 @@
 
 	<properties>
 		<dist.key>DATAHC</dist.key>
+		<failsafe.and.surefire>2.18.1</failsafe.and.surefire>
 		<hazelcast>3.6-SNAPSHOT</hazelcast>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -42,6 +43,14 @@
 			<groupId>com.mysema.querydsl</groupId>
 			<artifactId>querydsl-core</artifactId>
 			<version>${querydsl}</version>
+		</dependency>
+
+		<!-- SCOPE==test -->
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-client-new</artifactId>
+			<version>${hazelcast}</version>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
@@ -120,6 +129,54 @@
 					</rules>
 				</configuration>
 			</plugin>
+			
+            <!--  Run unit "*Test.java" and integration tests "*IT.java" from same module  -->
+            <!-- so can remain single module maven project. Not necessarily ideal.         -->
+            <!--  Also, force default inclusions for Failsafe and Surefire as common parent -->
+            <!-- otherwise overrides.                                                      -->
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${failsafe.and.surefire}</version>
+                <configuration>
+                    <failIfNoTests>true</failIfNoTests>
+                    <includes>
+                        <include>**/IT*.java</include>
+                        <include>**/*IT.java</include>
+                        <include>**/*ITCase.java</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                    	<id>default-integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${failsafe.and.surefire}</version>
+                <configuration>
+                	<!-- 
+                    <failIfNoTests>true</failIfNoTests>
+                	 -->
+                    <includes>
+                        <include>**/Test*.java</include>
+                        <include>**/*Test.java</include>
+                        <include>**/*TestCase.java</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                    	<id>default-test</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -18,41 +18,38 @@ package org.springframework.data.hazelcast.repository.config;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.hazelcast.HazelcastUtils;
-import org.springframework.data.keyvalue.core.KeyValueOperations;
-import org.springframework.data.keyvalue.core.KeyValueTemplate;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import test.utils.Constants;
+import test.utils.InstanceHelper;
+import test.utils.Person;
+import test.utils.PersonRepository;
+
 /**
+ *<P>
  * Integration test for Hazelcast repositories.
+ *</P>
+ *<P>
+ *Domain class {@link Person} and repository {@link PersonRepository} made into outer classes
+ *for use in other tests.
+ *</P>
  * 
  * @author Christoph Strobl
  * @author Oliver Gierke
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration
-public class EnableHazelcastRepositoriesIntegrationTests {
-
-	@Configuration
-	@EnableHazelcastRepositories(considerNestedRepositories = true)
-	static class Config {
-
-		@Bean
-		public KeyValueOperations keyValueTemplate() {
-			return new KeyValueTemplate(HazelcastUtils.preconfiguredHazelcastKeyValueAdapter());
-		}
-	}
+@ContextConfiguration(classes={InstanceHelper.class})
+@ActiveProfiles(Constants.SPRING_TEST_PROFILE_SINGLETON)
+@DirtiesContext
+public class EnableHazelcastRepositoriesIT {
 
 	@Autowired PersonRepository repo;
 
@@ -68,36 +65,7 @@ public class EnableHazelcastRepositoriesIntegrationTests {
 		List<Person> result = repo.findByFirstname("foo");
 
 		assertThat(result, hasSize(1));
-		assertThat(result.get(0).firstname, is("foo"));
+		assertThat(result.get(0).getFirstname(), is("foo"));
 	}
 
-	static class Person implements Serializable {
-
-		private static final long serialVersionUID = -1654603912377346292L;
-
-		@Id String id;
-		String firstname;
-
-		public String getId() {
-			return id;
-		}
-
-		public void setId(String id) {
-			this.id = id;
-		}
-
-		public String getFirstname() {
-			return firstname;
-		}
-
-		public void setFirstname(String firstname) {
-			this.firstname = firstname;
-		}
-
-	}
-
-	static interface PersonRepository extends CrudRepository<Person, String> {
-
-		List<Person> findByFirstname(String firstname);
-	}
 }
