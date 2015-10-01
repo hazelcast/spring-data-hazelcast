@@ -38,7 +38,7 @@
 			<artifactId>hazelcast</artifactId>
 			<version>${hazelcast}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.mysema.querydsl</groupId>
 			<artifactId>querydsl-core</artifactId>
@@ -129,7 +129,7 @@
 					</rules>
 				</configuration>
 			</plugin>
-			
+
             <!--  Run unit "*Test.java" and integration tests "*IT.java" from same module  -->
             <!-- so can remain single module maven project. Not necessarily ideal.         -->
             <!--  Also, force default inclusions for Failsafe and Surefire as common parent -->
@@ -159,9 +159,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${failsafe.and.surefire}</version>
                 <configuration>
-                	<!-- 
                     <failIfNoTests>true</failIfNoTests>
-                	 -->
                     <includes>
                         <include>**/Test*.java</include>
                         <include>**/*Test.java</include>

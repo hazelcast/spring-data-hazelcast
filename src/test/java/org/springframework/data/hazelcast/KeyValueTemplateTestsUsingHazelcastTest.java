@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.annotation.Id;
@@ -37,6 +38,7 @@ import org.springframework.data.keyvalue.core.KeyValueTemplate;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 import org.springframework.util.ObjectUtils;
 
+import com.hazelcast.core.Hazelcast;
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.PredicateBuilder;
 
@@ -47,7 +49,7 @@ import com.hazelcast.query.PredicateBuilder;
  * @author Oliver Gierke
  */
 @SuppressWarnings("serial")
-public class KeyValueTemplateTestsUsingHazelcast {
+public class KeyValueTemplateTestsUsingHazelcastTest {
 
 	private static final Foo FOO_ONE = new Foo("one");
 	private static final Foo FOO_TWO = new Foo("two");
@@ -61,6 +63,11 @@ public class KeyValueTemplateTestsUsingHazelcast {
 
 	private KeyValueTemplate operations;
 
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+        System.setProperty("hazelcast.logging.type","slf4j");    
+	}
+
 	@Before
 	public void setUp() throws InstantiationException, IllegalAccessException {
 		this.operations = new KeyValueTemplate(HazelcastUtils.preconfiguredHazelcastKeyValueAdapter());
@@ -69,6 +76,7 @@ public class KeyValueTemplateTestsUsingHazelcast {
 	@After
 	public void tearDown() throws Exception {
 		this.operations.destroy();
+		Hazelcast.shutdownAll();
 	}
 
 	@Test
@@ -220,7 +228,7 @@ public class KeyValueTemplateTestsUsingHazelcast {
 		assertThat(operations.findAll(ALIASED.getClass()), containsInAnyOrder(ALIASED, SUBCLASS_OF_ALIASED));
 	}
 
-	static class Foo implements Serializable {
+	static class Foo implements Comparable<Foo>, Serializable {
 
 		String foo;
 
@@ -250,6 +258,14 @@ public class KeyValueTemplateTestsUsingHazelcast {
 			}
 			Foo other = (Foo) obj;
 			return ObjectUtils.nullSafeEquals(this.foo, other.foo);
+		}
+
+		public int compareTo(Foo that) {
+			if(this.foo==null || that==null || that.getFoo()==null) {
+				throw new NullPointerException();
+			} else {
+				return this.foo.compareTo(that.getFoo());
+			}
 		}
 
 	}
