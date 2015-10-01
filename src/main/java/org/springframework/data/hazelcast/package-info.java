@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 /**
- * <P>Contains the {@link org.springframework.stereotype.Repository @Repository}
- * bean interface available for Hazelcast applications.
+ * <P>Mainly defines {@link org.springframework.data.hazelcast.HazelcastKeyValueAdapter}
+ * providing Hazelcast as an implementation of a <I>key-value</I> store.
  * </P>
  */
-package org.springframework.data.hazelcast.repository;
+package org.springframework.data.hazelcast;

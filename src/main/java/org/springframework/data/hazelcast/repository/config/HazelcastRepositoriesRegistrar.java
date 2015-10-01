@@ -24,61 +24,64 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 /**
  * Special {@link KeyValueRepositoriesRegistrar} to point the infrastructure to inspect
  * {@link EnableHazelcastRepositories}.
- * 
+ *
  * @author Oliver Gierke
  */
 class HazelcastRepositoriesRegistrar extends RepositoryBeanDefinitionRegistrarSupport {
 
-	/* 
-	 * (non-Javadoc)
-	 * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoriesRegistrar#getAnnotation()
-	 */
-	@Override
-	protected Class<? extends Annotation> getAnnotation() {
-		return EnableHazelcastRepositories.class;
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoriesRegistrar#getAnnotation()
+     */
+    @Override
+    protected Class<? extends Annotation> getAnnotation() {
+        return EnableHazelcastRepositories.class;
+    }
 
-	/* 
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.config.RepositoryBeanDefinitionRegistrarSupport#getExtension()
-	 */
-	@Override
-	protected RepositoryConfigurationExtension getExtension() {
-		return new HazelcastRepositoryConfigurationExtension();
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.repository.config.RepositoryBeanDefinitionRegistrarSupport#getExtension()
+     */
+    @Override
+    protected RepositoryConfigurationExtension getExtension() {
+        return new HazelcastRepositoryConfigurationExtension();
+    }
 
-	/**
-	 * Hazelcast-specific {@link RepositoryConfigurationExtension}.
-	 *
-	 * @author Oliver Gierke
-	 */
-	private static class HazelcastRepositoryConfigurationExtension extends KeyValueRepositoryConfigurationExtension {
+    /**
+     * Hazelcast-specific {@link RepositoryConfigurationExtension}.
+     *
+     * @author Oliver Gierke
+     */
+    private static class HazelcastRepositoryConfigurationExtension extends KeyValueRepositoryConfigurationExtension {
 
-		/* 
-		 * (non-Javadoc)
-		 * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension#getModuleName()
-		 */
-		@Override
-		public String getModuleName() {
-			return "Hazelcast";
-		}
+        /*
+         * (non-Javadoc)
+         * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
+         *                          #getModuleName()
+         */
+        @Override
+        public String getModuleName() {
+            return "Hazelcast";
+        }
 
-		/* 
-		 * (non-Javadoc)
-		 * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension#getModulePrefix()
-		 */
-		@Override
-		protected String getModulePrefix() {
-			return "hazelcast";
-		}
+        /*
+         * (non-Javadoc)
+         * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
+         *                          #getModulePrefix()
+         */
+        @Override
+        protected String getModulePrefix() {
+            return "hazelcast";
+        }
 
-		/* 
-		 * (non-Javadoc)
-		 * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension#getDefaultKeyValueTemplateRef()
-		 */
-		@Override
-		protected String getDefaultKeyValueTemplateRef() {
-			return "hazelcastKeyValueTemplate";
-		}
-	}
+        /*
+         * (non-Javadoc)
+         * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
+         *                          #getDefaultKeyValueTemplateRef()
+         */
+        @Override
+        protected String getDefaultKeyValueTemplateRef() {
+            return "hazelcastKeyValueTemplate";
+        }
+    }
 }

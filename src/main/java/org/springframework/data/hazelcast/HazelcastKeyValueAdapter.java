@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map.Entry;
 
-import org.springframework.data.hazelcast.HazelcastQueryEngine;
 import org.springframework.data.keyvalue.core.AbstractKeyValueAdapter;
 import org.springframework.data.util.CloseableIterator;
 import org.springframework.util.Assert;
@@ -33,81 +32,81 @@ import com.hazelcast.core.IMap;
  */
 public class HazelcastKeyValueAdapter extends AbstractKeyValueAdapter {
 
-	private HazelcastInstance hzInstance;
+    private HazelcastInstance hzInstance;
 
-	public HazelcastKeyValueAdapter() {
-		this(Hazelcast.newHazelcastInstance());
-	}
+    public HazelcastKeyValueAdapter() {
+        this(Hazelcast.newHazelcastInstance());
+    }
 
-	public HazelcastKeyValueAdapter(HazelcastInstance hzInstance) {
+    public HazelcastKeyValueAdapter(HazelcastInstance hzInstance) {
 
-		super(new HazelcastQueryEngine());
-		Assert.notNull(hzInstance, "hzInstance must not be 'null'.");
-		this.hzInstance = hzInstance;
-	}
+        super(new HazelcastQueryEngine());
+        Assert.notNull(hzInstance, "hzInstance must not be 'null'.");
+        this.hzInstance = hzInstance;
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Object put(Serializable id, Object item, Serializable keyspace) {
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object put(Serializable id, Object item, Serializable keyspace) {
 
-		Assert.notNull(id, "Id must not be 'null' for adding.");
-		Assert.notNull(item, "Item must not be 'null' for adding.");
+        Assert.notNull(id, "Id must not be 'null' for adding.");
+        Assert.notNull(item, "Item must not be 'null' for adding.");
 
-		return getMap(keyspace).put(id, item);
-	}
+        return getMap(keyspace).put(id, item);
+    }
 
-	@Override
-	public boolean contains(Serializable id, Serializable keyspace) {
-		return getMap(keyspace).containsKey(id);
-	}
+    @Override
+    public boolean contains(Serializable id, Serializable keyspace) {
+        return getMap(keyspace).containsKey(id);
+    }
 
-	@Override
-	public Object get(Serializable id, Serializable keyspace) {
-		return getMap(keyspace).get(id);
-	}
+    @Override
+    public Object get(Serializable id, Serializable keyspace) {
+        return getMap(keyspace).get(id);
+    }
 
-	@Override
-	public Object delete(Serializable id, Serializable keyspace) {
-		return getMap(keyspace).remove(id);
-	}
+    @Override
+    public Object delete(Serializable id, Serializable keyspace) {
+        return getMap(keyspace).remove(id);
+    }
 
-	@Override
-	public Collection<?> getAllOf(Serializable keyspace) {
-		return getMap(keyspace).values();
-	}
+    @Override
+    public Collection<?> getAllOf(Serializable keyspace) {
+        return getMap(keyspace).values();
+    }
 
-	@Override
-	public void deleteAllOf(Serializable keyspace) {
-		getMap(keyspace).clear();
-	}
+    @Override
+    public void deleteAllOf(Serializable keyspace) {
+        getMap(keyspace).clear();
+    }
 
-	@Override
-	public void clear() {
-		// TODO: remove all elements
-	}
+    @Override
+    public void clear() {
+        // TODO: remove all elements
+    }
 
-	@SuppressWarnings("rawtypes")
-	protected IMap getMap(final Serializable keyspace) {
+    @SuppressWarnings("rawtypes")
+    protected IMap getMap(final Serializable keyspace) {
 
-		Assert.isInstanceOf(String.class, keyspace, "Keyspace identifier must of of type String.");
-		return hzInstance.getMap((String) keyspace);
-	}
+        Assert.isInstanceOf(String.class, keyspace, "Keyspace identifier must of of type String.");
+        return hzInstance.getMap((String) keyspace);
+    }
 
-	@Override
-	public void destroy() throws Exception {
-		hzInstance.shutdown();
-	}
+    @Override
+    public void destroy() throws Exception {
+        hzInstance.shutdown();
+    }
 
-	@Override
-	public long count(Serializable arg0) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    @Override
+    public long count(Serializable arg0) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-	@Override
-	public CloseableIterator<Entry<Serializable, Object>> entries(Serializable arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public CloseableIterator<Entry<Serializable, Object>> entries(Serializable arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map.Entry;
 
-import org.springframework.data.hazelcast.HazelcastKeyValueAdapter;
 import org.springframework.data.keyvalue.core.CriteriaAccessor;
 import org.springframework.data.keyvalue.core.QueryEngine;
 import org.springframework.data.keyvalue.core.SortAccessor;
@@ -35,74 +34,74 @@ import com.hazelcast.query.PredicateBuilder;
  */
 public class HazelcastQueryEngine extends QueryEngine<HazelcastKeyValueAdapter, Predicate<?, ?>, Comparator<Entry>> {
 
-	public HazelcastQueryEngine() {
-		super(HazelcastCriteriaAccessor.INSTANCE, HazelcastSortAccessor.INSTANCE);
-	}
+    public HazelcastQueryEngine() {
+        super(HazelcastCriteriaAccessor.INSTANCE, HazelcastSortAccessor.INSTANCE);
+    }
 
-	@Override
-	public Collection<?> execute(Predicate<?, ?> criteria, Comparator<Entry> sort, int offset, int rows,
-			Serializable keyspace) {
+    @Override
+    public Collection<?> execute(Predicate<?, ?> criteria, Comparator<Entry> sort, int offset, int rows,
+            Serializable keyspace) {
 
-		Predicate<?, ?> predicateToUse = criteria;
+        Predicate<?, ?> predicateToUse = criteria;
 
-		if (sort != null || offset > 0 || rows > 0) {
-			PagingPredicate pp = new PagingPredicate(criteria, (Comparator<Entry>) sort, rows);
-			if (offset > 0 && rows > 0) {
-				int x = offset / rows;
-				while (x > 0) {
-					pp.nextPage();
-					x--;
-				}
-			}
-			predicateToUse = pp;
-		}
+        if (sort != null || offset > 0 || rows > 0) {
+            PagingPredicate pp = new PagingPredicate(criteria, (Comparator<Entry>) sort, rows);
+            if (offset > 0 && rows > 0) {
+                int x = offset / rows;
+                while (x > 0) {
+                    pp.nextPage();
+                    x--;
+                }
+            }
+            predicateToUse = pp;
+        }
 
-		return this.getAdapter().getMap(keyspace).values(predicateToUse);
+        return this.getAdapter().getMap(keyspace).values(predicateToUse);
 
-	}
+    }
 
-	@Override
-	public long count(Predicate<?, ?> criteria, Serializable keyspace) {
-		return this.getAdapter().getMap(keyspace).keySet(criteria).size();
-	}
+    @Override
+    public long count(Predicate<?, ?> criteria, Serializable keyspace) {
+        return this.getAdapter().getMap(keyspace).keySet(criteria).size();
+    }
 
-	static enum HazelcastCriteriaAccessor implements CriteriaAccessor<Predicate<?, ?>> {
-		INSTANCE;
+    static enum HazelcastCriteriaAccessor implements CriteriaAccessor<Predicate<?, ?>> {
+        INSTANCE;
 
-		@Override
-		public Predicate<?, ?> resolve(KeyValueQuery<?> query) {
+        @Override
+        public Predicate<?, ?> resolve(KeyValueQuery<?> query) {
 
-			if (query == null || query.getCritieria() == null) {
-				return null;
-			}
+            if (query == null || query.getCritieria() == null) {
+                return null;
+            }
 
-			if (query.getCritieria() instanceof Predicate) {
-				return (Predicate<?, ?>) query.getCritieria();
-			}
+            if (query.getCritieria() instanceof Predicate) {
+                return (Predicate<?, ?>) query.getCritieria();
+            }
 
-			if (query.getCritieria() instanceof PredicateBuilder) {
-				return (PredicateBuilder) query.getCritieria();
-			}
+            if (query.getCritieria() instanceof PredicateBuilder) {
+                return (PredicateBuilder) query.getCritieria();
+            }
 
-			throw new UnsupportedOperationException();
-		}
+            throw new UnsupportedOperationException();
+        }
 
-	}
+    }
 
-	static enum HazelcastSortAccessor implements SortAccessor<Comparator<Entry>> {
+    static enum HazelcastSortAccessor implements SortAccessor<Comparator<Entry>> {
 
-		INSTANCE;
+        INSTANCE;
 
-		@Override
-		public Comparator<Entry> resolve(KeyValueQuery<?> query) {
+        @Override
+        public Comparator<Entry> resolve(KeyValueQuery<?> query) {
 
-			if (query == null || query.getSort() == null) {
-				return null;
-			}
+            if (query == null || query.getSort() == null) {
+                return null;
+            }
 
-			// TODO: create serializable sorter;
-			throw new UnsupportedOperationException();
-		}
-	}
+            // TODO: create serializable sorter;
+            throw new UnsupportedOperationException();
+        }
+    }
 
 }
