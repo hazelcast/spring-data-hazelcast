@@ -82,7 +82,7 @@ public class HazelcastKeyValueAdapter extends AbstractKeyValueAdapter {
 
     @Override
     public void clear() {
-        // TODO: remove all elements
+        this.hzInstance.shutdown();
     }
 
     @SuppressWarnings("rawtypes")
@@ -94,13 +94,12 @@ public class HazelcastKeyValueAdapter extends AbstractKeyValueAdapter {
 
     @Override
     public void destroy() throws Exception {
-        hzInstance.shutdown();
+        this.clear();
     }
 
     @Override
-    public long count(Serializable arg0) {
-        // TODO Auto-generated method stub
-        return 0;
+    public long count(Serializable keyspace) {
+        return this.getMap(keyspace).size();
     }
 
     @Override

@@ -60,8 +60,8 @@ public class InstanceHelper {
 	
     /**
      * <P>Spring will shutdown the test Hazelcast instance, as the {@code @Bean}
-     * is defined with {@code destroyMethod="shutdown"}. Shut down any other
-     * server instances started, which may be needed for cluster tests.
+     * is defined as a {@link org.springframework.beans.factory.DisposableBean}.
+     * Shut down any other server instances started, which may be needed for cluster tests.
      * </P>
      */
 	@PreDestroy
@@ -69,6 +69,9 @@ public class InstanceHelper {
 	    Set<HazelcastInstance> hazelcastInstances = Hazelcast.getAllHazelcastInstances();
 	    if(hazelcastInstances.size()!=0) {
 	        for(HazelcastInstance hazelcastInstance : hazelcastInstances) {
+	        	if(Constants.HAZELCAST_TEST_INSTANCE_NAME.equals(hazelcastInstance.getName())) {
+	        		log.error("'{}' is still running", Constants.HAZELCAST_TEST_INSTANCE_NAME);
+	        	}
 	            log.debug("Closing '{}'", hazelcastInstance);
 	            hazelcastInstance.shutdown();
 	        }
@@ -88,7 +91,7 @@ public class InstanceHelper {
 	     * </P>
 	     * @return A standalone Hazelcast instance, a cluster of one
 	     */
-		@Bean(destroyMethod="shutdown", name=Constants.HAZELCAST_TEST_INSTANCE_NAME)
+		@Bean(name=Constants.HAZELCAST_TEST_INSTANCE_NAME)
 		public HazelcastInstance singleton() {
 			HazelcastInstance hazelcastInstance = 
 					InstanceHelper.makeServer(
@@ -118,7 +121,7 @@ public class InstanceHelper {
 	     * </P>
 	     * @return One of two Hazelcast instances created.
 	     */
-		@Bean(destroyMethod="shutdown", name=Constants.HAZELCAST_TEST_INSTANCE_NAME)
+		@Bean(name=Constants.HAZELCAST_TEST_INSTANCE_NAME)
 		public HazelcastInstance cluster() {
 			HazelcastInstance hazelcastInstance = 
 					InstanceHelper.makeServer(
@@ -153,7 +156,7 @@ public class InstanceHelper {
 	     * </P>
 	     * @return The client Hazelcast instance.
 	     */
-		@Bean(destroyMethod="shutdown", name=Constants.HAZELCAST_TEST_INSTANCE_NAME)
+		@Bean(name=Constants.HAZELCAST_TEST_INSTANCE_NAME)
 		public HazelcastInstance cluster() {
 			InstanceHelper.makeServer(
 					"Not" + Constants.HAZELCAST_TEST_INSTANCE_NAME, 
