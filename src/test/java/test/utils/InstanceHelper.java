@@ -66,16 +66,24 @@ public class InstanceHelper {
      */
 	@PreDestroy
 	public void preDestroy() {
+        boolean testInstanceWasRunning = false;
+
 	    Set<HazelcastInstance> hazelcastInstances = Hazelcast.getAllHazelcastInstances();
 	    if(hazelcastInstances.size()!=0) {
 	        for(HazelcastInstance hazelcastInstance : hazelcastInstances) {
 	        	if(Constants.HAZELCAST_TEST_INSTANCE_NAME.equals(hazelcastInstance.getName())) {
-	        		log.error("'{}' is still running", Constants.HAZELCAST_TEST_INSTANCE_NAME);
+                    testInstanceWasRunning = true;
 	        	}
 	            log.debug("Closing '{}'", hazelcastInstance);
 	            hazelcastInstance.shutdown();
 	        }
 	    };
+
+       if(testInstanceWasRunning) {
+   	       log.error("'{}' was still running", Constants.HAZELCAST_TEST_INSTANCE_NAME);
+       } else {
+   	       log.debug("'{}' already closed by Spring", Constants.HAZELCAST_TEST_INSTANCE_NAME);
+	   }
 	}
 	
 	/**
