@@ -33,7 +33,7 @@ import org.springframework.data.keyvalue.core.KeyValueTemplate;
 @Configuration
 @EnableHazelcastRepositories
 public class InstanceHelper {
-	private static final Logger log = LoggerFactory.getLogger(InstanceHelper.class);
+	private static final Logger LOG = LoggerFactory.getLogger(InstanceHelper.class);
 	private static final String CLUSTER_HOST = "127.0.0.1";
 	private static final int CLUSTER_PORT = 5701;
 	private static final String MASTER_SERVER = CLUSTER_HOST + ":" + CLUSTER_PORT; 
@@ -74,15 +74,15 @@ public class InstanceHelper {
 	        	if(Constants.HAZELCAST_TEST_INSTANCE_NAME.equals(hazelcastInstance.getName())) {
                     testInstanceWasRunning = true;
 	        	}
-	            log.debug("Closing '{}'", hazelcastInstance);
+	        	LOG.debug("Closing '{}'", hazelcastInstance);
 	            hazelcastInstance.shutdown();
 	        }
 	    };
 
        if(testInstanceWasRunning) {
-   	       log.error("'{}' was still running", Constants.HAZELCAST_TEST_INSTANCE_NAME);
+    	   LOG.error("'{}' was still running", Constants.HAZELCAST_TEST_INSTANCE_NAME);
        } else {
-   	       log.debug("'{}' already closed by Spring", Constants.HAZELCAST_TEST_INSTANCE_NAME);
+    	   LOG.debug("'{}' already closed by Spring", Constants.HAZELCAST_TEST_INSTANCE_NAME);
 	   }
 	}
 	
@@ -105,7 +105,7 @@ public class InstanceHelper {
 					InstanceHelper.makeServer(
 							Constants.HAZELCAST_TEST_INSTANCE_NAME, 
 							CLUSTER_PORT);
-			log.trace("@Bean=='{}'", hazelcastInstance);
+			LOG.trace("@Bean=='{}'", hazelcastInstance);
 			return hazelcastInstance;
 		}
 	}
@@ -135,7 +135,7 @@ public class InstanceHelper {
 					InstanceHelper.makeServer(
 							Constants.HAZELCAST_TEST_INSTANCE_NAME, 
 							CLUSTER_PORT);
-			log.trace("@Bean == '{}'", hazelcastInstance);
+			LOG.trace("@Bean == '{}'", hazelcastInstance);
 
 			InstanceHelper.makeServer(
 					"Not" + Constants.HAZELCAST_TEST_INSTANCE_NAME, 
@@ -173,7 +173,7 @@ public class InstanceHelper {
 			HazelcastInstance hazelcastInstance = 
 					InstanceHelper.makeClient(
 							Constants.HAZELCAST_TEST_INSTANCE_NAME);
-			log.trace("@Bean == '{}'", hazelcastInstance);
+			LOG.trace("@Bean == '{}'", hazelcastInstance);
 
 			return hazelcastInstance;
 		}
@@ -208,7 +208,7 @@ public class InstanceHelper {
 		
 		HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
 
-		log.debug("Created {}", hazelcastInstance);
+		LOG.debug("Created {}", hazelcastInstance);
 		
 		return hazelcastInstance;
 	}
@@ -231,7 +231,7 @@ public class InstanceHelper {
 
 		HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(clientConfig);
 		
-		log.debug("Created {}", hazelcastInstance);
+		LOG.debug("Created {}", hazelcastInstance);
 		
 		return hazelcastInstance;
 	}
