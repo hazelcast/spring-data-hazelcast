@@ -65,7 +65,8 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-        System.setProperty("hazelcast.logging.type","slf4j");    
+        System.setProperty("hazelcast.logging.type","slf4j");
+        System.setProperty("hazelcast.version.check.enabled", "false");
 	}
 
 	@Before
