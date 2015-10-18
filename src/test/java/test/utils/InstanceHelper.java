@@ -39,7 +39,8 @@ public class InstanceHelper {
 	private static final String MASTER_SERVER = CLUSTER_HOST + ":" + CLUSTER_PORT; 
 
     static {
-        System.setProperty("hazelcast.logging.type","slf4j");    
+        System.setProperty("hazelcast.logging.type","slf4j");
+        System.setProperty("hazelcast.version.check.enabled", "false");
     }
     
 	@Resource(name=Constants.HAZELCAST_TEST_INSTANCE_NAME)
