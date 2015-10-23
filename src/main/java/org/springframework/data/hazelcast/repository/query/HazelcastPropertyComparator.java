@@ -51,15 +51,17 @@ public class HazelcastPropertyComparator implements Comparator<Entry<?, ?>>, Ser
     public int compare(Entry<?, ?> o1, Entry<?, ?> o2) {
 
         try {
-            Comparable o1Field = ReflectionHelper.extractValue(o1.getValue(), this.attributeName);
-            Comparable o2Field = ReflectionHelper.extractValue(o2.getValue(), this.attributeName);
+            Object o1Field = ReflectionHelper.extractValue(o1.getValue(), this.attributeName);
+            Object o2Field = ReflectionHelper.extractValue(o2.getValue(), this.attributeName);
 
-            if (o1Field != null) {
-                return this.direction * o1Field.compareTo(o2Field);
-            } else {
-                if (o2Field != null) {
-                    return -1 * this.direction * o2Field.compareTo(null);
-                }
+            if (o1Field == null) {
+                return this.direction;
+            }
+            if (o2Field == null) {
+                return -1 * this.direction;
+            }
+            if (o1Field instanceof Comparable && o2Field instanceof Comparable) {
+                return this.direction * ((Comparable) o1Field).compareTo((Comparable) o2Field);
             }
 
         } catch (Exception ignore) {
