@@ -24,10 +24,12 @@ import org.springframework.data.repository.query.ParameterAccessor;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
+import org.springframework.data.repository.query.parser.Part.Type;
 
 import com.hazelcast.query.EntryObject;
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.PredicateBuilder;
+import com.hazelcast.query.Predicates;
 
 /**
  * @author Christoph Strobl
@@ -65,9 +67,10 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
      * @see org.springframework.data.repository.query.parser.AbstractQueryCreator
      *                          #create(org.springframework.data.repository.query.parser.Part, java.util.Iterator)
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected Predicate<?, ?> create(Part part, Iterator<Object> iterator) {
-        return from(predicateBuilder, part, iterator);
+        return this.from(this.predicateBuilder, part, (Iterator<Comparable<?>>) (Iterator) iterator);
     }
 
     /*
@@ -75,9 +78,10 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
      * @see org.springframework.data.repository.query.parser.AbstractQueryCreator
      *                          #and(org.springframework.data.repository.query.parser.Part, java.lang.Object, java.util.Iterator)
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected Predicate<?, ?> and(Part part, Predicate<?, ?> base, Iterator<Object> iterator) {
-        return predicateBuilder.and(from(predicateBuilder, part, iterator));
+        return this.predicateBuilder.and(this.from(this.predicateBuilder, part, (Iterator<Comparable<?>>) (Iterator) iterator));
     }
 
     /*
@@ -100,25 +104,137 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
         return new KeyValueQuery<Predicate<?, ?>>(criteria);
     }
 
-    private Predicate<?, ?> from(PredicateBuilder pb, Part part, Iterator<Object> iterator) {
+    /* Map query types to Hazelcast predicates. Use multiple methods to separate into
+     * logical groups, easing testing and for possible recursion.
+     *
+     * TODO: Not all types are currently implemented.
+     */
+    private Predicate<?, ?> from(PredicateBuilder pb, Part part, Iterator<Comparable<?>> iterator) {
 
-        EntryObject e = pb.getEntryObject();
-        e.get(part.getProperty().toDotPath());
+        String property = part.getProperty().toDotPath();
+        Type type = part.getType();
 
-        switch (part.getType()) {
-            case TRUE:
-                return e.equal(true);
-            case FALSE:
-                return e.equal(false);
-            case SIMPLE_PROPERTY:
-                return e.equal((Comparable<?>) iterator.next());
-            case IS_NULL:
-                return e.isNull();
-            case GREATER_THAN:
-                return e.greaterThan((Comparable<?>) iterator.next());
+        EntryObject entryObject = pb.getEntryObject();
+        entryObject.get(property);
 
-            default:
-                throw new InvalidDataAccessApiUsageException(String.format("Found invalid part '%s' in query", part.getType()));
+        switch (type) {
+
+        case FALSE:
+        case TRUE:
+            return fromBooleanVariant(type, entryObject);
+
+        case SIMPLE_PROPERTY:
+            return fromEqualityVariant(type, entryObject, iterator);
+
+        case GREATER_THAN:
+        case GREATER_THAN_EQUAL:
+        case LESS_THAN:
+        case LESS_THAN_EQUAL:
+            return fromInequalityVariant(type, entryObject, iterator);
+
+        case LIKE:
+            return fromLikeVariant(type, property, iterator);
+
+        case IS_NOT_NULL:
+        case IS_NULL:
+            return fromNullVariant(type, entryObject);
+
+        /* case AFTER:
+         * case BEFORE:
+         * case BETWEEN:
+         * case CONTAINING:
+         * case ENDING_WITH:
+         * case EXISTS:
+         * case IN:
+         * case NEAR:
+         * case NEGATING_SIMPLE_PROPERTY:
+         * case NOT_CONTAINING:
+         * case NOT_IN:
+         * case NOT_LIKE:
+         * case REGEX:
+         * case STARTING_WITH:
+         * case WITHIN:
+         */
+        default:
+            throw new InvalidDataAccessApiUsageException(
+                String.format("Found invalid part '%s' in query", type));
+        }
+
+    }
+
+    private Predicate<?, ?> fromBooleanVariant(Type type, EntryObject entryObject) {
+
+        switch (type) {
+
+        case TRUE:
+            return entryObject.equal(true);
+        case FALSE:
+            return entryObject.equal(false);
+
+        default:
+            throw new InvalidDataAccessApiUsageException(
+                String.format("Logic error for '%s' in query", type));
         }
     }
+
+    private Predicate<?, ?> fromInequalityVariant(Type type, EntryObject entryObject, Iterator<Comparable<?>> iterator) {
+
+        switch (type) {
+
+        case GREATER_THAN:
+            return entryObject.greaterThan(iterator.next());
+        case GREATER_THAN_EQUAL:
+            return entryObject.greaterEqual(iterator.next());
+        case LESS_THAN:
+            return entryObject.lessThan(iterator.next());
+        case LESS_THAN_EQUAL:
+            return entryObject.lessEqual(iterator.next());
+
+        default:
+            throw new InvalidDataAccessApiUsageException(
+                String.format("Logic error for '%s' in query", type));
+        }
+    }
+
+    private Predicate<?, ?> fromEqualityVariant(Type type, EntryObject entryObject, Iterator<Comparable<?>> iterator) {
+
+        switch (type) {
+
+        case SIMPLE_PROPERTY:
+            return entryObject.equal(iterator.next());
+
+        default:
+            throw new InvalidDataAccessApiUsageException(
+                String.format("Logic error for '%s' in query", type));
+        }
+    }
+
+    private Predicate<?, ?> fromLikeVariant(Type type, String property, Iterator<Comparable<?>> iterator) {
+
+        switch (type) {
+
+        case LIKE:
+            return Predicates.like(property, iterator.next().toString());
+
+        default:
+            throw new InvalidDataAccessApiUsageException(
+                String.format("Logic error for '%s' in query", type));
+        }
+    }
+
+    private Predicate<?, ?> fromNullVariant(Type type, EntryObject entryObject) {
+
+        switch (type) {
+
+        case IS_NULL:
+            return entryObject.isNull();
+        case IS_NOT_NULL:
+            return entryObject.isNotNull();
+
+        default:
+            throw new InvalidDataAccessApiUsageException(
+                String.format("Logic error for '%s' in query", type));
+        }
+    }
+
 }
