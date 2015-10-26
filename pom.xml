@@ -19,7 +19,7 @@
 	<properties>
 		<dist.key>DATAHC</dist.key>
 		<failsafe.and.surefire>2.18.1</failsafe.and.surefire>
-		<hazelcast>3.6-SNAPSHOT</hazelcast>
+		<hazelcast>3.6-EA</hazelcast>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<springdata.keyvalue>1.0.0.RELEASE</springdata.keyvalue>
@@ -48,7 +48,7 @@
 		<!-- SCOPE==test -->
 		<dependency>
 			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast-client-new</artifactId>
+			<artifactId>hazelcast-client</artifactId>
 			<version>${hazelcast}</version>
 			<scope>test</scope>
 		</dependency>
@@ -65,7 +65,7 @@
   					<target>
 	  					<property name="escapeDollar" value="$$"/>
   						<echo>TODO: Update ${escapeDollar}{project.version}</echo>
-  						<echo>TODO: Remove sonatype-snapshot repository once Hazelcast 3.6 released.</echo>
+						<echo>TODO: Update ${escapeDollar}{hazelcast} once Hazelcast 3.6 released.</echo>
   						<echo>TODO  Update template.mf for ${escapeDollar}{hazelcast:[=.=.=,+1.0.0)}</echo>
   					</target>
   				</configuration>
@@ -206,17 +206,6 @@
 
 		</plugins>
 	</build>
-
-	<!-- For Hazelcast 3.6-SNAPSHOT -->
-	<repositories>
-		<repository>
-			<id>sonatype-snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 
 	<!-- For Spring Bundlor plugin -->
 	<pluginRepositories>
