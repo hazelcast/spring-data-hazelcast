@@ -39,12 +39,6 @@
 			<version>${hazelcast}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.mysema.querydsl</groupId>
-			<artifactId>querydsl-core</artifactId>
-			<version>${querydsl}</version>
-		</dependency>
-
 		<!-- SCOPE==test -->
 		<dependency>
 			<groupId>com.hazelcast</groupId>
