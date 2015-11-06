@@ -14,8 +14,19 @@ import org.springframework.data.repository.query.Param;
  * for wider use.
  *</P>
  *<P>The specified methods are implemented by Spring at run-time, using the method name and parameters to
- *deduce the query syntax.
+ * deduce the query syntax.
  *</P>
+ *<P>See {@link org.springframework.data.repository.query.parser.PartTree PartTree} for details of the
+ * query syntax. A simple example being a concatenation:
+ * <UL>
+ * <LI>'<B>{@code find}</B>' - return results or result</LI>
+ * <LI>[optional] '<B>{@code first}<I>nn</I></B>' - limit results to the first <I>nn</I> matches</LI>
+ * <LI>'<B>{@code By}</B>' - filters follow this token
+ * <LI>[optional] '<I><B>{@code fieldname}</B>'</I> - select on a field in the {@code Map.Entry.getValue()}
+ * <LI>[optional] '<B>{@code OrderBy}</B>' - sorts follow this token
+ * <LI>[optional] '<I><B>{@code fieldname}</B>'</I> - select on a field in the {@code Map.Entry.getValue()}
+ * </UL>
+ * </P>
  *
  * @author Christoph Strobl
  * @author Oliver Gierke
@@ -23,13 +34,23 @@ import org.springframework.data.repository.query.Param;
 public interface PersonRepository extends HazelcastRepository<Person, String> {
 
 	public Long				countByFirstname(String firstname);
-	
-    public Person           findMinById();
+
+    public Long             countByIdLessThanEqual(String id);
+
+    //TODO 'Distinct' is not yet implemented
+    public Long             countDistinctLastnameByFirstname(String firstname);
+
+    //TODO 'Delete' is not yet implemented
+    public Long             deleteByLastname(String firstname);
+
+    public Person           findFirstIdByOrderById();
     
+    public Person           findFirstIdByFirstnameOrderByIdDesc(String firstname);
+
     public List<Person>     findByFirstname(String firstname);
 
-    // Optional underscores for readibility
-    public List<Person>     findBy_Firstname_And_Lastname(String firstname, String lastname);
+    // Underscores are permitted after field names, improving readability slightly
+    public List<Person>     findByFirstname_AndLastname(String firstname, String lastname);
     
     // Params are positional unless tagged
     public List<Person>     findByFirstnameOrLastname(@Param("lastname") String s1, @Param("firstname") String s2);
@@ -47,16 +68,24 @@ public interface PersonRepository extends HazelcastRepository<Person, String> {
     public List<Person>     findByFirstname(String firstname, Sort sort);
     
     public List<Person>     findByLastnameIgnoreCase(String lastname);
-    
+
     public List<Person>     findByLastnameNotNull(Sort sort);
 
-    public List<Person>   	findFirst2();
+    public List<Person>     findFirst3ByOrderByFirstnameAsc();
 
-    public List<Person>   	findAllFirst3OrderByFirstname();
+    public List<Person>     findFirst30ByOrderByFirstnameDescLastnameAsc();
 
-    public Stream<Person>   findAllFirst4();
+    public Stream<Person>   findFirst4By();
 
-    public Slice<Person>    find();
+    public Stream<Person>   streamByLastnameGreaterThanEqual(String lastname);
 
-    public Page<Person>     findFirst2ByLastname(Pageable pageable, String lastname);
+    public Slice<Person>    findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual(String id,
+                                String firstname1, String firstname2, Pageable pageable);
+
+    public Page<Person>     findByLastname(String lastname, Pageable pageable);
+
+    public Page<Person>     findByOrderByLastnameDesc(Pageable pageable);
+
+    public Slice<Person>    findByIdLike(String pattern, Pageable pageable);
+
 }
