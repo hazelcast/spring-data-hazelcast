@@ -26,9 +26,9 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.hazelcast.repository.query.HazelcastQueryCreator;
+import org.springframework.data.hazelcast.repository.support.HazelcastRepositoryFactoryBean;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.repository.config.QueryCreatorType;
-import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.QueryLookupStrategy.Key;
 
@@ -103,11 +103,11 @@ public @interface EnableHazelcastRepositories {
 
     /**
      * Returns the {@link FactoryBean} class to be used for each repository instance. Defaults to
-     * {@link KeyValueRepositoryFactoryBean}.
+     * {@link HazelcastRepositoryFactoryBean}.
      *
      * @return
      */
-    Class<?> repositoryFactoryBeanClass() default KeyValueRepositoryFactoryBean.class;
+    Class<?> repositoryFactoryBeanClass() default HazelcastRepositoryFactoryBean.class;
 
     /**
      * Configures the name of the {@link KeyValueOperations} bean to be used with the repositories detected.

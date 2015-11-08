@@ -15,17 +15,15 @@
  */
 package org.springframework.data.hazelcast;
 
+import com.hazelcast.query.PagingPredicate;
+import com.hazelcast.query.Predicate;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map.Entry;
-
 import org.springframework.data.hazelcast.repository.query.HazelcastCriteriaAccessor;
 import org.springframework.data.hazelcast.repository.query.HazelcastSortAccessor;
 import org.springframework.data.keyvalue.core.QueryEngine;
-
-import com.hazelcast.query.PagingPredicate;
-import com.hazelcast.query.Predicate;
 
 /**
  * <P>Implementation of {@code findBy*()} and {@code countBy*{}} queries.

@@ -17,9 +17,11 @@ package org.springframework.data.hazelcast;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
 import org.springframework.data.keyvalue.core.AbstractKeyValueAdapter;
+import org.springframework.data.keyvalue.core.ForwardingCloseableIterator;
 import org.springframework.data.util.CloseableIterator;
 import org.springframework.util.Assert;
 
@@ -87,7 +89,6 @@ public class HazelcastKeyValueAdapter extends AbstractKeyValueAdapter {
 
     @SuppressWarnings("rawtypes")
     protected IMap getMap(final Serializable keyspace) {
-
         Assert.isInstanceOf(String.class, keyspace, "Keyspace identifier must of of type String.");
         return hzInstance.getMap((String) keyspace);
     }
@@ -102,10 +103,12 @@ public class HazelcastKeyValueAdapter extends AbstractKeyValueAdapter {
         return this.getMap(keyspace).size();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public CloseableIterator<Entry<Serializable, Object>> entries(Serializable arg0) {
-        // TODO Auto-generated method stub
-        return null;
+    public CloseableIterator<Entry<Serializable, Object>> entries(Serializable keyspace) {
+        Iterator<Entry<Serializable, Object>> iterator =
+                this.getMap(keyspace).entrySet().iterator();
+        return new ForwardingCloseableIterator<Entry<Serializable, Object>>(iterator);
     }
 
 }

@@ -81,7 +81,7 @@ class HazelcastRepositoriesRegistrar extends RepositoryBeanDefinitionRegistrarSu
          */
         @Override
         protected String getDefaultKeyValueTemplateRef() {
-            return "hazelcastKeyValueTemplate";
+            return "keyValueTemplate";
         }
     }
 }

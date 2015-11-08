@@ -15,32 +15,39 @@
  */
 package org.springframework.data.hazelcast.repository.query;
 
+import com.hazelcast.query.PagingPredicate;
 import com.hazelcast.query.Predicate;
-import com.hazelcast.query.PredicateBuilder;
-
 import org.springframework.data.keyvalue.core.CriteriaAccessor;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 
 /**
- * TODO Javadoc
+ * <P>Provide a mechanism to convert the abstract query into the direct
+ * implementation in Hazelcast.
+ * </P>
  */
 public class HazelcastCriteriaAccessor implements CriteriaAccessor<Predicate<?, ?>> {
 
+    /**
+     * @param   A query in Spring form
+     * @return  The same in Hazelcast form
+     */
     public Predicate<?, ?> resolve(KeyValueQuery<?> query) {
 
-        if (query == null || query.getCritieria() == null) {
-            return null;
-        }
+       if (query == null || query.getCritieria() == null) {
+           return null;
+       }
 
-        if (query.getCritieria() instanceof Predicate) {
-            return (Predicate<?, ?>) query.getCritieria();
-        }
+       if (query.getCritieria() instanceof PagingPredicate) {
+           PagingPredicate pagingPredicate = (PagingPredicate) query.getCritieria();
+           query.limit(pagingPredicate.getPageSize());
+           return pagingPredicate.getPredicate();
+       }
 
-        if (query.getCritieria() instanceof PredicateBuilder) {
-            return (PredicateBuilder) query.getCritieria();
-        }
+       if (query.getCritieria() instanceof Predicate) {
+           return (Predicate<?, ?>) query.getCritieria();
+       }
 
-        throw new UnsupportedOperationException();
+       throw new UnsupportedOperationException(query.toString());
     }
 
 }

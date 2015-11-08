@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Map.Entry;
 
-
 /**
  * <P>Implement a limited form of custom comparison between entries.
  * The fields used for the comparison and the ascending/descending
