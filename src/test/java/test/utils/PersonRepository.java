@@ -88,4 +88,5 @@ public interface PersonRepository extends HazelcastRepository<Person, String> {
 
     public Slice<Person>    findByIdLike(String pattern, Pageable pageable);
 
+	public Long				countByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
 }

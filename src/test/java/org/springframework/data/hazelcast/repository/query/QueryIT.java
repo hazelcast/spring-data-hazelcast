@@ -69,6 +69,12 @@ public class QueryIT extends TestDataHelper {
     }
 
     @Test
+    public void countByFirstnameOrLastnameAllIgnoreCase() {
+    	Long count = this.personRepository.countByFirstnameOrLastnameAllIgnoreCase("james", "GUINNESS");
+        assertThat("1940, 1942 and 1957", count, equalTo(3L));
+    }
+
+    @Test
     public void deleteByLastname() {
         this.expectedException.expect(UnsupportedOperationException.class);
         this.expectedException.expectMessage(startsWith("Delete"));
