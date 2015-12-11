@@ -19,7 +19,7 @@
 	<properties>
 		<dist.key>DATAHC</dist.key>
 		<failsafe.and.surefire>2.18.1</failsafe.and.surefire>
-		<hazelcast>3.6-EA</hazelcast>
+		<hazelcast>3.6-EA2</hazelcast>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<springdata.keyvalue>1.0.0.RELEASE</springdata.keyvalue>
