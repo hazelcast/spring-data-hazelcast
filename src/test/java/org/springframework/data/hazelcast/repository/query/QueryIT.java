@@ -69,9 +69,21 @@ public class QueryIT extends TestDataHelper {
     }
 
     @Test
+    public void countByLastnameAllIgnoreCase() {
+        Long count = this.personRepository.countByLastnameAllIgnoreCase("day-LEWIS");
+        assertThat("1989, 2007 and 2012", count, equalTo(3L));
+    }
+
+    @Test
     public void countByFirstnameOrLastnameAllIgnoreCase() {
-    	Long count = this.personRepository.countByFirstnameOrLastnameAllIgnoreCase("james", "GUINNESS");
+        Long count = this.personRepository.countByFirstnameOrLastnameAllIgnoreCase("james", "GUINNESS");
         assertThat("1940, 1942 and 1957", count, equalTo(3L));
+    }
+
+    @Test
+    public void countByFirstnameAndLastnameAllIgnoreCase() {
+        Long count = this.personRepository.countByFirstnameAndLastnameAllIgnoreCase("JAMES", "CAGNEY");
+        assertThat("1942", count, equalTo(1L));
     }
 
     @Test
