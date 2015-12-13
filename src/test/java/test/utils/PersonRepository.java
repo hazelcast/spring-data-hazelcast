@@ -94,4 +94,10 @@ public interface PersonRepository extends HazelcastRepository<Person, String> {
 
     public Long             countByFirstnameAndLastnameAllIgnoreCase(String firstname, String lastname);
 
+    public Person           findByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
+
+    public Person           findByFirstnameOrLastnameIgnoreCase(String firstname, String lastname);
+
+    public Person           findByFirstnameIgnoreCaseOrLastname(String firstname, String lastname);
+
 }

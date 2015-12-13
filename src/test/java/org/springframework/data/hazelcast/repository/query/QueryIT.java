@@ -35,8 +35,8 @@ import test.utils.PersonRepository;
  */
 @ActiveProfiles(Constants.SPRING_TEST_PROFILE_SINGLETON)
 public class QueryIT extends TestDataHelper {
-	private static final int PAGE_0 = 0;
-	private static final int SIZE_1 = 1;
+    private static final int PAGE_0 = 0;
+    private static final int SIZE_1 = 1;
     private static final int SIZE_5 = 5;
 
     @Resource
@@ -84,6 +84,34 @@ public class QueryIT extends TestDataHelper {
     public void countByFirstnameAndLastnameAllIgnoreCase() {
         Long count = this.personRepository.countByFirstnameAndLastnameAllIgnoreCase("JAMES", "CAGNEY");
         assertThat("1942", count, equalTo(1L));
+    }
+
+    @Test
+    public void findByFirstnameIgnoreCaseOrLastname() {
+        Person person = this.personRepository.findByFirstnameIgnoreCaseOrLastname("alec", "");
+        assertThat("1957 ignore case applied to firstname not lastname", person, notNullValue());
+        assertThat("1957 firstname", person.getId(), equalTo("1957"));
+        person = this.personRepository.findByFirstnameIgnoreCaseOrLastname("", "guinness");
+        assertThat("1957 lastname", person, nullValue());
+    }
+
+    @Test
+    public void findByFirstnameOrLastnameIgnoreCase() {
+        Person person = this.personRepository.findByFirstnameOrLastnameIgnoreCase("alec", "");
+        assertThat("1957 firstname", person, nullValue());
+        person = this.personRepository.findByFirstnameOrLastnameIgnoreCase("", "guinness");
+        assertThat("1957 ignore case applied to lastname not firstname", person, notNullValue());
+        assertThat("1957 lastname", person.getId(), equalTo("1957"));
+    }
+
+    @Test
+    public void findByFirstnameOrLastnameAllIgnoreCase() {
+        Person person = this.personRepository.findByFirstnameOrLastnameAllIgnoreCase("alec", "");
+        assertThat("1957 firstname", person, notNullValue());
+        assertThat("1957 firstname", person.getId(), equalTo("1957"));
+        person = this.personRepository.findByFirstnameOrLastnameAllIgnoreCase("", "guinness");
+        assertThat("1957 lastname", person, notNullValue());
+        assertThat("1957 lastname", person.getId(), equalTo("1957"));
     }
 
     @Test
