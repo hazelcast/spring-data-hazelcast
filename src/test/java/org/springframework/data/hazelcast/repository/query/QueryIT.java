@@ -168,6 +168,12 @@ public class QueryIT extends TestDataHelper {
         assertThat("1941 and 1952", matches, 
         		containsInAnyOrder(hasProperty("id", equalTo("1941")),
 						   		   hasProperty("id", equalTo("1952"))));
+
+        matches = this.personRepository.findByFirstname_AndLastname("James","");
+        assertThat("Mismatch on lastname", matches.size(), equalTo(0));
+
+        matches = this.personRepository.findByFirstname_AndLastname("","Stewart");
+        assertThat("Mismatch on firstname", matches.size(), equalTo(0));
 	}
 
 	// Firstname and lastname in different order when arguments compared to method name

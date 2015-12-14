@@ -27,17 +27,14 @@ import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
 import org.springframework.data.repository.query.parser.Part.Type;
 import org.springframework.data.repository.query.parser.PartTree;
 
-import com.hazelcast.query.EntryObject;
 import com.hazelcast.query.PagingPredicate;
 import com.hazelcast.query.Predicate;
-import com.hazelcast.query.PredicateBuilder;
 import com.hazelcast.query.Predicates;
 
 /**
  * @author Christoph Strobl
  */
 public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Predicate<?, ?>>, Predicate<?, ?>> {
-    private final PredicateBuilder predicateBuilder;
     private final int limit;
 
     /**
@@ -48,7 +45,6 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
     public HazelcastQueryCreator(PartTree tree) {
         super(tree);
 
-        this.predicateBuilder = new PredicateBuilder();
         if (tree.isLimiting() && tree.getMaxResults() > 0) {
             this.limit = tree.getMaxResults();
         } else {
@@ -67,7 +63,6 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
     public HazelcastQueryCreator(PartTree tree, ParameterAccessor parameters) {
         super(tree, parameters);
 
-        this.predicateBuilder = new PredicateBuilder();
         if (tree.isLimiting() && tree.getMaxResults() > 0) {
             this.limit = tree.getMaxResults();
         } else {
@@ -83,7 +78,7 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected Predicate<?, ?> create(Part part, Iterator<Object> iterator) {
-        return this.from(predicateBuilder, part, (Iterator<Comparable<?>>) (Iterator) iterator);
+        return this.from(part, (Iterator<Comparable<?>>) (Iterator) iterator);
     }
 
     /*
@@ -94,8 +89,9 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected Predicate<?, ?> and(Part part, Predicate<?, ?> base, Iterator<Object> iterator) {
-        return this.predicateBuilder.and(
-                this.from(this.predicateBuilder, part, (Iterator<Comparable<?>>) (Iterator) iterator));
+        Predicate<?, ?> criteria =
+                this.from(part, (Iterator<Comparable<?>>) (Iterator) iterator);
+        return Predicates.and(base, criteria);
     }
 
     /*
@@ -105,7 +101,7 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
      */
     @Override
     protected Predicate<?, ?> or(Predicate<?, ?> base, Predicate<?, ?> criteria) {
-        return predicateBuilder.or(criteria);
+        return Predicates.or(base, criteria);
     }
 
     /*
@@ -133,38 +129,38 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
     /* Map query types to Hazelcast predicates. Use multiple methods to separate into
      * logical groups, easing testing and for possible recursion.
      *
+     * Use Predicate in favour over PredicateBuilder as the latter cannot support
+     * the former being embedded in the chain.
+     *
      * TODO Not all types are currently implemented. Some will be easier than others.
      */
-    private Predicate<?, ?> from(PredicateBuilder pb, Part part, Iterator<Comparable<?>> iterator) {
+    private Predicate<?, ?> from(Part part, Iterator<Comparable<?>> iterator) {
 
         String property = part.getProperty().toDotPath();
         Type type = part.getType();
         boolean ignoreCase = (part.shouldIgnoreCase() != IgnoreCaseType.NEVER);
 
-        EntryObject entryObject = pb.getEntryObject();
-        entryObject.get(property);
-
         switch (type) {
 
         case FALSE:
         case TRUE:
-            return fromBooleanVariant(type, entryObject);
+            return fromBooleanVariant(type, property);
 
         case SIMPLE_PROPERTY:
-            return fromEqualityVariant(type, ignoreCase, property, entryObject, iterator);
+            return fromEqualityVariant(type, ignoreCase, property, iterator);
 
         case GREATER_THAN:
         case GREATER_THAN_EQUAL:
         case LESS_THAN:
         case LESS_THAN_EQUAL:
-            return fromInequalityVariant(type, ignoreCase, entryObject, iterator);
+            return fromInequalityVariant(type, ignoreCase, property, iterator);
 
         case LIKE:
             return fromLikeVariant(type, property, iterator);
 
         case IS_NOT_NULL:
         case IS_NULL:
-            return fromNullVariant(type, entryObject);
+            return fromNullVariant(type, property);
 
         /* case AFTER:
          * case BEFORE:
@@ -189,14 +185,14 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
 
     }
 
-    private Predicate<?, ?> fromBooleanVariant(Type type, EntryObject entryObject) {
+    private Predicate<?, ?> fromBooleanVariant(Type type, String property) {
 
         switch (type) {
 
         case TRUE:
-            return entryObject.equal(true);
+            return Predicates.equal(property, true);
         case FALSE:
-            return entryObject.equal(false);
+            return Predicates.equal(property, false);
 
         default:
             throw new InvalidDataAccessApiUsageException(
@@ -205,7 +201,7 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
     }
 
     private Predicate<?, ?> fromInequalityVariant(Type type, boolean ignoreCase,
-            EntryObject entryObject, Iterator<Comparable<?>> iterator) {
+            String property, Iterator<Comparable<?>> iterator) {
 
         if (ignoreCase && type != Type.SIMPLE_PROPERTY) {
             throw new InvalidDataAccessApiUsageException(
@@ -215,13 +211,13 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
         switch (type) {
 
         case GREATER_THAN:
-            return entryObject.greaterThan(iterator.next());
+            return Predicates.greaterThan(property, iterator.next());
         case GREATER_THAN_EQUAL:
-            return entryObject.greaterEqual(iterator.next());
+            return Predicates.greaterEqual(property, iterator.next());
         case LESS_THAN:
-            return entryObject.lessThan(iterator.next());
+            return Predicates.lessThan(property, iterator.next());
         case LESS_THAN_EQUAL:
-            return entryObject.lessEqual(iterator.next());
+            return Predicates.lessEqual(property, iterator.next());
 
         default:
             throw new InvalidDataAccessApiUsageException(
@@ -230,7 +226,7 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
     }
 
     private Predicate<?, ?> fromEqualityVariant(Type type, boolean ignoreCase,
-            String property, EntryObject entryObject, Iterator<Comparable<?>> iterator) {
+            String property, Iterator<Comparable<?>> iterator) {
 
         switch (type) {
 
@@ -238,7 +234,7 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
             if (ignoreCase) {
                 return Predicates.ilike(property, iterator.next().toString());
             } else {
-                return entryObject.equal(iterator.next());
+                return Predicates.equal(property, iterator.next());
             }
 
         default:
@@ -260,14 +256,14 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
         }
     }
 
-    private Predicate<?, ?> fromNullVariant(Type type, EntryObject entryObject) {
+    private Predicate<?, ?> fromNullVariant(Type type, String property) {
 
         switch (type) {
 
         case IS_NULL:
-            return entryObject.isNull();
+            return Predicates.equal(property, null);
         case IS_NOT_NULL:
-            return entryObject.isNotNull();
+            return Predicates.notEqual(property, null);
 
         default:
             throw new InvalidDataAccessApiUsageException(
