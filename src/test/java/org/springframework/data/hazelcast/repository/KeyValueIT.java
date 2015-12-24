@@ -11,6 +11,8 @@ import test.utils.Person;
  * to test any Key-Value additions to {@link PagingAndSortingRepository}. At
  * the moment, there are none so this is empty.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 public class KeyValueIT {
 	   

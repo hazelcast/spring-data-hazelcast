@@ -25,6 +25,8 @@ import java.util.Map.Entry;
  * The fields used for the comparison and the ascending/descending
  * can be specified at run time.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 public class HazelcastPropertyComparator implements Comparator<Entry<?, ?>>, Serializable {
     private static final long serialVersionUID = 1L;

@@ -38,6 +38,7 @@ import org.springframework.data.repository.query.QueryLookupStrategy.Key;
  *
  * @author Christoph Strobl
  * @author Oliver Gierke
+ * @author Neil Stevenson
  */
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)

@@ -31,6 +31,8 @@ import org.springframework.util.Assert;
  * <P>Ensures {@link HazelcastPartTreeQuery} is used for query preparation rather
  * than {@link KeyValuePartTreeQuery} or other alternatives.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 public class HazelcastQueryLookupStrategy implements QueryLookupStrategy {
 

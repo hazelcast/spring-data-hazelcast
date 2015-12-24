@@ -33,6 +33,8 @@ import org.springframework.data.repository.query.parser.AbstractQueryCreator;
  * <P>The end goal of this bean is for {@link HazelcastPartTreeQuery} to be used
  * for query preparation.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 public class HazelcastRepositoryFactory extends KeyValueRepositoryFactory {
 

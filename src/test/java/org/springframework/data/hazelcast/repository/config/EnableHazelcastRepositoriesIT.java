@@ -44,6 +44,7 @@ import test.utils.PersonRepository;
  * 
  * @author Christoph Strobl
  * @author Oliver Gierke
+ * @author Neil Stevenson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={InstanceHelper.class})

@@ -17,6 +17,7 @@ import org.springframework.data.keyvalue.annotation.KeySpace;
  *
  * @author Christoph Strobl
  * @author Oliver Gierke
+ * @author Neil Stevenson
  */
 @KeySpace(Constants.PERSON_MAP_NAME)
 public class Person implements Comparable<Person>, Serializable {

@@ -31,6 +31,8 @@ import org.springframework.util.comparator.CompoundComparator;
  * wish to assume anything other than Hazelcast classes are available
  * on remote nodes.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 public class HazelcastSortAccessor implements SortAccessor<Comparator<Entry<?, ?>>> {
 

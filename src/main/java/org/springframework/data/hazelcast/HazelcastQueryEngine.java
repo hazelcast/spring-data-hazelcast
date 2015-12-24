@@ -30,6 +30,7 @@ import org.springframework.data.keyvalue.core.QueryEngine;
  * </P>
  *
  * @author Christoph Strobl
+ * @author Neil Stevenson
  */
 public class HazelcastQueryEngine extends QueryEngine<HazelcastKeyValueAdapter, Predicate<?, ?>, Comparator<Entry<?, ?>>> {
 

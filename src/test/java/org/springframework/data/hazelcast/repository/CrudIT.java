@@ -27,6 +27,8 @@ import test.utils.Person;
  * <P>Where possible, verify the repository against the underlying
  * Hazelcast instance directly.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 @ActiveProfiles(Constants.SPRING_TEST_PROFILE_SINGLETON)
 public class CrudIT extends TestDataHelper {

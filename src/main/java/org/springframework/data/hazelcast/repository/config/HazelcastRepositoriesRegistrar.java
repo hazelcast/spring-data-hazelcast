@@ -26,6 +26,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * {@link EnableHazelcastRepositories}.
  *
  * @author Oliver Gierke
+ * @author Neil Stevenson
  */
 class HazelcastRepositoriesRegistrar extends RepositoryBeanDefinitionRegistrarSupport {
 

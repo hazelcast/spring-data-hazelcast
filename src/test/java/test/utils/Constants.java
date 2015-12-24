@@ -1,5 +1,8 @@
 package test.utils;
 
+/**
+ * @author Neil Stevenson
+ */
 public class Constants {
     
 	public static final String HAZELCAST_TEST_INSTANCE_NAME = "TestInstance";

@@ -1,5 +1,8 @@
 package test.utils;
 
+/**
+ * @author Neil Stevenson
+ */
 public class Oscars {
   
     // https://en.wikipedia.org/wiki/Academy_Award_for_Best_Actor

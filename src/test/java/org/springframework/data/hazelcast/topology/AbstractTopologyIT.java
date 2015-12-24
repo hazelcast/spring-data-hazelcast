@@ -32,6 +32,8 @@ import test.utils.PersonRepository;
  * the co-ordination of process starting and stopping,
  * since networking isn't relevant to the tests.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 public abstract class AbstractTopologyIT extends TestDataHelper {
 	

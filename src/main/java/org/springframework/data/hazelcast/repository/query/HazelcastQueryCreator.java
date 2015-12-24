@@ -33,6 +33,7 @@ import com.hazelcast.query.Predicates;
 
 /**
  * @author Christoph Strobl
+ * @author Neil Stevenson
  */
 public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Predicate<?, ?>>, Predicate<?, ?>> {
     private final int limit;

@@ -32,6 +32,8 @@ import test.utils.PersonRepository;
  * <P>Sorting with querying is only fully tested in methods where the collation
  * sequence is parameter, and different sequences can be tried.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 @ActiveProfiles(Constants.SPRING_TEST_PROFILE_SINGLETON)
 public class QueryIT extends TestDataHelper {

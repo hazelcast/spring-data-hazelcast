@@ -30,6 +30,8 @@ import org.springframework.data.keyvalue.repository.KeyValueRepository;
  * defines that the {@code ID} class extends {@link Serializable}.
  * </P>
  *
+ * @author Neil Stevenson
+ *
  * @param <T>   The type of the domain value class
  * @param <ID>  The type of the domain key class
  */

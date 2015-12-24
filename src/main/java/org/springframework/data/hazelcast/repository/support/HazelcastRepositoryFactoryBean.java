@@ -40,6 +40,8 @@ import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFa
  * for query preparation.
  * </P>
  *
+ * @author Neil Stevenson
+ *
  * @param <T>   Repository type, {@link HazelcastRepository}
  * @param <S>   Domain object class
  * @param <ID>  Domain object key, super expects {@link Serializable}

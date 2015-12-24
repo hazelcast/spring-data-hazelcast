@@ -47,6 +47,7 @@ import com.hazelcast.query.PredicateBuilder;
  * 
  * @author Christoph Strobl
  * @author Oliver Gierke
+ * @author Neil Stevenson
  */
 @SuppressWarnings("serial")
 public class KeyValueTemplateTestsUsingHazelcastTest {

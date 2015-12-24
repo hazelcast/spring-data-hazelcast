@@ -22,6 +22,8 @@ import test.utils.Person;
  * tests examine the server content to confirm client
  * operations are sent there.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 @ActiveProfiles(Constants.SPRING_TEST_PROFILE_CLIENT_SERVER)
 public class ClientServerIT extends AbstractTopologyIT {

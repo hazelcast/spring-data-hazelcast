@@ -24,6 +24,8 @@ import org.springframework.data.keyvalue.core.query.KeyValueQuery;
  * <P>Provide a mechanism to convert the abstract query into the direct
  * implementation in Hazelcast.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 public class HazelcastCriteriaAccessor implements CriteriaAccessor<Predicate<?, ?>> {
 

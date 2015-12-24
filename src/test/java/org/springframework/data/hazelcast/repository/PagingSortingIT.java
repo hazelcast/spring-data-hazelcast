@@ -30,6 +30,8 @@ import test.utils.Person;
  * <P>Where possible, verify the repository against the underlying
  * Hazelcast instance directly.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 @ActiveProfiles(Constants.SPRING_TEST_PROFILE_CLIENT_SERVER)
 public class PagingSortingIT extends TestDataHelper {

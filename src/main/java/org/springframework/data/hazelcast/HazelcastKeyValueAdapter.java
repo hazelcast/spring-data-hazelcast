@@ -31,6 +31,7 @@ import com.hazelcast.core.IMap;
 
 /**
  * @author Christoph Strobl
+ * @author Neil Stevenson
  */
 public class HazelcastKeyValueAdapter extends AbstractKeyValueAdapter {
 
@@ -89,7 +90,7 @@ public class HazelcastKeyValueAdapter extends AbstractKeyValueAdapter {
 
     @SuppressWarnings("rawtypes")
     protected IMap getMap(final Serializable keyspace) {
-        Assert.isInstanceOf(String.class, keyspace, "Keyspace identifier must of of type String.");
+        Assert.isInstanceOf(String.class, keyspace, "Keyspace identifier must of type String.");
         return hzInstance.getMap((String) keyspace);
     }
 

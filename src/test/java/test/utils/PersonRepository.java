@@ -30,6 +30,7 @@ import org.springframework.data.repository.query.Param;
  *
  * @author Christoph Strobl
  * @author Oliver Gierke
+ * @author Neil Stevenson
  */
 public interface PersonRepository extends HazelcastRepository<Person, String> {
 

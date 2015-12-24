@@ -49,6 +49,8 @@ import org.springframework.data.util.StreamUtils;
  * to be instantiated into the output of the predicate builder rather
  * than the input.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 

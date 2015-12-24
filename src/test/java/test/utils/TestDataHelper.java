@@ -18,6 +18,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * <P>Load the {@code Person} {@link IMap} with data prior to a test,
  * delete it after.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes={InstanceHelper.class})

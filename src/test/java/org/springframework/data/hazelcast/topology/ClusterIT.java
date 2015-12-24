@@ -12,6 +12,8 @@ import test.utils.Constants;
  * to connect to, so the tests compare expected outcome
  * against another server node.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 @ActiveProfiles(Constants.SPRING_TEST_PROFILE_CLUSTER)
 public class ClusterIT extends AbstractTopologyIT {

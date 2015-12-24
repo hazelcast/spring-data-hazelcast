@@ -29,6 +29,8 @@ import org.springframework.data.keyvalue.core.KeyValueTemplate;
  * a class scan to load repositories and domain classes. Depending on the Spring active profile, the
  * Hazelcast instance may be isolated or connected to others in this JVM.
  * </P>
+ *
+ * @author Neil Stevenson
  */
 @Configuration
 @EnableHazelcastRepositories
