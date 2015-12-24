@@ -10,14 +10,16 @@ import org.springframework.data.hazelcast.repository.HazelcastRepository;
 import org.springframework.data.repository.query.Param;
 
 /**
- *<P>Repository class used for tests, re-factored from inner class in {@link EnableHazelcastRepositoriesIT}
- * for wider use.
- *</P>
- *<P>The specified methods are implemented by Spring at run-time, using the method name and parameters to
- * deduce the query syntax.
- *</P>
- *<P>See {@link org.springframework.data.repository.query.parser.PartTree PartTree} for details of the
- * query syntax. A simple example being a concatenation:
+ * <P>
+ * Repository class used for tests, re-factored from inner class in {@link EnableHazelcastRepositoriesIT} for wider use.
+ * </P>
+ * <P>
+ * The specified methods are implemented by Spring at run-time, using the method name and parameters to deduce the query
+ * syntax.
+ * </P>
+ * <P>
+ * See {@link org.springframework.data.repository.query.parser.PartTree PartTree} for details of the query syntax. A
+ * simple example being a concatenation:
  * <UL>
  * <LI>'<B>{@code find}</B>' - return results or result</LI>
  * <LI>[optional] '<B>{@code first}<I>nn</I></B>' - limit results to the first <I>nn</I> matches</LI>
@@ -34,71 +36,71 @@ import org.springframework.data.repository.query.Param;
  */
 public interface PersonRepository extends HazelcastRepository<Person, String> {
 
-	public Long				countByFirstname(String firstname);
+	public Long countByFirstname(String firstname);
 
-    public Long             countByIdLessThanEqual(String id);
+	public Long countByIdLessThanEqual(String id);
 
-    //TODO 'Distinct' is not yet implemented
-    public Long             countDistinctLastnameByFirstname(String firstname);
+	// TODO 'Distinct' is not yet implemented
+	public Long countDistinctLastnameByFirstname(String firstname);
 
-    //TODO 'Delete' is not yet implemented
-    public Long             deleteByLastname(String firstname);
+	// TODO 'Delete' is not yet implemented
+	public Long deleteByLastname(String firstname);
 
-    public Person           findFirstIdByOrderById();
-    
-    public Person           findFirstIdByFirstnameOrderByIdDesc(String firstname);
+	public Person findFirstIdByOrderById();
 
-    public List<Person>     findByFirstname(String firstname);
+	public Person findFirstIdByFirstnameOrderByIdDesc(String firstname);
 
-    // Underscores are permitted after field names, improving readability slightly
-    public List<Person>     findByFirstname_AndLastname(String firstname, String lastname);
-    
-    // Params are positional unless tagged
-    public List<Person>     findByFirstnameOrLastname(@Param("lastname") String s1, @Param("firstname") String s2);
-    
-    public List<Person>     findByFirstnameGreaterThan(String firstname);
-    
-    public List<Person>     findByFirstnameLike(String firstname);
-    
-    public List<Person>     findByFirstnameOrderById(String firstname);
-    
-    public List<Person>     findByLastnameOrderByIdAsc(String lastname);
-    
-    public List<Person>     findByFirstnameOrderByLastnameDesc(String firstname);
-    
-    public List<Person>     findByFirstname(String firstname, Sort sort);
-    
-    public List<Person>     findByLastnameIgnoreCase(String lastname);
+	public List<Person> findByFirstname(String firstname);
 
-    public List<Person>     findByLastnameNotNull(Sort sort);
+	// Underscores are permitted after field names, improving readability slightly
+	public List<Person> findByFirstname_AndLastname(String firstname, String lastname);
 
-    public List<Person>     findFirst3ByOrderByFirstnameAsc();
+	// Params are positional unless tagged
+	public List<Person> findByFirstnameOrLastname(@Param("lastname") String s1, @Param("firstname") String s2);
 
-    public List<Person>     findFirst30ByOrderByFirstnameDescLastnameAsc();
+	public List<Person> findByFirstnameGreaterThan(String firstname);
 
-    public Stream<Person>   findFirst4By();
+	public List<Person> findByFirstnameLike(String firstname);
 
-    public Stream<Person>   streamByLastnameGreaterThanEqual(String lastname);
+	public List<Person> findByFirstnameOrderById(String firstname);
 
-    public Slice<Person>    findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual(String id,
-                                String firstname1, String firstname2, Pageable pageable);
+	public List<Person> findByLastnameOrderByIdAsc(String lastname);
 
-    public Page<Person>     findByLastname(String lastname, Pageable pageable);
+	public List<Person> findByFirstnameOrderByLastnameDesc(String firstname);
 
-    public Page<Person>     findByOrderByLastnameDesc(Pageable pageable);
+	public List<Person> findByFirstname(String firstname, Sort sort);
 
-    public Slice<Person>    findByIdLike(String pattern, Pageable pageable);
+	public List<Person> findByLastnameIgnoreCase(String lastname);
 
-    public Long             countByLastnameAllIgnoreCase(String lastname);
+	public List<Person> findByLastnameNotNull(Sort sort);
 
-    public Long             countByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
+	public List<Person> findFirst3ByOrderByFirstnameAsc();
 
-    public Long             countByFirstnameAndLastnameAllIgnoreCase(String firstname, String lastname);
+	public List<Person> findFirst30ByOrderByFirstnameDescLastnameAsc();
 
-    public Person           findByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
+	public Stream<Person> findFirst4By();
 
-    public Person           findByFirstnameOrLastnameIgnoreCase(String firstname, String lastname);
+	public Stream<Person> streamByLastnameGreaterThanEqual(String lastname);
 
-    public Person           findByFirstnameIgnoreCaseOrLastname(String firstname, String lastname);
+	public Slice<Person> findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual(String id,
+			String firstname1, String firstname2, Pageable pageable);
+
+	public Page<Person> findByLastname(String lastname, Pageable pageable);
+
+	public Page<Person> findByOrderByLastnameDesc(Pageable pageable);
+
+	public Slice<Person> findByIdLike(String pattern, Pageable pageable);
+
+	public Long countByLastnameAllIgnoreCase(String lastname);
+
+	public Long countByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
+
+	public Long countByFirstnameAndLastnameAllIgnoreCase(String firstname, String lastname);
+
+	public Person findByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
+
+	public Person findByFirstnameOrLastnameIgnoreCase(String firstname, String lastname);
+
+	public Person findByFirstnameIgnoreCaseOrLastname(String firstname, String lastname);
 
 }

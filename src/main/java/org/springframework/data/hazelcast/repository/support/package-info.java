@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 /**
- * <P>{@link HazelcastPartTreeQuery} is a required modification to that
- * provided by Spring-Data-Keyvalue (class {@link KeyValuePartTreeQuery})
- * to implement queries correctly for Hazelcast.
+ * <P>
+ * {@link HazelcastPartTreeQuery} is a required modification to that provided by Spring-Data-Keyvalue (class
+ * {@link KeyValuePartTreeQuery}) to implement queries correctly for Hazelcast.
  * </P>
- * <P>As this is embedded, need to provide {@link HazelcastRepositoryFactoryBean}
- * to create {@link HazelcastRepositoryFactory} which provide a
- * {@link HazelcastQueryLookupStrategy}. There largely extend their
- * Spring-Data-KeyValue counterparts, copying where necessary, and overriding
- * where possible.
+ * <P>
+ * As this is embedded, need to provide {@link HazelcastRepositoryFactoryBean} to create
+ * {@link HazelcastRepositoryFactory} which provide a {@link HazelcastQueryLookupStrategy}. There largely extend their
+ * Spring-Data-KeyValue counterparts, copying where necessary, and overriding where possible.
  * </P>
  */
 package org.springframework.data.hazelcast.repository.support;

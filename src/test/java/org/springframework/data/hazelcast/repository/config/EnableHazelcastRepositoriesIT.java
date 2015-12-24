@@ -34,20 +34,19 @@ import test.utils.Person;
 import test.utils.PersonRepository;
 
 /**
- *<P>
+ * <P>
  * Integration test for Hazelcast repositories.
- *</P>
- *<P>
- *Domain class {@link Person} and repository {@link PersonRepository} made into outer classes
- *for use in other tests.
- *</P>
+ * </P>
+ * <P>
+ * Domain class {@link Person} and repository {@link PersonRepository} made into outer classes for use in other tests.
+ * </P>
  * 
  * @author Christoph Strobl
  * @author Oliver Gierke
  * @author Neil Stevenson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={InstanceHelper.class})
+@ContextConfiguration(classes = { InstanceHelper.class })
 @ActiveProfiles(Constants.SPRING_TEST_PROFILE_SINGLETON)
 @DirtiesContext
 public class EnableHazelcastRepositoriesIT {

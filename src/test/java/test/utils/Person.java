@@ -5,15 +5,16 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.keyvalue.annotation.KeySpace;
 
 /**
- *<P>Domain class used for tests, re-factored from inner class in {@link EnableHazelcastRepositoriesIT}
- * for wider use.
- *</P>
- *<P>A simple Pojo for the <I>value</I> part of a key-value store. Although it is not necessary for
- * the <I>value</I> object to contain the <I>key</I>, this is done here and the field is indicated
- * with {@code @Id}.
- *</P>
- *<P>Use {@code @KeySpace} to name the map used, rather than default to fully qualified class name.
- *</P>
+ * <P>
+ * Domain class used for tests, re-factored from inner class in {@link EnableHazelcastRepositoriesIT} for wider use.
+ * </P>
+ * <P>
+ * A simple Pojo for the <I>value</I> part of a key-value store. Although it is not necessary for the <I>value</I>
+ * object to contain the <I>key</I>, this is done here and the field is indicated with {@code @Id}.
+ * </P>
+ * <P>
+ * Use {@code @KeySpace} to name the map used, rather than default to fully qualified class name.
+ * </P>
  *
  * @author Christoph Strobl
  * @author Oliver Gierke
@@ -24,38 +25,42 @@ public class Person implements Comparable<Person>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-    @Id 
-    private String id;
-    private String firstname;
-    private String lastname;
-    
-    public String getId() {
-        return id;
-    }
-    public void setId(String id) {
-        this.id = id;
-    }
-    public String getFirstname() {
-        return firstname;
-    }
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-    public String getLastname() {
-        return lastname;
-    }
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-    
-    // Sort by lastname then firstname
-    @Override
-    public int compareTo(Person that) {
-        int lastnameCompare = this.lastname.compareTo(that.getLastname());
-        return (lastnameCompare!=0 ? lastnameCompare : this.firstname.compareTo(that.getFirstname())); 
-    }
+	@Id private String id;
+	private String firstname;
+	private String lastname;
 
-    @Override
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getFirstname() {
+		return firstname;
+	}
+
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
+
+	public String getLastname() {
+		return lastname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
+	}
+
+	// Sort by lastname then firstname
+	@Override
+	public int compareTo(Person that) {
+		int lastnameCompare = this.lastname.compareTo(that.getLastname());
+		return (lastnameCompare != 0 ? lastnameCompare : this.firstname.compareTo(that.getFirstname()));
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -64,6 +69,7 @@ public class Person implements Comparable<Person>, Serializable {
 		result = prime * result + ((lastname == null) ? 0 : lastname.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -90,10 +96,10 @@ public class Person implements Comparable<Person>, Serializable {
 			return false;
 		return true;
 	}
-    
-    @Override
-    public String toString() {
-        return "Person [id=" + id + ", firstname=" + firstname + ", lastname=" + lastname + "]";
-    }
+
+	@Override
+	public String toString() {
+		return "Person [id=" + id + ", firstname=" + firstname + ", lastname=" + lastname + "]";
+	}
 
 }

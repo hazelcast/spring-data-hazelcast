@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 /**
- * <P>Mainly defines {@link org.springframework.data.hazelcast.HazelcastKeyValueAdapter}
- * providing Hazelcast as an implementation of a <I>key-value</I> store.
+ * <P>
+ * Mainly defines {@link org.springframework.data.hazelcast.HazelcastKeyValueAdapter} providing Hazelcast as an
+ * implementation of a <I>key-value</I> store.
  * </P>
  */
 package org.springframework.data.hazelcast;

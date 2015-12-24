@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 /**
- * <P>Configuration defaults for using Hazelcast as a <I>key-value</I>
- * store.
+ * <P>
+ * Configuration defaults for using Hazelcast as a <I>key-value</I> store.
  * </P>
  */
 package org.springframework.data.hazelcast.repository.config;

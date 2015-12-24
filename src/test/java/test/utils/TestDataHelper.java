@@ -13,47 +13,48 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * <P>Common processing for integration tests.
+ * <P>
+ * Common processing for integration tests.
  * </P>
- * <P>Load the {@code Person} {@link IMap} with data prior to a test,
- * delete it after.
+ * <P>
+ * Load the {@code Person} {@link IMap} with data prior to a test, delete it after.
  * </P>
  *
  * @author Neil Stevenson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={InstanceHelper.class})
+@ContextConfiguration(classes = { InstanceHelper.class })
 @DirtiesContext
 public abstract class TestDataHelper {
-	@Autowired
-	protected HazelcastInstance hazelcastInstance;
-	
-    protected IMap<String, Person> personMap;
+	@Autowired protected HazelcastInstance hazelcastInstance;
 
-    /* Use Hazelcast directly, minimise reliance on Spring as the object is
-     * to test Spring encapsulation of Hazelcast.
-     */
-    @Before
-    public void setUp() {
-    	assertThat("Correct Hazelcast instance", this.hazelcastInstance.getName(), equalTo(Constants.HAZELCAST_TEST_INSTANCE_NAME));
+	protected IMap<String, Person> personMap;
 
-    	this.personMap = this.hazelcastInstance.getMap(Constants.PERSON_MAP_NAME);
-        assertThat("No test data left behind by other tests", this.personMap.size(), equalTo(0));
+	/* Use Hazelcast directly, minimise reliance on Spring as the object is
+	 * to test Spring encapsulation of Hazelcast.
+	 */
+	@Before
+	public void setUp() {
+		assertThat("Correct Hazelcast instance", this.hazelcastInstance.getName(),
+				equalTo(Constants.HAZELCAST_TEST_INSTANCE_NAME));
 
-        for(int i=0 ; i<Oscars.bestActors.length ; i++) {
-            Person person = new Person();
-            
-            person.setId(Integer.toString((int)Oscars.bestActors[i][0]));
-            person.setFirstname(Oscars.bestActors[i][1].toString());
-            person.setLastname(Oscars.bestActors[i][2].toString());
-            
-            this.personMap.put(person.getId(), person);
-        }
-    }
+		this.personMap = this.hazelcastInstance.getMap(Constants.PERSON_MAP_NAME);
+		assertThat("No test data left behind by other tests", this.personMap.size(), equalTo(0));
 
-    @After
-    public void tearDown() {
-        this.personMap.clear();
-    }
+		for (int i = 0; i < Oscars.bestActors.length; i++) {
+			Person person = new Person();
+
+			person.setId(Integer.toString((int) Oscars.bestActors[i][0]));
+			person.setFirstname(Oscars.bestActors[i][1].toString());
+			person.setLastname(Oscars.bestActors[i][2].toString());
+
+			this.personMap.put(person.getId(), person);
+		}
+	}
+
+	@After
+	public void tearDown() {
+		this.personMap.clear();
+	}
 
 }

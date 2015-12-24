@@ -66,8 +66,8 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-        System.setProperty("hazelcast.logging.type","slf4j");
-        System.setProperty("hazelcast.version.check.enabled", "false");
+		System.setProperty("hazelcast.logging.type", "slf4j");
+		System.setProperty("hazelcast.version.check.enabled", "false");
 	}
 
 	@Before
@@ -263,7 +263,7 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
 		}
 
 		public int compareTo(Foo that) {
-			if(this.foo==null || that==null || that.getFoo()==null) {
+			if (this.foo == null || that == null || that.getFoo() == null) {
 				throw new NullPointerException();
 			} else {
 				return this.foo.compareTo(that.getFoo());

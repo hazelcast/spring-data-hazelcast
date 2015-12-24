@@ -4,17 +4,16 @@ import org.springframework.test.context.ActiveProfiles;
 import test.utils.Constants;
 
 /**
- * <P>Run the {@link AbstractTopologyIT} tests with the
- * server-only profile, that defines a cluster with
- * multiple server nodes.
+ * <P>
+ * Run the {@link AbstractTopologyIT} tests with the server-only profile, that defines a cluster with multiple server
+ * nodes.
  * </P>
- * <P>Spring Data Hazelcast selects one of server nodes
- * to connect to, so the tests compare expected outcome
- * against another server node.
+ * <P>
+ * Spring Data Hazelcast selects one of server nodes to connect to, so the tests compare expected outcome against
+ * another server node.
  * </P>
  *
  * @author Neil Stevenson
  */
 @ActiveProfiles(Constants.SPRING_TEST_PROFILE_CLUSTER)
-public class ClusterIT extends AbstractTopologyIT {
-}
+public class ClusterIT extends AbstractTopologyIT {}

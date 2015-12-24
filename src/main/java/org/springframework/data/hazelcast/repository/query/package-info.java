@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 /**
- * <P>Implementation of querying so that Hazelcast repositories can
- * be queried in the standard Spring query method style.
+ * <P>
+ * Implementation of querying so that Hazelcast repositories can be queried in the standard Spring query method style.
  * </P>
  */
 package org.springframework.data.hazelcast.repository.query;
