@@ -69,16 +69,22 @@
 
     <!-- Checks for whitespace                               -->
     <!-- See http://checkstyle.sf.net/config_whitespace.html -->
-    <module name="FileTabCharacter"/>
+    <!-- AMENDED FROM Hazelcast checkstyle.xml
+        This rule conflict with Spring Data formatting.
+    <module name="FileTabCharacter">
+    -->
 
     <!-- Miscellaneous other checks.                   -->
     <!-- See http://checkstyle.sf.net/config_misc.html -->
-    <module name="RegexpSingleline">
+    <!-- AMENDED FROM Hazelcast checkstyle.xml
+        This rule conflict with Spring Data formatting.
+     <module name="RegexpSingleline">
         <property name="format" value="\s+$"/>
         <property name="minimum" value="0"/>
         <property name="maximum" value="0"/>
         <property name="message" value="Line has trailing spaces."/>
     </module>
+    -->
 
     <!-- Checks for Headers                                -->
     <!-- See http://checkstyle.sf.net/config_header.html   -->
@@ -139,9 +145,12 @@
 
         <!-- Checks for Size Violations.                    -->
         <!-- See http://checkstyle.sf.net/config_sizes.html -->
+        <!-- AMENDED FROM Hazelcast checkstyle.xml
+            This rule conflict with Spring Data formatting.
         <module name="LineLength">
             <property name="max" value="130"/>
         </module>
+        -->
         <module name="MethodLength">
             <property name="tokens" value="METHOD_DEF"/>
             <property name="max" value="60"/>
@@ -188,7 +197,10 @@
         <module name="ParenPad"/>
         <module name="TypecastParenPad"/>
         <module name="WhitespaceAfter"/>
-        <module name="WhitespaceAround"/>
+        <!-- AMENDED FROM Hazelcast checkstyle.xml
+            This rule conflict with Spring Data formatting.
+         <module name="WhitespaceAround"/>
+        -->
 
         <!-- Modifier Checks                                    -->
         <!-- See http://checkstyle.sf.net/config_modifiers.html -->
