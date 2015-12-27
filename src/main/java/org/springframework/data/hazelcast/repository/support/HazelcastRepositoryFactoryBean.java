@@ -25,72 +25,72 @@ import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFa
 import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean;
 
 /**
- * <P>Extend {@link KeyValueRepositoryFactoryBean} purely to be able to return
- * {@link HazelcastRepositoryFactory} from {@link #createRepositoryFactory()}
- * method.
+ * <P>
+ * Extend {@link KeyValueRepositoryFactoryBean} purely to be able to return {@link HazelcastRepositoryFactory} from
+ * {@link #createRepositoryFactory()} method.
  * </P>
- * <P>This is necessary as the default implementation does not implement querying
- * in a manner consistent with Hazelcast. More details of this are in
- * {@link HazelcastRepositoryFactory}.
+ * <P>
+ * This is necessary as the default implementation does not implement querying in a manner consistent with Hazelcast.
+ * More details of this are in {@link HazelcastRepositoryFactory}.
  * </P>
- * <P>This class is only called as repositories are needed. Rather than try to
- * optimise called methods, allow to delegate to {@code super} to ease future changes.
+ * <P>
+ * This class is only called as repositories are needed. Rather than try to optimise called methods, allow to delegate
+ * to {@code super} to ease future changes.
  * </P>
- * <P>The end goal of this bean is for {@link HazelcastPartTreeQuery} to be used
- * for query preparation.
+ * <P>
+ * The end goal of this bean is for {@link HazelcastPartTreeQuery} to be used for query preparation.
  * </P>
  *
  * @author Neil Stevenson
- *
- * @param <T>   Repository type, {@link HazelcastRepository}
- * @param <S>   Domain object class
- * @param <ID>  Domain object key, super expects {@link Serializable}
+ * @param <T> Repository type, {@link HazelcastRepository}
+ * @param <S> Domain object class
+ * @param <ID> Domain object key, super expects {@link Serializable}
  */
 public class HazelcastRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable>
-    extends KeyValueRepositoryFactoryBean<T, S, ID> {
+		extends KeyValueRepositoryFactoryBean<T, S, ID> {
 
-    private KeyValueOperations operations;
-    private Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
+	private KeyValueOperations operations;
+	private Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
 
-    /* Capture KeyValueOperations before passing to super.
-     *
-     * (non-Javadoc)
-     * @see org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean
-     *                          #setKeyValueOperations(org.springframework.data.keyvalue.core.KeyValueOperations)
-     */
-    @Override
-    public void setKeyValueOperations(KeyValueOperations operations) {
-        this.operations = operations;
-        super.setKeyValueOperations(this.operations);
-    }
+	/* Capture KeyValueOperations before passing to super.
+	 *
+	 * (non-Javadoc)
+	 * @see org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean
+	 *                          #setKeyValueOperations(org.springframework.data.keyvalue.core.KeyValueOperations)
+	 */
+	@Override
+	public void setKeyValueOperations(KeyValueOperations operations) {
+		this.operations = operations;
+		super.setKeyValueOperations(this.operations);
+	}
 
-    /* Capture QueryCreator before passing to super.
-     *
-     * (non-Javadoc)
-     * @see org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean
-     *                          #setQueryCreator(java.lang.Class)
-     */
-    @Override
-    public void setQueryCreator(Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
-        this.queryCreator = queryCreator;
-        super.setQueryCreator(queryCreator);
-    }
+	/* Capture QueryCreator before passing to super.
+	 *
+	 * (non-Javadoc)
+	 * @see org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean
+	 *                          #setQueryCreator(java.lang.Class)
+	 */
+	@Override
+	public void setQueryCreator(Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
+		this.queryCreator = queryCreator;
+		super.setQueryCreator(queryCreator);
+	}
 
-    /**
-     *<P>Return a {@link HazelcastRepositoryFactory} using the captured arguments.
-     *</P>
-     *<P>{@code super} would return {@link KeyValueRepositoryFactory} which in
-     * turn builds {@link KeyValueRepository} instances, and these have a private
-     * method that implement querying in a manner that does not fit with Hazelcast.
-     * More details are in {@link HazelcastRepositoryFactory}.
-     *</P>
-     *
-     * @return A {@link HazelcastRepositoryFactory} that creates
-     *        {@link HazelcastRepository} instances.
-     */
-    @Override
-    protected RepositoryFactorySupport createRepositoryFactory() {
-        return new HazelcastRepositoryFactory(this.operations, this.queryCreator);
-    }
+	/**
+	 * <P>
+	 * Return a {@link HazelcastRepositoryFactory} using the captured arguments.
+	 * </P>
+	 * <P>
+	 * {@code super} would return {@link KeyValueRepositoryFactory} which in turn builds {@link KeyValueRepository}
+	 * instances, and these have a private method that implement querying in a manner that does not fit with Hazelcast.
+	 * More details are in {@link HazelcastRepositoryFactory}.
+	 * </P>
+	 *
+	 * @return A {@link HazelcastRepositoryFactory} that creates {@link HazelcastRepository} instances.
+	 */
+	@Override
+	protected RepositoryFactorySupport createRepositoryFactory() {
+		return new HazelcastRepositoryFactory(this.operations, this.queryCreator);
+	}
 
 }

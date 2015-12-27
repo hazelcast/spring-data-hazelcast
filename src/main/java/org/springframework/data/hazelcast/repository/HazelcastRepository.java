@@ -20,21 +20,21 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.keyvalue.repository.KeyValueRepository;
 
 /**
- * <P>Subtype {@link org.springframework.stereotype.Repository @Repository} for Hazelcast
- * usage.
+ * <P>
+ * Subtype {@link org.springframework.stereotype.Repository @Repository} for Hazelcast usage.
  * </P>
- * <P>Although part of the rationale of the repository interface is to abstract the implementation,
- * it is useful for type checking to confirm the allowed type generics for the domain classes.
+ * <P>
+ * Although part of the rationale of the repository interface is to abstract the implementation, it is useful for type
+ * checking to confirm the allowed type generics for the domain classes.
  * </P>
- * <P>Note that {@link org.springframework.data.keyvalue.repository.KeyValueRepository KeyValueRepository}
- * defines that the {@code ID} class extends {@link Serializable}.
+ * <P>
+ * Note that {@link org.springframework.data.keyvalue.repository.KeyValueRepository KeyValueRepository} defines that the
+ * {@code ID} class extends {@link Serializable}.
  * </P>
  *
  * @author Neil Stevenson
- *
- * @param <T>   The type of the domain value class
- * @param <ID>  The type of the domain key class
+ * @param <T> The type of the domain value class
+ * @param <ID> The type of the domain key class
  */
 @NoRepositoryBean
-public interface HazelcastRepository<T, ID extends Serializable> extends KeyValueRepository<T, ID> {
-}
+public interface HazelcastRepository<T, ID extends Serializable> extends KeyValueRepository<T, ID> {}

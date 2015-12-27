@@ -21,55 +21,55 @@ import java.util.Comparator;
 import java.util.Map.Entry;
 
 /**
- * <P>Implement a limited form of custom comparison between entries.
- * The fields used for the comparison and the ascending/descending
- * can be specified at run time.
+ * <P>
+ * Implement a limited form of custom comparison between entries. The fields used for the comparison and the
+ * ascending/descending can be specified at run time.
  * </P>
  *
  * @author Neil Stevenson
  */
 public class HazelcastPropertyComparator implements Comparator<Entry<?, ?>>, Serializable {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private String attributeName;
-    private int direction;
+	private String attributeName;
+	private int direction;
 
-    public HazelcastPropertyComparator(String attributeName, boolean ascending) {
-        this.attributeName = attributeName;
-        this.direction = (ascending ? 1 : -1);
-    }
+	public HazelcastPropertyComparator(String attributeName, boolean ascending) {
+		this.attributeName = attributeName;
+		this.direction = (ascending ? 1 : -1);
+	}
 
-    /**
-     * <P>Use Hazelcast's {@code ReflectionHelper} to extract a field in an
-     * entry, and use this is in the comparison.
-     * </P>
-     *
-     * @param o1     An entry in a map
-     * @param o2     Another entry in the map
-     * @return       Comparison result
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public int compare(Entry<?, ?> o1, Entry<?, ?> o2) {
+	/**
+	 * <P>
+	 * Use Hazelcast's {@code ReflectionHelper} to extract a field in an entry, and use this is in the comparison.
+	 * </P>
+	 *
+	 * @param o1 An entry in a map
+	 * @param o2 Another entry in the map
+	 * @return Comparison result
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public int compare(Entry<?, ?> o1, Entry<?, ?> o2) {
 
-        try {
-            Object o1Field = ReflectionHelper.extractValue(o1.getValue(), this.attributeName);
-            Object o2Field = ReflectionHelper.extractValue(o2.getValue(), this.attributeName);
+		try {
+			Object o1Field = ReflectionHelper.extractValue(o1.getValue(), this.attributeName);
+			Object o2Field = ReflectionHelper.extractValue(o2.getValue(), this.attributeName);
 
-            if (o1Field == null) {
-                return this.direction;
-            }
-            if (o2Field == null) {
-                return -1 * this.direction;
-            }
-            if (o1Field instanceof Comparable && o2Field instanceof Comparable) {
-                return this.direction * ((Comparable) o1Field).compareTo((Comparable) o2Field);
-            }
+			if (o1Field == null) {
+				return this.direction;
+			}
+			if (o2Field == null) {
+				return -1 * this.direction;
+			}
+			if (o1Field instanceof Comparable && o2Field instanceof Comparable) {
+				return this.direction * ((Comparable) o1Field).compareTo((Comparable) o2Field);
+			}
 
-        } catch (Exception ignore) {
-            return 0;
-        }
+		} catch (Exception ignore) {
+			return 0;
+		}
 
-        return 0;
-    }
+		return 0;
+	}
 
 }

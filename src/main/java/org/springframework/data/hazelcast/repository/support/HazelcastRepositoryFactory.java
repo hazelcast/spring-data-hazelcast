@@ -23,55 +23,54 @@ import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 
 /**
- * <P>Hazelcast version of {@link KeyValueRepositoryFactory}, a factory
- * to build {@link HazelcastRepository} instances.
+ * <P>
+ * Hazelcast version of {@link KeyValueRepositoryFactory}, a factory to build {@link HazelcastRepository} instances.
  * </P>
- * <P>The purpose of extending is to ensure that the {@link #getQueryLookupStrategy}
- * method returns a {@link HazelcastQueryLookupStrategy} rather than the
- * default.
+ * <P>
+ * The purpose of extending is to ensure that the {@link #getQueryLookupStrategy} method returns a
+ * {@link HazelcastQueryLookupStrategy} rather than the default.
  * </P>
- * <P>The end goal of this bean is for {@link HazelcastPartTreeQuery} to be used
- * for query preparation.
+ * <P>
+ * The end goal of this bean is for {@link HazelcastPartTreeQuery} to be used for query preparation.
  * </P>
  *
  * @author Neil Stevenson
  */
 public class HazelcastRepositoryFactory extends KeyValueRepositoryFactory {
 
-    private static final Class<SpelQueryCreator> DEFAULT_QUERY_CREATOR = SpelQueryCreator.class;
+	private static final Class<SpelQueryCreator> DEFAULT_QUERY_CREATOR = SpelQueryCreator.class;
 
-    private final KeyValueOperations keyValueOperations;
-    private final Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
+	private final KeyValueOperations keyValueOperations;
+	private final Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
 
-    /* Mirror functionality of super, to ensure private
-     * fields are set.
-     */
-    public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations) {
-        this(keyValueOperations, DEFAULT_QUERY_CREATOR);
-    }
+	/* Mirror functionality of super, to ensure private
+	 * fields are set.
+	 */
+	public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations) {
+		this(keyValueOperations, DEFAULT_QUERY_CREATOR);
+	}
 
-    /* Capture KeyValueOperations and QueryCreator objects after passing to super.
-     */
-    public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations,
-            Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
+	/* Capture KeyValueOperations and QueryCreator objects after passing to super.
+	 */
+	public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations,
+			Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
 
-        super(keyValueOperations, queryCreator);
+		super(keyValueOperations, queryCreator);
 
-        this.keyValueOperations = keyValueOperations;
-        this.queryCreator = queryCreator;
-    }
+		this.keyValueOperations = keyValueOperations;
+		this.queryCreator = queryCreator;
+	}
 
-    /**
-     * <P>Ensure the mechanism for query evaluation is Hazelcast specific,
-     * as the original {@link KeyValueRepositoryFactory.KeyValueQueryLookStrategy}
-     * does not function correctly for Hazelcast.
-     * </P>
-     */
-    @Override
-    protected QueryLookupStrategy getQueryLookupStrategy(QueryLookupStrategy.Key key,
-            EvaluationContextProvider evaluationContextProvider) {
-         return new HazelcastQueryLookupStrategy(key, evaluationContextProvider,
-                this.keyValueOperations, this.queryCreator);
-    }
+	/**
+	 * <P>
+	 * Ensure the mechanism for query evaluation is Hazelcast specific, as the original
+	 * {@link KeyValueRepositoryFactory.KeyValueQueryLookStrategy} does not function correctly for Hazelcast.
+	 * </P>
+	 */
+	@Override
+	protected QueryLookupStrategy getQueryLookupStrategy(QueryLookupStrategy.Key key,
+			EvaluationContextProvider evaluationContextProvider) {
+		return new HazelcastQueryLookupStrategy(key, evaluationContextProvider, this.keyValueOperations, this.queryCreator);
+	}
 
 }
