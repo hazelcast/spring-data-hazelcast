@@ -61,7 +61,6 @@
   						<echo>TODO: Update ${escapeDollar}{project.version}</echo>
 						<echo>TODO: Update ${escapeDollar}{hazelcast} once Hazelcast 3.6 released.</echo>
   						<echo>TODO: Update template.mf for ${escapeDollar}{hazelcast:[=.=.=,+1.0.0)}</echo>
-						<echo>TODO: Update copyright header to 2014-2016</echo>
   					</target>
   				</configuration>
   				<executions>
