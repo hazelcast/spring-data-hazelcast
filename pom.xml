@@ -18,7 +18,7 @@
 
 	<properties>
 		<dist.key>DATAHC</dist.key>
-		<failsafe.and.surefire>2.19</failsafe.and.surefire>
+		<failsafe.and.surefire>2.19.1</failsafe.and.surefire>
 		<hazelcast>3.6-EA3</hazelcast>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -94,7 +94,7 @@
 
   			<plugin>
   				<artifactId>maven-compiler-plugin</artifactId>
-  				<version>3.3</version>
+  				<version>3.3</version><!--$NO-MVN-MAN-VER$-->
   				<configuration>
   					<source>1.8</source>
   					<target>1.8</target>
