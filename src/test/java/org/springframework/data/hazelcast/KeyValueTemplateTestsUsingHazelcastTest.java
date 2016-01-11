@@ -42,6 +42,8 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.PredicateBuilder;
 
+import test.utils.InstanceHelper;
+
 /**
  * Unit tests for {@link KeyValueTemplate} using a {@link HazelcastKeyValueAdapter}.
  * 
@@ -66,8 +68,8 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		System.setProperty("hazelcast.logging.type", "slf4j");
-		System.setProperty("hazelcast.version.check.enabled", "false");
+		// Communal system properties setter in static block
+		Class.forName(InstanceHelper.class.getName());
 	}
 
 	@Before

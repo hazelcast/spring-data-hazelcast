@@ -43,7 +43,7 @@ public class InstanceHelper {
 
 	static {
 		System.setProperty("hazelcast.logging.type", "slf4j");
-		System.setProperty("hazelcast.version.check.enabled", "false");
+		System.setProperty("hazelcast.phone.home.enabled", "false");
 	}
 
 	@Resource(name = Constants.HAZELCAST_TEST_INSTANCE_NAME) private HazelcastInstance hazelcastInstance;
