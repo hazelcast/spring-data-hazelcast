@@ -18,7 +18,7 @@
 
 	<properties>
 		<dist.key>DATAHC</dist.key>
-		<hazelcast>3.6-RC1</hazelcast>
+		<hazelcast>3.6</hazelcast>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<springdata.keyvalue>1.0.1.RELEASE</springdata.keyvalue>
@@ -57,8 +57,6 @@
   					<target>
 	  					<property name="escapeDollar" value="$$"/>
   						<echo>TODO: Update ${escapeDollar}{project.version}</echo>
-						<echo>TODO: Update ${escapeDollar}{hazelcast} once Hazelcast 3.6 released.</echo>
-  						<echo>TODO: Update template.mf for ${escapeDollar}{hazelcast:[=.=.=,+1.0.0)}</echo>
   					</target>
   				</configuration>
   				<executions>
