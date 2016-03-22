@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@ package org.springframework.data.hazelcast;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
-import org.springframework.data.hazelcast.HazelcastQueryEngine;
 import org.springframework.data.keyvalue.core.AbstractKeyValueAdapter;
+import org.springframework.data.keyvalue.core.ForwardingCloseableIterator;
 import org.springframework.data.util.CloseableIterator;
 import org.springframework.util.Assert;
 
@@ -30,6 +31,7 @@ import com.hazelcast.core.IMap;
 
 /**
  * @author Christoph Strobl
+ * @author Neil Stevenson
  */
 public class HazelcastKeyValueAdapter extends AbstractKeyValueAdapter {
 
@@ -83,31 +85,30 @@ public class HazelcastKeyValueAdapter extends AbstractKeyValueAdapter {
 
 	@Override
 	public void clear() {
-		// TODO: remove all elements
+		this.hzInstance.shutdown();
 	}
 
 	@SuppressWarnings("rawtypes")
 	protected IMap getMap(final Serializable keyspace) {
-
-		Assert.isInstanceOf(String.class, keyspace, "Keyspace identifier must of of type String.");
+		Assert.isInstanceOf(String.class, keyspace, "Keyspace identifier must of type String.");
 		return hzInstance.getMap((String) keyspace);
 	}
 
 	@Override
 	public void destroy() throws Exception {
-		hzInstance.shutdown();
+		this.clear();
 	}
 
 	@Override
-	public long count(Serializable arg0) {
-		// TODO Auto-generated method stub
-		return 0;
+	public long count(Serializable keyspace) {
+		return this.getMap(keyspace).size();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public CloseableIterator<Entry<Serializable, Object>> entries(Serializable arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public CloseableIterator<Entry<Serializable, Object>> entries(Serializable keyspace) {
+		Iterator<Entry<Serializable, Object>> iterator = this.getMap(keyspace).entrySet().iterator();
+		return new ForwardingCloseableIterator<Entry<Serializable, Object>>(iterator);
 	}
 
 }

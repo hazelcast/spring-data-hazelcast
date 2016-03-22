@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2014-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,18 +26,19 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.hazelcast.repository.query.HazelcastQueryCreator;
+import org.springframework.data.hazelcast.repository.support.HazelcastRepositoryFactoryBean;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.repository.config.QueryCreatorType;
-import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.QueryLookupStrategy.Key;
 
 /**
  * Annotation to activate Hazelcast repositories. If no base package is configured through either {@link #value()},
  * {@link #basePackages()} or {@link #basePackageClasses()} it will trigger scanning of the package of annotated class.
- * 
+ *
  * @author Christoph Strobl
  * @author Oliver Gierke
+ * @author Neil Stevenson
  */
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
@@ -81,14 +82,14 @@ public @interface EnableHazelcastRepositories {
 	 * Returns the postfix to be used when looking up custom repository implementations. Defaults to {@literal Impl}. So
 	 * for a repository named {@code PersonRepository} the corresponding implementation class will be looked up scanning
 	 * for {@code PersonRepositoryImpl}.
-	 * 
+	 *
 	 * @return
 	 */
 	String repositoryImplementationPostfix() default "Impl";
 
 	/**
 	 * Configures the location of where to find the Spring Data named queries properties file.
-	 * 
+	 *
 	 * @return
 	 */
 	String namedQueriesLocation() default "";
@@ -96,22 +97,22 @@ public @interface EnableHazelcastRepositories {
 	/**
 	 * Returns the key of the {@link QueryLookupStrategy} to be used for lookup queries for query methods. Defaults to
 	 * {@link Key#CREATE_IF_NOT_FOUND}.
-	 * 
+	 *
 	 * @return
 	 */
 	Key queryLookupStrategy() default Key.CREATE_IF_NOT_FOUND;
 
 	/**
 	 * Returns the {@link FactoryBean} class to be used for each repository instance. Defaults to
-	 * {@link KeyValueRepositoryFactoryBean}.
-	 * 
+	 * {@link HazelcastRepositoryFactoryBean}.
+	 *
 	 * @return
 	 */
-	Class<?> repositoryFactoryBeanClass() default KeyValueRepositoryFactoryBean.class;
+	Class<?> repositoryFactoryBeanClass() default HazelcastRepositoryFactoryBean.class;
 
 	/**
 	 * Configures the name of the {@link KeyValueOperations} bean to be used with the repositories detected.
-	 * 
+	 *
 	 * @return
 	 */
 	String keyValueTemplateRef() default "keyValueTemplate";

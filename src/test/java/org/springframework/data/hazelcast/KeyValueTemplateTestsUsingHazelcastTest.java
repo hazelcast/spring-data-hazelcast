@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 the original author or authors.
+ * Copyright 2014-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.annotation.Id;
@@ -37,17 +38,21 @@ import org.springframework.data.keyvalue.core.KeyValueTemplate;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 import org.springframework.util.ObjectUtils;
 
+import com.hazelcast.core.Hazelcast;
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.PredicateBuilder;
+
+import test.utils.InstanceHelper;
 
 /**
  * Unit tests for {@link KeyValueTemplate} using a {@link HazelcastKeyValueAdapter}.
  * 
  * @author Christoph Strobl
  * @author Oliver Gierke
+ * @author Neil Stevenson
  */
 @SuppressWarnings("serial")
-public class KeyValueTemplateTestsUsingHazelcast {
+public class KeyValueTemplateTestsUsingHazelcastTest {
 
 	private static final Foo FOO_ONE = new Foo("one");
 	private static final Foo FOO_TWO = new Foo("two");
@@ -61,6 +66,12 @@ public class KeyValueTemplateTestsUsingHazelcast {
 
 	private KeyValueTemplate operations;
 
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		// Communal system properties setter in static block
+		Class.forName(InstanceHelper.class.getName());
+	}
+
 	@Before
 	public void setUp() throws InstantiationException, IllegalAccessException {
 		this.operations = new KeyValueTemplate(HazelcastUtils.preconfiguredHazelcastKeyValueAdapter());
@@ -69,6 +80,7 @@ public class KeyValueTemplateTestsUsingHazelcast {
 	@After
 	public void tearDown() throws Exception {
 		this.operations.destroy();
+		Hazelcast.shutdownAll();
 	}
 
 	@Test
@@ -220,7 +232,7 @@ public class KeyValueTemplateTestsUsingHazelcast {
 		assertThat(operations.findAll(ALIASED.getClass()), containsInAnyOrder(ALIASED, SUBCLASS_OF_ALIASED));
 	}
 
-	static class Foo implements Serializable {
+	static class Foo implements Comparable<Foo>, Serializable {
 
 		String foo;
 
@@ -250,6 +262,14 @@ public class KeyValueTemplateTestsUsingHazelcast {
 			}
 			Foo other = (Foo) obj;
 			return ObjectUtils.nullSafeEquals(this.foo, other.foo);
+		}
+
+		public int compareTo(Foo that) {
+			if (this.foo == null || that == null || that.getFoo() == null) {
+				throw new NullPointerException();
+			} else {
+				return this.foo.compareTo(that.getFoo());
+			}
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 the original author or authors.
+ * Copyright 2014-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,13 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 /**
  * Special {@link KeyValueRepositoriesRegistrar} to point the infrastructure to inspect
  * {@link EnableHazelcastRepositories}.
- * 
+ *
  * @author Oliver Gierke
+ * @author Neil Stevenson
  */
 class HazelcastRepositoriesRegistrar extends RepositoryBeanDefinitionRegistrarSupport {
 
-	/* 
+	/*
 	 * (non-Javadoc)
 	 * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoriesRegistrar#getAnnotation()
 	 */
@@ -38,7 +39,7 @@ class HazelcastRepositoriesRegistrar extends RepositoryBeanDefinitionRegistrarSu
 		return EnableHazelcastRepositories.class;
 	}
 
-	/* 
+	/*
 	 * (non-Javadoc)
 	 * @see org.springframework.data.repository.config.RepositoryBeanDefinitionRegistrarSupport#getExtension()
 	 */
@@ -54,31 +55,34 @@ class HazelcastRepositoriesRegistrar extends RepositoryBeanDefinitionRegistrarSu
 	 */
 	private static class HazelcastRepositoryConfigurationExtension extends KeyValueRepositoryConfigurationExtension {
 
-		/* 
+		/*
 		 * (non-Javadoc)
-		 * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension#getModuleName()
+		 * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
+		 *                          #getModuleName()
 		 */
 		@Override
 		public String getModuleName() {
 			return "Hazelcast";
 		}
 
-		/* 
+		/*
 		 * (non-Javadoc)
-		 * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension#getModulePrefix()
+		 * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
+		 *                          #getModulePrefix()
 		 */
 		@Override
 		protected String getModulePrefix() {
 			return "hazelcast";
 		}
 
-		/* 
+		/*
 		 * (non-Javadoc)
-		 * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension#getDefaultKeyValueTemplateRef()
+		 * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
+		 *                          #getDefaultKeyValueTemplateRef()
 		 */
 		@Override
 		protected String getDefaultKeyValueTemplateRef() {
-			return "hazelcastKeyValueTemplate";
+			return "keyValueTemplate";
 		}
 	}
 }
