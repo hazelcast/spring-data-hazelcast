@@ -18,6 +18,7 @@ package org.springframework.data.hazelcast.repository.support;
 import java.lang.reflect.Method;
 import org.springframework.data.hazelcast.repository.query.HazelcastPartTreeQuery;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
+import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.EvaluationContextProvider;
@@ -74,12 +75,15 @@ public class HazelcastQueryLookupStrategy implements QueryLookupStrategy {
 	 *
 	 * @param Method, the query method
 	 * @param RepositoryMetadata, not used
+	 * @param ProjectionFactory, not used
 	 * @param NamedQueries, not used
 	 * @return A mechanism for querying Hazelcast repositories
 	 */
-	public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, NamedQueries namedQueries) {
-		QueryMethod queryMethod = new QueryMethod(method, metadata);
+	public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, 
+			ProjectionFactory projectionFactory, NamedQueries namedQueries) {
+		QueryMethod queryMethod = new QueryMethod(method, metadata, projectionFactory);
 		return new HazelcastPartTreeQuery(queryMethod, evaluationContextProvider, this.keyValueOperations,
 				this.queryCreator);
 	}
+	
 }

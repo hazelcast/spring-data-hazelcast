@@ -211,7 +211,7 @@ public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 	 * @param parameters Possibly empty list of query parameters
 	 * @return A ready-to-use query
 	 */
-	private KeyValueQuery<?> prepareQuery(Object[] parameters) {
+	protected KeyValueQuery<?> prepareQuery(Object[] parameters) {
 		PartTree tree = null;
 
 		if (this.queryMethod.getParameters().getNumberOfParameters() > 0) {
