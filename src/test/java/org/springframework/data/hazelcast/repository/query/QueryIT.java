@@ -65,7 +65,7 @@ public class QueryIT extends TestDataHelper {
 	@Test
 	public void countDistinctLastnameByFirstname() {
 		this.expectedException.expect(UnsupportedOperationException.class);
-		this.expectedException.expectMessage(startsWith("Distinct"));
+		this.expectedException.expectMessage(startsWith("DISTINCT"));
 
 		this.personRepository.countDistinctLastnameByFirstname("Daniel");
 	}
