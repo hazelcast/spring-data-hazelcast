@@ -40,7 +40,6 @@ public interface PersonRepository extends HazelcastRepository<Person, String> {
 
 	public Long countByIdLessThanEqual(String id);
 
-	// TODO 'Distinct' is not yet implemented
 	public Long countDistinctLastnameByFirstname(String firstname);
 
 	// TODO 'Delete' is not yet implemented

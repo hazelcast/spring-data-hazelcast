@@ -97,10 +97,12 @@ public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 
 		KeyValueQuery<?> query = prepareQuery(parameters);
 
-		/* Distinct modifier could be implemented using Aggregations.
+		/* Queries return domain objects not projections. In Spring Data, domain objects
+		 * include a unique @Id. So DISTINCT as a modifier is irrelevant ; throw exception
+		 * rather than ignore to alert the user.
 		 */
 		if (this.isDistinct) {
-			String message = String.format("Distinct in '%s' not yet supported.", queryMethod.getName());
+			String message = String.format("DISTINCT modifier in '%s' not applicable to Key-Value queries.", queryMethod.getName());
 			throw new UnsupportedOperationException(message);
 		}
 
@@ -211,7 +213,7 @@ public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 	 * @param parameters Possibly empty list of query parameters
 	 * @return A ready-to-use query
 	 */
-	private KeyValueQuery<?> prepareQuery(Object[] parameters) {
+	protected KeyValueQuery<?> prepareQuery(Object[] parameters) {
 		PartTree tree = null;
 
 		if (this.queryMethod.getParameters().getNumberOfParameters() > 0) {
