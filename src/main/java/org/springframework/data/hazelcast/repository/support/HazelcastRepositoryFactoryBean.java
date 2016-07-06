@@ -18,8 +18,10 @@ package org.springframework.data.hazelcast.repository.support;
 import java.io.Serializable;
 
 import org.springframework.data.repository.Repository;
-import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+//import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
+//import org.springframework.util.Assert;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory;
 import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean;
@@ -27,7 +29,7 @@ import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFa
 /**
  * <P>
  * Extend {@link KeyValueRepositoryFactoryBean} purely to be able to return {@link HazelcastRepositoryFactory} from
- * {@link #createRepositoryFactory()} method.
+ * {@link #createRepositoryFactory(KeyValueOperations, Class, Class)} method.
  * </P>
  * <P>
  * This is necessary as the default implementation does not implement querying in a manner consistent with Hazelcast.
@@ -49,36 +51,9 @@ import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFa
 public class HazelcastRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable>
 		extends KeyValueRepositoryFactoryBean<T, S, ID> {
 
-	private KeyValueOperations operations;
-	private Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
-
-	/* Capture KeyValueOperations before passing to super.
-	 *
-	 * (non-Javadoc)
-	 * @see org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean
-	 *                          #setKeyValueOperations(org.springframework.data.keyvalue.core.KeyValueOperations)
-	 */
-	@Override
-	public void setKeyValueOperations(KeyValueOperations operations) {
-		this.operations = operations;
-		super.setKeyValueOperations(this.operations);
-	}
-
-	/* Capture QueryCreator before passing to super.
-	 *
-	 * (non-Javadoc)
-	 * @see org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean
-	 *                          #setQueryCreator(java.lang.Class)
-	 */
-	@Override
-	public void setQueryCreator(Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
-		this.queryCreator = queryCreator;
-		super.setQueryCreator(queryCreator);
-	}
-
 	/**
 	 * <P>
-	 * Return a {@link HazelcastRepositoryFactory} using the captured arguments.
+	 * Return a {@link HazelcastRepositoryFactory}.
 	 * </P>
 	 * <P>
 	 * {@code super} would return {@link KeyValueRepositoryFactory} which in turn builds {@link KeyValueRepository}
@@ -86,11 +61,16 @@ public class HazelcastRepositoryFactoryBean<T extends Repository<S, ID>, S, ID e
 	 * More details are in {@link HazelcastRepositoryFactory}.
 	 * </P>
 	 *
+	 * @param KeyValueOperations
+	 * @param Query Creator
+	 * @param RepositoryQueryType, not used
 	 * @return A {@link HazelcastRepositoryFactory} that creates {@link HazelcastRepository} instances.
 	 */
 	@Override
-	protected RepositoryFactorySupport createRepositoryFactory() {
-		return new HazelcastRepositoryFactory(this.operations, this.queryCreator);
+	protected KeyValueRepositoryFactory createRepositoryFactory(KeyValueOperations operations,
+			Class<? extends AbstractQueryCreator<?, ?>> queryCreator, Class<? extends RepositoryQuery> repositoryQueryType) {
+
+		return new HazelcastRepositoryFactory(operations, queryCreator);
 	}
 
 }
