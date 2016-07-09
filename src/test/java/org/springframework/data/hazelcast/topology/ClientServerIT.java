@@ -12,7 +12,7 @@ import com.hazelcast.query.Predicate;
 import com.hazelcast.query.Predicates;
 
 import test.utils.Constants;
-import test.utils.Person;
+import test.utils.domain.Person;
 
 /**
  * <P>

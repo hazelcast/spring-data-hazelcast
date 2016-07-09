@@ -13,9 +13,9 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 
 import test.utils.TestDataHelper;
+import test.utils.domain.Person;
+import test.utils.repository.standard.PersonRepository;
 import test.utils.Constants;
-import test.utils.Person;
-import test.utils.PersonRepository;
 
 /**
  * <P>

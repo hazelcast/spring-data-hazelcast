@@ -1,8 +1,10 @@
-package test.utils;
+package test.utils.domain;
 
 import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.keyvalue.annotation.KeySpace;
+
+import test.utils.Constants;
 
 /**
  * <P>
@@ -13,7 +15,7 @@ import org.springframework.data.keyvalue.annotation.KeySpace;
  * object to contain the <I>key</I>, this is done here and the field is indicated with {@code @Id}.
  * </P>
  * <P>
- * Use {@code @KeySpace} to name the map used, rather than default to fully qualified class name.
+ * Use {@code @KeySpace} to name the map used for storage, "@{code Actors}".
  * </P>
  *
  * @author Christoph Strobl

@@ -21,10 +21,10 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import test.utils.TestDataHelper;
+import test.utils.domain.Person;
+import test.utils.repository.standard.PersonRepository;
 import test.utils.Constants;
 import test.utils.Oscars;
-import test.utils.Person;
-import test.utils.PersonRepository;
 
 /**
  * <P>

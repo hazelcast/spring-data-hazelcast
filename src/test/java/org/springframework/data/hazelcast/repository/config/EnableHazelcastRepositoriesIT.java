@@ -30,8 +30,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import test.utils.Constants;
 import test.utils.InstanceHelper;
-import test.utils.Person;
-import test.utils.PersonRepository;
+import test.utils.domain.Person;
+import test.utils.repository.standard.PersonRepository;
 
 /**
  * <P>
