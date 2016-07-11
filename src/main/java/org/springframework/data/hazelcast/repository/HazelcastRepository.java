@@ -37,4 +37,4 @@ import org.springframework.data.keyvalue.repository.KeyValueRepository;
  * @param <ID> The type of the domain key class
  */
 @NoRepositoryBean
-public interface HazelcastRepository<T, ID extends Serializable> extends KeyValueRepository<T, ID> {}
+public interface HazelcastRepository<T extends Serializable, ID extends Serializable> extends KeyValueRepository<T, ID> {}
