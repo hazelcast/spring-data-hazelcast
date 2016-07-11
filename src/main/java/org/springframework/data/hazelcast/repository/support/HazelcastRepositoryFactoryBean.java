@@ -18,10 +18,8 @@ package org.springframework.data.hazelcast.repository.support;
 import java.io.Serializable;
 
 import org.springframework.data.repository.Repository;
-//import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
-//import org.springframework.util.Assert;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory;
 import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean;

@@ -4,7 +4,8 @@ import javax.annotation.Resource;
 import org.junit.Test;
 import org.springframework.data.keyvalue.repository.KeyValueRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import test.utils.Person;
+
+import test.utils.domain.Person;
 
 /**
  * <P>

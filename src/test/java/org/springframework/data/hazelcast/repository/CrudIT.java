@@ -17,8 +17,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.context.ActiveProfiles;
 
 import test.utils.TestDataHelper;
+import test.utils.domain.Person;
 import test.utils.Constants;
-import test.utils.Person;
 
 /**
  * <P>

@@ -7,6 +7,8 @@ import com.hazelcast.config.TcpIpConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
+import test.utils.repository.custom.MyTitleRepositoryFactoryBean;
+
 import java.util.Arrays;
 import java.util.Set;
 
@@ -30,11 +32,15 @@ import org.springframework.data.keyvalue.core.KeyValueTemplate;
  * repositories and domain classes. Depending on the Spring active profile, the Hazelcast instance may be isolated or
  * connected to others in this JVM.
  * </P>
+ * <P>
+ * Package scanning adds standard repositories, from "{@code test.utils.repository.standard}",
+ * using {@link HazelcastRepositoryFactoryBean}.
+ * </P>
  *
  * @author Neil Stevenson
  */
 @Configuration
-@EnableHazelcastRepositories
+@EnableHazelcastRepositories(basePackages="test.utils.repository.standard")
 public class InstanceHelper {
 	private static final Logger LOG = LoggerFactory.getLogger(InstanceHelper.class);
 	private static final String CLUSTER_HOST = "127.0.0.1";
@@ -47,6 +53,16 @@ public class InstanceHelper {
 
 	@Resource(name = Constants.HAZELCAST_TEST_INSTANCE_NAME) private HazelcastInstance hazelcastInstance;
 
+	/**
+	 * <P>The {@code @EnableHazelcastRepositories} annotation is not repeatable,
+	 * so use an inner class to scan a second package.
+	 * </P>
+	 */
+	@EnableHazelcastRepositories(basePackages="test.utils.repository.custom",
+		repositoryFactoryBeanClass=MyTitleRepositoryFactoryBean.class)
+	static class InstanceHelperInner {
+	}
+	
 	/**
 	 * <P>
 	 * {@link org.springframework.data.keyvalue.core.KeyValueOperations KeyValueOperations} are implemented by a
