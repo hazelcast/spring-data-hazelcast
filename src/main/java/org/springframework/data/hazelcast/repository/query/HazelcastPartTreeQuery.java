@@ -110,12 +110,8 @@ public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 			return this.keyValueOperations.count(query, queryMethod.getEntityInformation().getJavaType());
 		}
 
-		/* delete(KeyValueQuery<?> query, Class<?> type) is not part of KeyValueOperations
-		 * interface, although Hazelcast could do IMap.values().removeIf(predicate);
-		 */
 		if (this.isDelete) {
-			String message = String.format("Delete in '%s' not yet supported.", queryMethod.getName());
-			throw new UnsupportedOperationException(message);
+			return this.executeDeleteQuery(query, queryMethod);
 		}
 
 		if (queryMethod.isPageQuery() || queryMethod.isSliceQuery()) {
@@ -129,6 +125,36 @@ public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 		String message = String.format("Query method '%s' not supported.", queryMethod.getName());
 		throw new UnsupportedOperationException(message);
 	}
+
+	/**
+	 * <P>
+	 * Execute a "delete" query, not really a query more of an operation.
+	 * </P>
+	 * <P>
+	 * <B>NOTE:</B> Delete is not a collection operation, the return value is a single object that
+	 * was deleted.
+	 * </P>
+	 * <P>Although the <I>find</I> operation returns an iterator, the result set is either empty
+	 * or has one domain object in it. If there are multiple possible matches it's random which
+	 * one of the matches is deleted.
+	 * </P>
+	 *
+	 * @param query The query to run
+	 * @param queryMethod Used here to find the type of object to match the query
+	 * @return Query The individual entry deleted
+	 */
+	private Object executeDeleteQuery(final KeyValueQuery<?> query, final QueryMethod queryMethod) {
+		
+		Iterable<?> resultSet = this.keyValueOperations.find(query, queryMethod.getEntityInformation().getJavaType());
+		Iterator<?> iterator = resultSet.iterator();
+		
+		if (iterator.hasNext()) {
+			return this.keyValueOperations.delete(iterator.next());
+		} else {
+			return null;
+		}
+	}
+	
 
 	/**
 	 * <P>

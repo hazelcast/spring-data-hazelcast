@@ -44,8 +44,7 @@ public interface PersonRepository extends HazelcastRepository<Person, String> {
 
 	public Long countDistinctLastnameByFirstname(String firstname);
 
-	// TODO 'Delete' is not yet implemented
-	public Long deleteByLastname(String firstname);
+	public Person deleteByLastname(String firstname);
 
 	public Person findFirstIdByOrderById();
 
