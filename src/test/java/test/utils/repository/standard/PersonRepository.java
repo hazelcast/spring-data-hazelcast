@@ -1,4 +1,4 @@
-package test.utils;
+package test.utils.repository.standard;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -8,6 +8,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.hazelcast.repository.HazelcastRepository;
 import org.springframework.data.repository.query.Param;
+
+import test.utils.domain.Person;
 
 /**
  * <P>
@@ -40,11 +42,9 @@ public interface PersonRepository extends HazelcastRepository<Person, String> {
 
 	public Long countByIdLessThanEqual(String id);
 
-	// TODO 'Distinct' is not yet implemented
 	public Long countDistinctLastnameByFirstname(String firstname);
 
-	// TODO 'Delete' is not yet implemented
-	public Long deleteByLastname(String firstname);
+	public Person deleteByLastname(String firstname);
 
 	public Person findFirstIdByOrderById();
 

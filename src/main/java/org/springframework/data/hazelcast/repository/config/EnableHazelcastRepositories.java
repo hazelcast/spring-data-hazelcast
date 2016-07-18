@@ -29,6 +29,7 @@ import org.springframework.data.hazelcast.repository.query.HazelcastQueryCreator
 import org.springframework.data.hazelcast.repository.support.HazelcastRepositoryFactoryBean;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.repository.config.QueryCreatorType;
+import org.springframework.data.repository.config.DefaultRepositoryBaseClass;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.QueryLookupStrategy.Key;
 
@@ -110,6 +111,14 @@ public @interface EnableHazelcastRepositories {
 	 */
 	Class<?> repositoryFactoryBeanClass() default HazelcastRepositoryFactoryBean.class;
 
+	/**
+	 * Allow custom base classes, for generic behavior shared amongst selected
+	 * repositories. 
+	 * 
+	 * @return
+	 */
+	Class<?> repositoryBaseClass() default DefaultRepositoryBaseClass.class;
+	
 	/**
 	 * Configures the name of the {@link KeyValueOperations} bean to be used with the repositories detected.
 	 *

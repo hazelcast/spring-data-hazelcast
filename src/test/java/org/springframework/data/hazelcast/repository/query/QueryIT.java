@@ -21,10 +21,10 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import test.utils.TestDataHelper;
+import test.utils.domain.Person;
+import test.utils.repository.standard.PersonRepository;
 import test.utils.Constants;
 import test.utils.Oscars;
-import test.utils.Person;
-import test.utils.PersonRepository;
 
 /**
  * <P>
@@ -65,7 +65,7 @@ public class QueryIT extends TestDataHelper {
 	@Test
 	public void countDistinctLastnameByFirstname() {
 		this.expectedException.expect(UnsupportedOperationException.class);
-		this.expectedException.expectMessage(startsWith("Distinct"));
+		this.expectedException.expectMessage(startsWith("DISTINCT"));
 
 		this.personRepository.countDistinctLastnameByFirstname("Daniel");
 	}
@@ -115,13 +115,28 @@ public class QueryIT extends TestDataHelper {
 		assertThat("1957 lastname", person, notNullValue());
 		assertThat("1957 lastname", person.getId(), equalTo("1957"));
 	}
-
+	
 	@Test
 	public void deleteByLastname() {
-		this.expectedException.expect(UnsupportedOperationException.class);
-		this.expectedException.expectMessage(startsWith("Delete"));
-
-		this.personRepository.deleteByLastname("Tracy");
+		assertThat("Map fully populated before", this.personMap.size(), equalTo(Oscars.bestActors.length));
+		
+		Person person = this.personRepository.deleteByLastname("abcdefghijklmnopqrstuvwxyz");
+		
+		assertThat("Delete for unmatched name does nothing to map", this.personMap.size(), equalTo(Oscars.bestActors.length));
+		assertThat("Delete for unmatched name does nothing to @Repository", this.personRepository.count(), equalTo(Long.valueOf(Oscars.bestActors.length)));
+		assertThat("Delete for unmatched name returns null", person, nullValue());
+		
+		// Spencer Tracy, 1937 & 1938
+		int count = 0;
+		while ( (person = this.personRepository.deleteByLastname("Tracy")) != null ) {
+			count++;
+		}
+		
+		assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(Oscars.bestActors.length - 2));
+		assertThat("Delete for matched name removes from @Repository", this.personRepository.count(), equalTo(Long.valueOf(Oscars.bestActors.length - 2)));
+		assertThat("Delete for matched name returns correct count", count, equalTo(2));
+		assertThat("1937 deleted", this.personMap.get("1937"), nullValue());
+		assertThat("1938 deleted", this.personMap.get("1938"), nullValue());
 	}
 
 	// First by ascending == Min
