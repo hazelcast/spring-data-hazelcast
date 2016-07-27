@@ -5,7 +5,7 @@
 
 	<groupId>org.springframework.data</groupId>
 	<artifactId>spring-data-hazelcast</artifactId>
-	<version>1.0.0.BUILD-SNAPSHOT</version>
+	<version>0.8</version>
 
 	<name>Spring Data Hazelcast</name>
   	<description>Spring Data module for Hazelcast repositories.</description>  
@@ -50,24 +50,6 @@
 
 	<build>
 		<plugins>
-
-  			<plugin>
-  				<artifactId>maven-antrun-plugin</artifactId>
-  				<configuration>
-  					<target>
-	  					<property name="escapeDollar" value="$$"/>
-  						<echo>TODO: Update ${escapeDollar}{project.version}</echo>
-  					</target>
-  				</configuration>
-  				<executions>
-  					<execution>
-  						<phase>package</phase>
-  						<goals>
-  							<goal>run</goal>
-  						</goals>
-  					</execution>
-  				</executions>
-  			</plugin>
 
   			<plugin>
   				<artifactId>maven-checkstyle-plugin</artifactId>
