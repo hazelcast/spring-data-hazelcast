@@ -22,13 +22,13 @@ Neil Stevenson <neil@hazelcast.com>; Viktor Gamov <viktor@hazelcast.com> © 2016
 
 Welcome to Spring Data Hazelcast project!
 
+toc::[]
+
 The primary goal of the Spring Data project is to make it easier to build Spring-powered applications that use data access technologies. 
 
 Spring Data Hazelcast project will enable the Spring Data paradigm to gain the power of a distributed data repository.
 
-image::http://gif.co/sLTK.gif[]
-
-toc::[]
+image::http://gif.co/sLTK.gif[I have the power!]
 
 == Join the community
 
