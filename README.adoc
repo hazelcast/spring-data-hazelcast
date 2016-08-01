@@ -11,7 +11,7 @@ Neil Stevenson <neil@hazelcast.com>; Viktor Gamov <viktor@hazelcast.com> © 2016
 :n: icon:check-minus[role="red"]
 :c: icon:file-text-alt[role="blue"]
 :toc: macro
-:toc-title: Table of content
+:toc-title: Table of contents
 :idprefix:
 :idseparator: -
 :sectanchors:
@@ -24,7 +24,7 @@ Welcome to Spring Data Hazelcast project!
 
 The primary goal of the Spring Data project is to make it easier to build Spring-powered applications that use data access technologies. 
 
-Spring Data Hazelcast project aims to bring the Spring Data paradigm to gain the power of a distributed data repository.
+Spring Data Hazelcast project will enable the Spring Data paradigm to gain the power of a distributed data repository.
 
 image:http://gif.co/sLTK.gif[]
 
@@ -47,19 +47,19 @@ Please, http://groups.google.com/group/hazelcast[join the mail group] if you are
 
 == Motivation
 
-The Spring platform is a commonly used environment. 
-Therefore it is natural to provide a way to use Hazelcast via Spring in a standard, platform neutral manner and to provide a baseline implementation of Spring Data Hazelcast that can be enhanced in the future with Hazelcast specific features.
+The Spring platform is a commonly used environment and Hazelcast is the most widely used IMDG. 
+Therefore it is natural to provide a way to use Hazelcast via Spring in a standard, platform neutral manner and to provide a baseline implementation of Spring Data Hazelcast that can be enhanced with Hazelcast specific features.
 
 The implementation is built on the new Spring Data https://github.com/spring-projects/spring-data-keyvalue[KeyValue] module and is one of the first projects to do this. 
 This module provides infrastructure components for creating repository abstractions for stores dealing with Key/Value pairs like `java.util.Map` or Hazelcast `IMap`.
 
-Through the means of the repository interface, CRUD operations and expression-based query methods can interrogate an in-memory data store in a manner consistent with the other Spring Data projects so developers can become productive quickly and easily.
+Through the means of the repository interface, CRUD operations, and expression-based query methods can interrogate an in-memory data store in a manner consistent with the other Spring Data projects allowing developers to be productive quickly and easily.
 
 == Features
 
 - Familiar "Spring Data" approach,  developers do not need to learn a new technology to be able to use it
-- Utilizes the new Spring-Data-Keyvalue abstraction, we did not reinvent the wheel
-- ​*FURTHER*​ eases the integration of Hazelcast into Spring and cloud
+- Utilizes the new Spring-Data-Key value abstraction, we did not reinvent the wheel
+- ​*FURTHER*​ eases the integration of Hazelcast into Spring and clouds
 - Reduces vendor lock-in. One can swap Hazelcast in place of more expensive or slower options
 
 == Usage
@@ -165,3 +165,4 @@ Hazelcast is available under the Apache 2 License. Please see the Licensing appe
 Copyright (c) 2008-2016, Hazelcast, Inc. All Rights Reserved.
 
 Visit http://www.hazelcast.com for more information.
+
