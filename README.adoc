@@ -26,7 +26,7 @@ The primary goal of the Spring Data project is to make it easier to build Spring
 
 Spring Data Hazelcast project will enable the Spring Data paradigm to gain the power of a distributed data repository.
 
-image:http://gif.co/sLTK.gif[]
+image::http://gif.co/sLTK.gif[]
 
 toc::[]
 
@@ -138,7 +138,7 @@ public class AppTest {
 </project>
 ----
 
-==== Gradle
+=== Gradle
 
 [source, groovy]
 ----
