@@ -22,15 +22,13 @@ Neil Stevenson <neil@hazelcast.com>; Viktor Gamov <viktor@hazelcast.com> © 2016
 
 Welcome to Spring Data Hazelcast project!
 
-https://drone.io/github.com/hazelcast/spring-data-hazelcast/latest[image:https://drone.io/github.com/hazelcast/spring-data-hazelcast/status.png[Build Status]]
-
 toc::[]
 
 The primary goal of the Spring Data project is to make it easier to build Spring-powered applications that use data access technologies. 
 
 Spring Data Hazelcast project will enable the Spring Data paradigm to gain the power of a distributed data repository.
 
-image::http://gif.co/sLTK.gif[I have the power!]
+image::power.gif[I have the power!,role="center"]
 
 == Join the community
 
@@ -133,9 +131,9 @@ public class AppTest {
         </repository>
     </repositories>
     <dependency>
-        <groupId>com.github.hazelcast-incubator</groupId>
-        <artifactId>spring-data-integrations-commons</artifactId>
-        <version>0.8</version>
+        <groupId>com.github.hazelcast</groupId>
+        <artifactId>spring-data-hazelcast</artifactId>
+        <version>1.0</version>
     </dependency>
 </project>
 ----
@@ -154,7 +152,7 @@ allprojects {
 
 // Add dependency
 dependencies {
-    compile 'com.github.hazelcast-incubator:spring-data-integrations-commons:0.8'
+    compile 'com.github.hazelcast:spring-data-hazelcast:1.0'
 }
 ----
 
