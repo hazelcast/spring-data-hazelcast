@@ -1,0 +1,168 @@
+= Spring Data Hazelcast
+Neil Stevenson <neil@hazelcast.com>; Viktor Gamov <viktor@hazelcast.com> © 2016 Hazelcast, Inc.
+2016-07-28
+:revdate: 2016-07-28 16:39:37 -0600
+:revnumber: 0.8
+:linkattrs:
+:ast: &ast;
+:y: &#10003;
+:n: &#10008;
+:y: icon:check-sign[role="green"]
+:n: icon:check-minus[role="red"]
+:c: icon:file-text-alt[role="blue"]
+:toc: macro
+:toc-title: Table of contents
+:idprefix:
+:idseparator: -
+:sectanchors:
+:icons: font
+:source-highlighter: highlight.js
+:highlightjs-theme: idea
+:experimental:
+
+Welcome to Spring Data Hazelcast project!
+
+toc::[]
+
+The primary goal of the Spring Data project is to make it easier to build Spring-powered applications that use data access technologies. 
+
+Spring Data Hazelcast project will enable the Spring Data paradigm to gain the power of a distributed data repository.
+
+image::http://gif.co/sLTK.gif[I have the power!]
+
+== Join the community
+
+=== Chat with developers
+
+https://gitter.im/hazelcast/spring-data-hazelcast?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge[image:https://badges.gitter.im/hazelcast/spring-data-hazelcast.svg[Gitter]]
+
+=== Stackoverflow 
+
+image:http://cdn.sstatic.net/Sites/stackoverflow/company/img/logos/so/so-icon.png?v=c78bd457575a[]
+Submit your question with `hazelcast` and `spring-data-hazelcast` http://stackoverflow.com/questions/tagged/hazelcast[tags].
+
+=== Mail Group
+
+Please, http://groups.google.com/group/hazelcast[join the mail group] if you are interested in using or developing Hazelcast.
+
+== Motivation
+
+The Spring platform is a commonly used environment and Hazelcast is the most widely used IMDG. 
+Therefore it is natural to provide a way to use Hazelcast via Spring in a standard, platform neutral manner and to provide a baseline implementation of Spring Data Hazelcast that can be enhanced with Hazelcast specific features.
+
+The implementation is built on the new Spring Data https://github.com/spring-projects/spring-data-keyvalue[KeyValue] module and is one of the first projects to do this. 
+This module provides infrastructure components for creating repository abstractions for stores dealing with Key/Value pairs like `java.util.Map` or Hazelcast `IMap`.
+
+Through the means of the repository interface, CRUD operations, and expression-based query methods can interrogate an in-memory data store in a manner consistent with the other Spring Data projects allowing developers to be productive quickly and easily.
+
+== Features
+
+- Familiar "Spring Data" approach,  developers do not need to learn a new technology to be able to use it
+- Utilizes the new Spring-Data-Key value abstraction, we did not reinvent the wheel
+- ​*FURTHER*​ eases the integration of Hazelcast into Spring and clouds
+- Reduces vendor lock-in. One can swap Hazelcast in place of more expensive or slower options
+
+== Usage
+
+.Spring Configuration
+[source,java]
+----
+@Configuration
+@EnableHazelcastRepositories(basePackages={"example.springdata.keyvalue.chemistry"}) // <1>
+public class ApplicationConfiguration {
+
+    @Bean
+    HazelcastInstance hazelcastInstance() {     // <2> 
+        return Hazelcast.newHazelcastInstance();
+        // return HazelcastClient.newHazelcastClient();
+    }
+
+    @Bean
+    public KeyValueOperations keyValueTemplate() {  // <3> 
+        return new KeyValueTemplate(new HazelcastKeyValueAdapter(hazelcastInstance()));
+    }
+
+    @Bean
+    public HazelcastKeyValueAdapter hazelcastKeyValueAdapter(HazelcastInstance hazelcastInstance) {
+        return new HazelcastKeyValueAdapter(hazelcastInstance);
+    }
+}
+----
+<1> Enables Spring Data magic for Hazelcast. 
+    You can specify `basePackages` for component scan.
+<2> Instantiates Hazelcast instance (a member or a client)
+<3> Instantiates KV template
+
+.A repository class definition
+[source,java]
+----
+public interface SpeakerRepository extends HazelcastRepository<Speaker, Long> {}
+----
+
+.A test of repository
+[source,java]
+----
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = AppConfiguration.class)
+public class AppTest {
+    @Autowired
+    SpeakerRepository speakerRepository;
+
+    @Test
+    public void testStart(){
+        speakerRepository.findAll();
+    }
+}
+
+----
+
+== Installation
+
+=== Maven
+
+.Add this to your `pom.xml`
+[source, xml]
+----
+<project>
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+    <dependency>
+        <groupId>com.github.hazelcast-incubator</groupId>
+        <artifactId>spring-data-integrations-commons</artifactId>
+        <version>0.8</version>
+    </dependency>
+</project>
+----
+
+=== Gradle
+
+[source, groovy]
+----
+// Add it to your root build.gradle at the end of repositories:
+allprojects {
+    repositories {
+        ...
+        maven { url "https://jitpack.io" }
+    }
+}
+
+// Add dependency
+dependencies {
+    compile 'com.github.hazelcast-incubator:spring-data-integrations-commons:0.8'
+}
+----
+
+== License
+
+Hazelcast is available under the Apache 2 License. Please see the Licensing appendix for more information.
+
+== Copyright
+
+Copyright (c) 2008-2016, Hazelcast, Inc. All Rights Reserved.
+
+Visit http://www.hazelcast.com for more information.
+
