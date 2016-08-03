@@ -8,7 +8,7 @@
 	<version>0.8</version>
 
 	<name>Spring Data Hazelcast</name>
-  	<description>Spring Data module for Hazelcast repositories.</description>  
+  	<description>Spring Data module for Hazelcast repositories.</description>
 
 	<parent>
 		<groupId>org.springframework.data.build</groupId>
@@ -31,7 +31,7 @@
 			<artifactId>spring-data-keyvalue</artifactId>
 			<version>${springdata.keyvalue}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.hazelcast</groupId>
 			<artifactId>hazelcast</artifactId>
@@ -173,7 +173,33 @@
  					</execution>
  				</executions>
  			</plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+				</configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 
