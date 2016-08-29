@@ -2,7 +2,7 @@
 Neil Stevenson <neil@hazelcast.com>; Viktor Gamov <viktor@hazelcast.com> © 2016 Hazelcast, Inc.
 2016-07-28
 :revdate: 2016-07-28 16:39:37 -0600
-:revnumber: 0.8
+:revnumber: 1.0
 :linkattrs:
 :ast: &ast;
 :y: &#10003;
@@ -125,36 +125,20 @@ public class AppTest {
 .Add this to your `pom.xml`
 [source, xml]
 ----
-<project>
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-    <dependency>
-        <groupId>com.github.hazelcast</groupId>
-        <artifactId>spring-data-hazelcast</artifactId>
-        <version>1.0</version>
-    </dependency>
-</project>
+<dependency>
+    <groupId>com.hazelcast</groupId>
+    <artifactId>spring-data-hazelcast</artifactId>
+    <version>1.0</version>
+</dependency>
 ----
 
 === Gradle
 
 [source, groovy]
 ----
-// Add it to your root build.gradle at the end of repositories:
-allprojects {
-    repositories {
-        ...
-        maven { url "https://jitpack.io" }
-    }
-}
-
 // Add dependency
 dependencies {
-    compile 'com.github.hazelcast:spring-data-hazelcast:1.0'
+    compile 'com.hazelcast:spring-data-hazelcast:1.0'
 }
 ----
 
