@@ -22,6 +22,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<springdata.keyvalue>1.1.2.RELEASE</springdata.keyvalue>
+		<maven.javadoc.plugin.version>2.9</maven.javadoc.plugin.version>
 	</properties>
 
 	<dependencies>
@@ -202,7 +203,71 @@
             </plugin>
 		</plugins>
 	</build>
+<profiles>
+	<profile>
+		<id>release</id>
+		<properties>
+			<javadoc>true</javadoc>
+		</properties>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>${maven.gpg.plugin.version}</version>
+					<executions>
+						<execution>
+							<id>sign-artifacts</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>sign</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
 
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>${maven.javadoc.plugin.version}</version>
+					<configuration>
+						<javaApiLinks>
+							<property>
+								<name>api_1.6</name>
+								<value>http://download.oracle.com/javase/1.6.0/docs/api/</value>
+							</property>
+							<property>
+								<name>api_1.7</name>
+								<value>http://download.oracle.com/javase/1.7.0/docs/api/</value>
+							</property>
+						</javaApiLinks>
+						<maxmemory>1024</maxmemory>
+					</configuration>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+
+				<plugin>
+					<groupId>org.sonatype.plugins</groupId>
+					<artifactId>nexus-staging-maven-plugin</artifactId>
+					<version>1.6.3</version>
+					<extensions>true</extensions>
+					<configuration>
+						<serverId>release-repository</serverId>
+						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+						<autoReleaseAfterClose>false</autoReleaseAfterClose>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</profile>
+</profiles>
 	<!-- For Spring Bundlor plugin -->
 	<pluginRepositories>
 		<pluginRepository>
