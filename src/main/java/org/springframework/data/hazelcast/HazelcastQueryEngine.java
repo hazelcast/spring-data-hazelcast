@@ -32,6 +32,7 @@ import org.springframework.data.keyvalue.core.QueryEngine;
  *
  * @author Christoph Strobl
  * @author Neil Stevenson
+ * @author Nasko Vasilev
  */
 public class HazelcastQueryEngine
 		extends QueryEngine<HazelcastKeyValueAdapter, Predicate<?, ?>, Comparator<Entry<?, ?>>> {
@@ -57,25 +58,21 @@ public class HazelcastQueryEngine
 	 */
 	@Override
 	public Collection<?> execute(final Predicate<?, ?> criteria, final Comparator<Entry<?, ?>> sort, final int offset,
-			final int rows, final Serializable keyspace) {
-
+										final int rows, final Serializable keyspace) {
 		Predicate<?, ?> predicateToUse = criteria;
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		Comparator<Entry> sortToUse = ((Comparator<Entry>) (Comparator) sort);
 
-		if (rows > 0) {
-			PagingPredicate pp = new PagingPredicate(predicateToUse, sortToUse, rows);
-			int x = offset / rows;
-			while (x > 0) {
-				pp.nextPage();
-				x--;
+		if (rows > 0 || sort != null) {
+			int pagingPageSize = rows > 0 ? rows : Integer.MAX_VALUE;
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			PagingPredicate pp = new PagingPredicate(criteria,(Comparator) sort, pagingPageSize);
+			if (rows > 0) {
+				int x = offset / rows;
+				while (x > 0) {
+					pp.nextPage();
+					x--;
+				}
 			}
 			predicateToUse = pp;
-
-		} else {
-			if (sortToUse != null) {
-				predicateToUse = new PagingPredicate(predicateToUse, sortToUse, Integer.MAX_VALUE);
-			}
 		}
 
 		if (predicateToUse == null) {
@@ -83,7 +80,6 @@ public class HazelcastQueryEngine
 		} else {
 			return this.getAdapter().getMap(keyspace).values(predicateToUse);
 		}
-
 	}
 
 	/**
