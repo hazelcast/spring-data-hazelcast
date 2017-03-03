@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>org.springframework.data.build</groupId>
 		<artifactId>spring-data-parent</artifactId>
-		<version>1.8.2.RELEASE</version>
+		<version>1.9.0.RELEASE</version>
 	</parent>
 
 	<properties>
@@ -21,7 +21,7 @@
 		<hazelcast>3.6</hazelcast>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<springdata.keyvalue>1.1.2.RELEASE</springdata.keyvalue>
+		<springdata.keyvalue>1.1.8.RELEASE</springdata.keyvalue>
 		<maven.gpg.plugin.version>1.4</maven.gpg.plugin.version>
 		<maven.javadoc.plugin.version>2.9</maven.javadoc.plugin.version>
 	</properties>
