@@ -35,7 +35,7 @@ public class Oscars {
 			{ 2005, "Philip", "Seymour" }, { 2006, "Forest", "Whitaker" }, { 2007, "Daniel", "Day-Lewis" },
 			{ 2008, "Sean", "Penn" }, { 2009, "Jeff", "Bridges" }, { 2010, "Colin", "Firth" },
 			{ 2011, "Jean", "Dujardin" }, { 2012, "Daniel", "Day-Lewis" }, { 2013, "Mathew", "McConaughey" },
-			{ 2014, "Eddie", "Redmayne" }, { 2015, "Leonardo", "DiCaprio" }, };
+			{ 2014, "Eddie", "Redmayne" }, { 2015, "Leonardo", "DiCaprio" }, { 2016, "Casey", "Affleck" } };
 
 	// https://en.wikipedia.org/wiki/Academy_Award_for_Best_Makeup_and_Hairstyling
 	public static final Object[][] bestMakeUp = { { 1964, "7 Faces Of Dr Lao", "William J Tuttle" },
@@ -68,7 +68,9 @@ public class Oscars {
 			{ 2012, "Les Miserables", "Lisa Westcott & Julie Dartnell" },
 			{ 2013, "Dallas Buyers Club", "Adruitha Lee & Robin Mathews" },
 			{ 2014, "The Grand Budepest Hotel", "Frances Hannon & Mark Coulier" },
-			{ 2015, "Mad Max: Fury Road", "Damian Martin & Lesley Vanderwalt & Elka Wardega" }, };
+			{ 2015, "Mad Max: Fury Road", "Damian Martin & Lesley Vanderwalt & Elka Wardega" },
+			{ 2016, "Suicide Squad", "Alessandro Bertolazzi, Giorgio Gregorini & Christopher Nelson" },
+	};
 
 	// https://en.wikipedia.org/wiki/Academy_Award_for_Best_Picture
 	public static final Object[][] bestPictures = { { 1928, "Wings" }, { 1929, "The Broadway Melody" },
@@ -98,7 +100,7 @@ public class Oscars {
 			{ 2005, "Crash" }, { 2006, "The Departed" }, { 2007, "No Country For Old Men" },
 			{ 2008, "Slumdog Millionaire" }, { 2009, "The Hurt Locker" }, { 2010, "The King's Speech" },
 			{ 2011, "The Artist" }, { 2012, "Argo" }, { 2013, "12 Years A Slave" }, { 2014, "Birdman" },
-			{ 2015, "Spotlight" }, };
+			{ 2015, "Spotlight" }, { 2016, "Moonlight" } };
 
 	// https://en.wikipedia.org/wiki/Academy_Award_for_Best_Original_Song
 	public static final Object[][] bestSongs = { { 1934, "The Continental" }, { 1935, "Lullaby Of Broadway" },
@@ -127,6 +129,6 @@ public class Oscars {
 			{ 2003, "Into The West" }, { 2004, "Al Otro Lada Del Rio" }, { 2005, "It's Hard Out Here For A Pimp" },
 			{ 2006, "I Need To Wake Up" }, { 2007, "Falling Slowly" }, { 2008, "Jai Ho" }, { 2009, "The Weary Kind" },
 			{ 2010, "We Belong Together" }, { 2011, "Man Or Muppet" }, { 2012, "Skyfall" }, { 2013, "Let It Go" },
-			{ 2014, "Glory" }, { 2015, "Writing's On The Wall" }, };
+			{ 2014, "Glory" }, { 2015, "Writing's On The Wall" }, { 2016, "City Of Stars" }, };
 
 }
