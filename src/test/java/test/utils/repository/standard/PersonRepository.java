@@ -107,6 +107,10 @@ public interface PersonRepository extends HazelcastRepository<Person, String> {
 	@Query("firstname=James")
 	public List<Person> peoplewiththeirFirstNameIsJames();
 
+	@Query("firstname=%s")
+	public List<Person> peoplewiththeirFirstName(String firstName);
 
+	@Query("firstname=%s and lastname=%s")
+	public List<Person> peoplewithFirstAndLastName(String firstName,String lastName);
 
 }

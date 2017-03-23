@@ -21,9 +21,9 @@ public class SqlPredicateQuery implements RepositoryQuery {
     @Override
     public Object execute(Object[] parameters) {
 
-        String queryString = queryMethod.getAnnotatedQuery();
+        String queryStringTemplate = queryMethod.getAnnotatedQuery();
 
-        // TODO check and replace parameters
+        String queryString = String.format(queryStringTemplate, parameters);
 
         SqlPredicate sqlPredicate = new SqlPredicate(queryString);
 

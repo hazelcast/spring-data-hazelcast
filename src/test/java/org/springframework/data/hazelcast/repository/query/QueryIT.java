@@ -192,10 +192,22 @@ public class QueryIT extends TestDataHelper {
 		assertThat("1940 and 1942", matches,
 				containsInAnyOrder(hasProperty("lastname", equalTo("Cagney")), hasProperty("lastname", equalTo("Stewart"))));
 
-		matches = this.personRepository.findByFirstname("Bing");
+	}
+
+	@Test
+	public void queryAnnotationWithOneParameter() {
+		List<Person> matches = this.personRepository.peoplewiththeirFirstName("Bing");
 		assertThat("1944", matches.size(), equalTo(1));
 		assertThat("1944", matches.get(0).getLastname(), equalTo("Crosby"));
 	}
+
+	@Test
+	public void queryAnnotationWithMultipleParameter() {
+		List<Person> matches = this.personRepository.peoplewithFirstAndLastName("James", "Stewart");
+		assertThat("1940", matches.size(), equalTo(1));
+		assertThat("1940", matches.get(0).getId(), equalTo("1940"));
+	}
+
 
 	@SuppressWarnings("unchecked")
 	@Test
