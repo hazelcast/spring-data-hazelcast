@@ -81,10 +81,10 @@ public class HazelcastQueryLookupStrategy implements QueryLookupStrategy {
 	public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, 
 			ProjectionFactory projectionFactory, NamedQueries namedQueries) {
 
-		HazelcastQueryMethod queryMethod = new HazelcastQueryMethod(method,metadata,projectionFactory);
+		HazelcastQueryMethod queryMethod = new HazelcastQueryMethod(method, metadata, projectionFactory);
 
 		if (queryMethod.hasAnnotatedQuery()) {
-			return new SqlPredicateQuery(queryMethod);
+			return new StringBasedHazelcastRepositoryQuery(queryMethod);
 
 		}
 
