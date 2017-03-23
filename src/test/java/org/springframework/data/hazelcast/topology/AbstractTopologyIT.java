@@ -1,21 +1,22 @@
 package org.springframework.data.hazelcast.topology;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import javax.annotation.Resource;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.data.hazelcast.repository.config.Constants;
+import test.utils.TestConstants;
 import test.utils.TestDataHelper;
 import test.utils.domain.Person;
 import test.utils.repository.standard.PersonRepository;
-import test.utils.Constants;
+
+import javax.annotation.Resource;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * <P>
@@ -48,13 +49,13 @@ public abstract class AbstractTopologyIT extends TestDataHelper {
 
 		// Look for any instance apart from Spring's one
 		for (HazelcastInstance hazelcastInstance : Hazelcast.getAllHazelcastInstances()) {
-			if (!hazelcastInstance.getName().equals(Constants.HAZELCAST_TEST_INSTANCE_NAME)) {
+			if (!hazelcastInstance.getName().equals(Constants.HAZELCAST_INSTANCE_NAME)) {
 				hazelcastServer = hazelcastInstance;
 			}
 		}
 
 		assertThat("Server found", hazelcastServer, notNullValue());
-		this.server_personMap = hazelcastServer.getMap(Constants.PERSON_MAP_NAME);
+		this.server_personMap = hazelcastServer.getMap(TestConstants.PERSON_MAP_NAME);
 	}
 
 	/* Data manipulated via the other instance should be visible

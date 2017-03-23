@@ -1,7 +1,7 @@
 package org.springframework.data.hazelcast.topology;
 
 import org.springframework.test.context.ActiveProfiles;
-import test.utils.Constants;
+import test.utils.TestConstants;
 
 /**
  * <P>
@@ -15,5 +15,5 @@ import test.utils.Constants;
  *
  * @author Neil Stevenson
  */
-@ActiveProfiles(Constants.SPRING_TEST_PROFILE_CLUSTER)
+@ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_CLUSTER)
 public class ClusterIT extends AbstractTopologyIT {}

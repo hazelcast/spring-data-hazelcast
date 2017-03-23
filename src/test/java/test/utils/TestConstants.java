@@ -5,9 +5,7 @@ import test.utils.domain.Song;
 /**
  * @author Neil Stevenson
  */
-public class Constants {
-
-	public static final String HAZELCAST_TEST_INSTANCE_NAME = "TestInstance";
+public class TestConstants {
 
 	public static final String SPRING_TEST_PROFILE_CLIENT_SERVER = "client-server";
 	public static final String SPRING_TEST_PROFILE_CLUSTER = "cluster";

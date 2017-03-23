@@ -1,11 +1,10 @@
 package test.utils.domain;
 
-import java.io.Serializable;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.keyvalue.annotation.KeySpace;
+import test.utils.TestConstants;
 
-import test.utils.Constants;
+import java.io.Serializable;
 
 /**
  * <P>{@code Makeup} is for the prize for make-up and hair styling.
@@ -17,7 +16,7 @@ import test.utils.Constants;
  * 
  * @author Neil Stevenson
  */
-@KeySpace(Constants.MAKEUP_MAP_NAME)
+@KeySpace(TestConstants.MAKEUP_MAP_NAME)
 public class Makeup implements Comparable<Makeup>, Serializable {
 
 	private static final long serialVersionUID = 1L;

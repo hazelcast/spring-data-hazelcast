@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import test.utils.TestDataHelper;
 import test.utils.domain.Person;
-import test.utils.Constants;
+import test.utils.TestConstants;
 
 /**
  * <P>
@@ -30,7 +30,7 @@ import test.utils.Constants;
  *
  * @author Neil Stevenson
  */
-@ActiveProfiles(Constants.SPRING_TEST_PROFILE_SINGLETON)
+@ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_SINGLETON)
 public class CrudIT extends TestDataHelper {
 	private static final String EIGHTEEN_HUNDRED = "1800";
 	private static final String NINETEEN_HUNDRED = "1900";

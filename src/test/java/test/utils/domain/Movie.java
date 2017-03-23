@@ -2,7 +2,7 @@ package test.utils.domain;
 
 import org.springframework.data.keyvalue.annotation.KeySpace;
 
-import test.utils.Constants;
+import test.utils.TestConstants;
 
 /**
  * <P>A {@code Movie} is a kind of {@link MyTitle}, as the fields here are just the
@@ -15,7 +15,7 @@ import test.utils.Constants;
  * 
  * @author Neil Stevenson
  */
-@KeySpace(Constants.MOVIE_MAP_NAME)
+@KeySpace(TestConstants.MOVIE_MAP_NAME)
 public class Movie extends MyTitle {
 	private static final long serialVersionUID = 1L;
 

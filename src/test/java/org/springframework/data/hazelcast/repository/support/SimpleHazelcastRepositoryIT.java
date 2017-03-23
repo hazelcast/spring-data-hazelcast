@@ -19,7 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.repository.core.support.ReflectionEntityInformation;
 import org.springframework.test.context.ActiveProfiles;
-import test.utils.Constants;
+import test.utils.TestConstants;
 import test.utils.Oscars;
 import test.utils.TestDataHelper;
 import test.utils.domain.Makeup;
@@ -33,7 +33,7 @@ import test.utils.domain.Makeup;
  *
  * @author Neil Stevenson
  */
-@ActiveProfiles(Constants.SPRING_TEST_PROFILE_SINGLETON)
+@ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_SINGLETON)
 public class SimpleHazelcastRepositoryIT extends TestDataHelper {
 	private static final String YEAR_1939 = "1939";
 	private static final String YEAR_1941 = "1941";

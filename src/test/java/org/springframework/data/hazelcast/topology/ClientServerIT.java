@@ -11,7 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.Predicates;
 
-import test.utils.Constants;
+import test.utils.TestConstants;
 import test.utils.domain.Person;
 
 /**
@@ -25,7 +25,7 @@ import test.utils.domain.Person;
  *
  * @author Neil Stevenson
  */
-@ActiveProfiles(Constants.SPRING_TEST_PROFILE_CLIENT_SERVER)
+@ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_CLIENT_SERVER)
 public class ClientServerIT extends AbstractTopologyIT {
 
 	/* Test data loaded into the client should exist on the

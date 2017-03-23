@@ -15,7 +15,7 @@ import test.utils.domain.Song;
 import test.utils.repository.custom.MovieRepository;
 import test.utils.repository.custom.MyTitleRepositoryFactoryBean;
 import test.utils.repository.custom.SongRepository;
-import test.utils.Constants;
+import test.utils.TestConstants;
 
 /**
  * <P>
@@ -34,7 +34,7 @@ import test.utils.Constants;
  *
  * @author Neil Stevenson
  */
-@ActiveProfiles(Constants.SPRING_TEST_PROFILE_SINGLETON)
+@ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_SINGLETON)
 public class CustomRepoIT extends TestDataHelper {
 	private static final String YEAR_1939 = "1939";
 	private static final String YEAR_1959 = "1959";

@@ -1,16 +1,5 @@
 package org.springframework.data.hazelcast.repository.query;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
-import javax.annotation.Resource;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -20,11 +9,35 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
+import test.utils.TestConstants;
+import test.utils.Oscars;
 import test.utils.TestDataHelper;
 import test.utils.domain.Person;
 import test.utils.repository.standard.PersonRepository;
-import test.utils.Constants;
-import test.utils.Oscars;
+
+import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
+
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThat;
 
 /**
  * <P>
@@ -37,7 +50,7 @@ import test.utils.Oscars;
  *
  * @author Neil Stevenson
  */
-@ActiveProfiles(Constants.SPRING_TEST_PROFILE_SINGLETON)
+@ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_SINGLETON)
 public class QueryIT extends TestDataHelper {
 	private static final int PAGE_0 = 0;
 	private static final int SIZE_1 = 1;
@@ -163,6 +176,18 @@ public class QueryIT extends TestDataHelper {
 	@Test
 	public void findByFirstname() {
 		List<Person> matches = this.personRepository.findByFirstname("James");
+		assertThat("1940 and 1942", matches.size(), equalTo(2));
+		assertThat("1940 and 1942", matches,
+				containsInAnyOrder(hasProperty("lastname", equalTo("Cagney")), hasProperty("lastname", equalTo("Stewart"))));
+
+		matches = this.personRepository.findByFirstname("Bing");
+		assertThat("1944", matches.size(), equalTo(1));
+		assertThat("1944", matches.get(0).getLastname(), equalTo("Crosby"));
+	}
+
+	@Test
+	public void queryAnnotation() {
+		List<Person> matches = this.personRepository.peoplewiththeirFirstNameIsJames();
 		assertThat("1940 and 1942", matches.size(), equalTo(2));
 		assertThat("1940 and 1942", matches,
 				containsInAnyOrder(hasProperty("lastname", equalTo("Cagney")), hasProperty("lastname", equalTo("Stewart"))));
