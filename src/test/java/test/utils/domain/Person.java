@@ -4,7 +4,7 @@ import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.keyvalue.annotation.KeySpace;
 
-import test.utils.Constants;
+import test.utils.TestConstants;
 
 /**
  * <P>
@@ -22,7 +22,7 @@ import test.utils.Constants;
  * @author Oliver Gierke
  * @author Neil Stevenson
  */
-@KeySpace(Constants.PERSON_MAP_NAME)
+@KeySpace(TestConstants.PERSON_MAP_NAME)
 public class Person implements Comparable<Person>, Serializable {
 
 	private static final long serialVersionUID = 1L;

@@ -15,19 +15,20 @@
  */
 package org.springframework.data.hazelcast;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
+import com.hazelcast.config.Config;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
+import org.springframework.data.hazelcast.repository.config.Constants;
 import org.springframework.data.keyvalue.core.AbstractKeyValueAdapter;
 import org.springframework.data.keyvalue.core.ForwardingCloseableIterator;
 import org.springframework.data.util.CloseableIterator;
 import org.springframework.util.Assert;
 
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 /**
  * @author Christoph Strobl
@@ -38,13 +39,12 @@ public class HazelcastKeyValueAdapter extends AbstractKeyValueAdapter {
 	private HazelcastInstance hzInstance;
 
 	public HazelcastKeyValueAdapter() {
-		this(Hazelcast.newHazelcastInstance());
+		super(new HazelcastQueryEngine());
+		Config cfg = new Config(Constants.HAZELCAST_INSTANCE_NAME);
+		this.hzInstance = Hazelcast.getOrCreateHazelcastInstance(cfg);
 	}
 
-	public HazelcastKeyValueAdapter(HazelcastInstance hzInstance) {
-
-		super(new HazelcastQueryEngine());
-		Assert.notNull(hzInstance, "hzInstance must not be 'null'.");
+	public void setHzInstance(HazelcastInstance hzInstance) {
 		this.hzInstance = hzInstance;
 	}
 

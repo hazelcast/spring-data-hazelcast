@@ -1,26 +1,28 @@
 package test.utils;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import java.util.Collection;
-
 import com.hazelcast.core.DistributedObject;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.hazelcast.repository.config.Constants;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import test.utils.domain.Makeup;
 import test.utils.domain.Movie;
 import test.utils.domain.Person;
 import test.utils.domain.Song;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import java.util.Collection;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.isIn;
+import static org.junit.Assert.assertThat;
 
 /**
  * <P>
@@ -55,20 +57,20 @@ public abstract class TestDataHelper {
 	@Before
 	public void setUp() {
 		assertThat("Correct Hazelcast instance", this.hazelcastInstance.getName(),
-				equalTo(Constants.HAZELCAST_TEST_INSTANCE_NAME));
+				equalTo(Constants.HAZELCAST_INSTANCE_NAME));
 
 		checkMapsEmpty("setUp");
 
-		this.makeupMap = this.hazelcastInstance.getMap(Constants.MAKEUP_MAP_NAME);
+		this.makeupMap = this.hazelcastInstance.getMap(TestConstants.MAKEUP_MAP_NAME);
 		loadMakeup(this.makeupMap);
 
-		this.movieMap = this.hazelcastInstance.getMap(Constants.MOVIE_MAP_NAME);
+		this.movieMap = this.hazelcastInstance.getMap(TestConstants.MOVIE_MAP_NAME);
 		loadMovie(this.movieMap);
 		
-		this.personMap = this.hazelcastInstance.getMap(Constants.PERSON_MAP_NAME);
+		this.personMap = this.hazelcastInstance.getMap(TestConstants.PERSON_MAP_NAME);
 		loadPerson(this.personMap);
 		
-		this.songMap = this.hazelcastInstance.getMap(Constants.SONG_MAP_NAME);
+		this.songMap = this.hazelcastInstance.getMap(TestConstants.SONG_MAP_NAME);
 		loadSong(this.songMap);
 		
 		checkMapsNotEmpty("setUp");
@@ -78,11 +80,11 @@ public abstract class TestDataHelper {
 		 */
 		Collection<DistributedObject> distributedObjects = this.hazelcastInstance.getDistributedObjects();
 		assertThat("Correct number of distributed objects",
-				distributedObjects.size(), equalTo(Constants.OSCAR_MAP_NAMES.length));
+				distributedObjects.size(), equalTo(TestConstants.OSCAR_MAP_NAMES.length));
 	}
 
 	private void checkMapsEmpty(String phase) {
-		for (String mapName : Constants.OSCAR_MAP_NAMES) {
+		for (String mapName : TestConstants.OSCAR_MAP_NAMES) {
 			IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
 			assertThat(phase + "(): No test data left behind by previous tests in '" + iMap.getName() + "'", 
 					iMap.size(), equalTo(0));
@@ -90,7 +92,7 @@ public abstract class TestDataHelper {
 	}
 
 	private void checkMapsNotEmpty(String phase) {
-		for (String mapName : Constants.OSCAR_MAP_NAMES) {
+		for (String mapName : TestConstants.OSCAR_MAP_NAMES) {
 			IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
 			assertThat(phase + "(): Test data has been loaded into '" + iMap.getName() + "'", 
 					iMap.size(), greaterThan(0));
@@ -145,7 +147,7 @@ public abstract class TestDataHelper {
 
 	@After
 	public void tearDown() {
-		for (String mapName : Constants.OSCAR_MAP_NAMES) {
+		for (String mapName : TestConstants.OSCAR_MAP_NAMES) {
 			IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
 			iMap.clear();
 		}
@@ -156,11 +158,11 @@ public abstract class TestDataHelper {
 		
 		for (DistributedObject distributedObject : distributedObjects) {
 			assertThat(distributedObject.getName(), distributedObject, instanceOf(IMap.class));
-			assertThat(distributedObject.getName(), isIn(Constants.OSCAR_MAP_NAMES)); 
+			assertThat(distributedObject.getName(), isIn(TestConstants.OSCAR_MAP_NAMES));
 		}
 
 		assertThat("Correct number of distributed objects",
-				distributedObjects.size(), equalTo(Constants.OSCAR_MAP_NAMES.length));
+				distributedObjects.size(), equalTo(TestConstants.OSCAR_MAP_NAMES.length));
 
 	}
 

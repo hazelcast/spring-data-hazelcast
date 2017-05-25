@@ -15,10 +15,9 @@
  */
 package org.springframework.data.hazelcast;
 
-import org.springframework.data.hazelcast.HazelcastKeyValueAdapter;
-
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 
 /**
  * @author Christoph Strobl
@@ -36,7 +35,10 @@ public class HazelcastUtils {
 	}
 
 	public static HazelcastKeyValueAdapter preconfiguredHazelcastKeyValueAdapter() {
-		return new HazelcastKeyValueAdapter(Hazelcast.newHazelcastInstance(hazelcastConfig()));
+		HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig());
+		HazelcastKeyValueAdapter hazelcastKeyValueAdapter = new HazelcastKeyValueAdapter();
+		hazelcastKeyValueAdapter.setHzInstance(hazelcastInstance);
+		return hazelcastKeyValueAdapter;
 	}
 
 }

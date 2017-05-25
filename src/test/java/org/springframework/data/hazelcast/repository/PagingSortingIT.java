@@ -20,7 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import test.utils.TestDataHelper;
 import test.utils.domain.Person;
-import test.utils.Constants;
+import test.utils.TestConstants;
 import test.utils.Oscars;
 
 /**
@@ -34,7 +34,7 @@ import test.utils.Oscars;
  *
  * @author Neil Stevenson
  */
-@ActiveProfiles(Constants.SPRING_TEST_PROFILE_CLIENT_SERVER)
+@ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_CLIENT_SERVER)
 public class PagingSortingIT extends TestDataHelper {
 
 	// PersonRepository is really a HazelcastRepository

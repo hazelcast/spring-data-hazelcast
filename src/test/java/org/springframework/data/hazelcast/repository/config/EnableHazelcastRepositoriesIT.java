@@ -28,7 +28,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import test.utils.Constants;
+import test.utils.TestConstants;
 import test.utils.InstanceHelper;
 import test.utils.domain.Person;
 import test.utils.repository.standard.PersonRepository;
@@ -47,7 +47,7 @@ import test.utils.repository.standard.PersonRepository;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { InstanceHelper.class })
-@ActiveProfiles(Constants.SPRING_TEST_PROFILE_SINGLETON)
+@ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_SINGLETON)
 @DirtiesContext
 public class EnableHazelcastRepositoriesIT {
 

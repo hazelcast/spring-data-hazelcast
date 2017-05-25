@@ -23,7 +23,6 @@ import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.QueryLookupStrategy;
-import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.util.Assert;
@@ -81,7 +80,14 @@ public class HazelcastQueryLookupStrategy implements QueryLookupStrategy {
 	 */
 	public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, 
 			ProjectionFactory projectionFactory, NamedQueries namedQueries) {
-		QueryMethod queryMethod = new QueryMethod(method, metadata, projectionFactory);
+
+		HazelcastQueryMethod queryMethod = new HazelcastQueryMethod(method, metadata, projectionFactory);
+
+		if (queryMethod.hasAnnotatedQuery()) {
+			return new StringBasedHazelcastRepositoryQuery(queryMethod);
+
+		}
+
 		return new HazelcastPartTreeQuery(queryMethod, evaluationContextProvider, this.keyValueOperations,
 				this.queryCreator);
 	}
