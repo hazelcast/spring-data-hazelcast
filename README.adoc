@@ -63,6 +63,7 @@ Through the means of the repository interface, CRUD operations, and expression-b
 - Utilizes the new Spring-Data-Key value abstraction, we did not reinvent the wheel
 - ​*FURTHER*​ eases the integration of Hazelcast into Spring and clouds
 - Reduces vendor lock-in. One can swap Hazelcast in place of more expensive or slower options
+- @Query Support
 
 == Usage
 
