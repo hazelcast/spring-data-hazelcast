@@ -200,34 +200,27 @@ public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 	private Object executePageSliceQuery(final Object[] parameters, final KeyValueQuery<?> query,
 			final QueryMethod queryMethod) {
 		long totalElements = -1;
-
 		int indexOfPageRequest = queryMethod.getParameters().getPageableIndex();
 		Pageable pageRequest = (Pageable) parameters[indexOfPageRequest];
-
-		/* TODO Eliminate count call for Slice, retrieve "rows+1" instead to determine if next page exists.
-		 */
-		if (query.getCritieria() == null) {
-			totalElements = this.keyValueOperations.count(queryMethod.getEntityInformation().getJavaType());
-		} else {
-			totalElements = this.keyValueOperations.count(query, queryMethod.getEntityInformation().getJavaType());
-		}
 
 		int requiredRows = pageRequest.getPageSize();
 
 		query.setOffset(pageRequest.getOffset());
-		query.setRows(pageRequest.getPageSize());
+		query.setRows(queryMethod.isSliceQuery() ? requiredRows + 1 : requiredRows);
 
 		Iterable<?> resultSet = this.keyValueOperations.find(query, queryMethod.getEntityInformation().getJavaType());
 		List<?> content = IterableConverter.toList(resultSet);
 
 		if (queryMethod.isPageQuery()) {
+			if (query.getCritieria() == null) {
+				totalElements = this.keyValueOperations.count(queryMethod.getEntityInformation().getJavaType());
+			} else {
+				totalElements = this.keyValueOperations.count(query, queryMethod.getEntityInformation().getJavaType());
+			}
 			return new PageImpl(content, pageRequest, totalElements);
 		} else {
-			boolean hasNext = totalElements > (query.getOffset() + query.getRows());
-			if (content.size() > requiredRows) {
-				content = content.subList(0, requiredRows);
-			}
-			return new SliceImpl(content, pageRequest, hasNext);
+			boolean hasNext = content.size() > requiredRows;
+			return new SliceImpl(hasNext ? content.subList(0, requiredRows) : content, pageRequest, hasNext);
 		}
 	}
 
