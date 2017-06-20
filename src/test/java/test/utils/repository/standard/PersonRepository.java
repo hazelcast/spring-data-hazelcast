@@ -1,5 +1,6 @@
 package test.utils.repository.standard;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 import org.springframework.data.domain.Page;
@@ -63,6 +64,10 @@ public interface PersonRepository extends HazelcastRepository<Person, String> {
 
 	public List<Person> findByFirstnameLike(String firstname);
 
+	public List<Person> findByFirstnameContains(String firstname);
+
+	public List<Person> findByFirstnameContainsAndLastnameStartsWithAllIgnoreCase(String firstname, String lastname);
+
 	public List<Person> findByFirstnameOrderById(String firstname);
 
 	public List<Person> findByLastnameOrderByIdAsc(String lastname);
@@ -79,12 +84,16 @@ public interface PersonRepository extends HazelcastRepository<Person, String> {
 
 	public List<Person> findFirst30ByOrderByFirstnameDescLastnameAsc();
 
+	public List<Person> findByFirstnameIn(Collection<String> firstnames);
+
+	public List<Person> findByFirstnameEndsWithAndLastnameNotIn(String firstname, Collection<String> lastnames);
+
 	public Stream<Person> findFirst4By();
 
 	public Stream<Person> streamByLastnameGreaterThanEqual(String lastname);
 
 	public Slice<Person> findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual(String id,
-			String firstname1, String firstname2, Pageable pageable);
+																								  String firstname1, String firstname2, Pageable pageable);
 
 	public Page<Person> findByLastname(String lastname, Pageable pageable);
 
@@ -97,6 +106,10 @@ public interface PersonRepository extends HazelcastRepository<Person, String> {
 	public Long countByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
 
 	public Long countByFirstnameAndLastnameAllIgnoreCase(String firstname, String lastname);
+
+	public Long countByIdAfter(String id);
+
+	public Long countByIdBetween(String firstId, String lastId);
 
 	public Person findByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
 
