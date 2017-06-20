@@ -15,8 +15,9 @@
  */
 package org.springframework.data.hazelcast.repository.query;
 
-import java.util.*;
-
+import com.hazelcast.query.PagingPredicate;
+import com.hazelcast.query.Predicate;
+import com.hazelcast.query.Predicates;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
@@ -26,13 +27,14 @@ import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.Part.Type;
 import org.springframework.data.repository.query.parser.PartTree;
-
-import com.hazelcast.query.PagingPredicate;
-import com.hazelcast.query.Predicate;
-import com.hazelcast.query.Predicates;
 import org.springframework.util.Assert;
 
-import static org.springframework.data.repository.query.parser.Part.Type.*;
+import java.util.Collection;
+import java.util.Iterator;
+
+import static org.springframework.data.repository.query.parser.Part.Type.CONTAINING;
+import static org.springframework.data.repository.query.parser.Part.Type.NOT_CONTAINING;
+import static org.springframework.data.repository.query.parser.Part.Type.NOT_LIKE;
 
 /**
  * @author Christoph Strobl
@@ -165,9 +167,6 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
                 return Predicates.in(property, collectToArray(type, iterator));
             case CONTAINING:
             case NOT_CONTAINING:
-                if (part.getProperty().isCollection()) {
-                    throw new InvalidDataAccessApiUsageException(String.format("%s is not supported for collection types", type));
-                }
             case STARTING_WITH:
             case ENDING_WITH:
             case LIKE:
@@ -199,13 +198,14 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
     private boolean ifIgnoreCase(Part part) {
         switch (part.shouldIgnoreCase()) {
             case ALWAYS:
-                Assert.state(canUpperCase(part.getProperty()), String.format("Unable to ignore case of %s types, the property '%s' " +
-                        "must reference a String", part.getProperty().getType().getName(), part.getProperty().getSegment()));
+                Assert.state(canUpperCase(part.getProperty()), String.format("Unable to ignore case of %s types, the property '%s' "
+                        + "must reference a String", part.getProperty().getType().getName(), part.getProperty().getSegment()));
                 return true;
             case WHEN_POSSIBLE:
                 if (canUpperCase(part.getProperty())) {
                     return true;
                 }
+                return false;
             case NEVER:
             default:
                 return false;
