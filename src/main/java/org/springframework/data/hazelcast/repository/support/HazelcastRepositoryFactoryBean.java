@@ -50,6 +50,18 @@ public class HazelcastRepositoryFactoryBean<T extends Repository<S, ID>, S, ID e
 		extends KeyValueRepositoryFactoryBean<T, S, ID> {
 
 	/**
+	 * <p>
+	 * Default Spring Data KeyValue constructor {@link KeyValueRepositoryFactoryBean}
+	 * Creates a new {@link HazelcastRepositoryFactoryBean} for the given repository interface.
+	 * </P>
+	 *
+	 * @param repositoryInterface must not be {@literal null}.
+	 */
+	public HazelcastRepositoryFactoryBean(Class<? extends T> repositoryInterface) {
+		super(repositoryInterface);
+	}
+
+	/**
 	 * <P>
 	 * Return a {@link HazelcastRepositoryFactory}.
 	 * </P>
