@@ -75,8 +75,7 @@ public class InstanceHelper {
 	 */
 	@Bean
 	public KeyValueOperations keyValueTemplate() {
-		HazelcastKeyValueAdapter hazelcastKeyValueAdapter = new HazelcastKeyValueAdapter();
-		hazelcastKeyValueAdapter.setHzInstance(this.hazelcastInstance);
+		HazelcastKeyValueAdapter hazelcastKeyValueAdapter = new HazelcastKeyValueAdapter(this.hazelcastInstance);
 		return new KeyValueTemplate(hazelcastKeyValueAdapter);
 	}
 
