@@ -21,6 +21,14 @@ import org.springframework.data.keyvalue.core.KeyValueOperations;
 public class MyTitleRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable>
  extends HazelcastRepositoryFactoryBean<T, S, ID> {
 
+	/*
+	 * Creates a new {@link MyTitleRepositoryFactoryBean} for the given repository interface.
+	 *
+	 * @param repositoryInterface must not be {@literal null}.
+	 */
+	public MyTitleRepositoryFactoryBean(Class<? extends T> repositoryInterface) {
+		super(repositoryInterface);
+	}
 	/* Create a specialised repository factory.
 	 * 
 	 * (non-Javadoc)
