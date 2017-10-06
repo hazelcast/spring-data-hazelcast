@@ -36,8 +36,7 @@ public class HazelcastUtils {
 
 	public static HazelcastKeyValueAdapter preconfiguredHazelcastKeyValueAdapter() {
 		HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig());
-		HazelcastKeyValueAdapter hazelcastKeyValueAdapter = new HazelcastKeyValueAdapter();
-		hazelcastKeyValueAdapter.setHzInstance(hazelcastInstance);
+		HazelcastKeyValueAdapter hazelcastKeyValueAdapter = new HazelcastKeyValueAdapter(hazelcastInstance);
 		return hazelcastKeyValueAdapter;
 	}
 
