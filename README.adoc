@@ -149,7 +149,7 @@ public List<Person> peoplewithFirstAndLastName(String firstName,String lastName)
 <dependency>
     <groupId>com.hazelcast</groupId>
     <artifactId>spring-data-hazelcast</artifactId>
-    <version>1.0</version>
+    <version>1.1.1</version>
 </dependency>
 ----
 
@@ -159,7 +159,7 @@ public List<Person> peoplewithFirstAndLastName(String firstName,String lastName)
 ----
 // Add dependency
 dependencies {
-    compile 'com.hazelcast:spring-data-hazelcast:1.0'
+    compile 'com.hazelcast:spring-data-hazelcast:1.1.1'
 }
 ----
 
