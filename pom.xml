@@ -23,6 +23,8 @@
 		<springdata.keyvalue>1.2.4.RELEASE</springdata.keyvalue>
 		<maven.gpg.plugin.version>1.4</maven.gpg.plugin.version>
 		<maven.javadoc.plugin.version>2.9</maven.javadoc.plugin.version>
+		<maven.sonar.plugin.version>3.3.0.603</maven.sonar.plugin.version>
+		<maven.jacoco.plugin.version>0.7.9</maven.jacoco.plugin.version>
 	</properties>
 
 	<dependencies>
@@ -263,6 +265,70 @@
 						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 						<autoReleaseAfterClose>true</autoReleaseAfterClose>
 					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</profile>
+	<profile>
+		<id>test-coverage</id>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>${maven.jacoco.plugin.version}</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>2.19.1</version>
+					<configuration>
+						<failIfNoTests>true</failIfNoTests>
+						<includes>
+							<include>**/IT*.java</include>
+							<include>**/*IT.java</include>
+							<include>**/*ITCase.java</include>
+						</includes>
+					</configuration>
+					<executions>
+						<execution>
+							<id>default-integration-test</id>
+							<goals>
+								<goal>integration-test</goal>
+								<goal>verify</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<configuration>
+						<failIfNoTests>true</failIfNoTests>
+						<includes>
+							<include>**/Test*.java</include>
+							<include>**/*Test.java</include>
+							<include>**/*TestCase.java</include>
+						</includes>
+					</configuration>
+					<executions>
+						<execution>
+							<id>default-test</id>
+							<goals>
+								<goal>test</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>${maven.sonar.plugin.version}</version>
 				</plugin>
 			</plugins>
 		</build>
