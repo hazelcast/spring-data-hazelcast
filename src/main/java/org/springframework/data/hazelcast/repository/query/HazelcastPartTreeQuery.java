@@ -48,6 +48,7 @@ import org.springframework.data.util.StreamUtils;
  * </P>
  *
  * @author Neil Stevenson
+ * @author Viacheslav Petriaiev
  */
 public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 
@@ -206,7 +207,7 @@ public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 
 		/* TODO Eliminate count call for Slice, retrieve "rows+1" instead to determine if next page exists.
 		 */
-		if (query.getCritieria() == null) {
+		if (query.getCriteria() == null) {
 			totalElements = this.keyValueOperations.count(queryMethod.getEntityInformation().getJavaType());
 		} else {
 			totalElements = this.keyValueOperations.count(query, queryMethod.getEntityInformation().getJavaType());
@@ -358,7 +359,7 @@ public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 		Iterator<Parameter> bindableParameterIterator = (Iterator<Parameter>) bindableParameters.iterator();
 		while (bindableParameterIterator.hasNext()) {
 			Parameter parameter = bindableParameterIterator.next();
-			methodParams.add(parameter.getName());
+			parameter.getName().ifPresent(methodParams::add);
 		}
 
 		this.rearrangeIndex = new int[queryParams.size()];

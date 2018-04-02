@@ -22,6 +22,8 @@ import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 
+import java.util.Optional;
+
 /**
  * <P>
  * Hazelcast version of {@link KeyValueRepositoryFactory}, a factory to build {@link HazelcastRepository} instances.
@@ -68,9 +70,9 @@ public class HazelcastRepositoryFactory extends KeyValueRepositoryFactory {
 	 * </P>
 	 */
 	@Override
-	protected QueryLookupStrategy getQueryLookupStrategy(QueryLookupStrategy.Key key,
-			EvaluationContextProvider evaluationContextProvider) {
-		return new HazelcastQueryLookupStrategy(key, evaluationContextProvider, this.keyValueOperations, this.queryCreator);
+	protected Optional<QueryLookupStrategy> getQueryLookupStrategy(QueryLookupStrategy.Key key,
+																   EvaluationContextProvider evaluationContextProvider) {
+		return Optional.of(new HazelcastQueryLookupStrategy(key, evaluationContextProvider, this.keyValueOperations, this.queryCreator));
 	}
 
 }

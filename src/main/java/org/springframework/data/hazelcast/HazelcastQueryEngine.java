@@ -17,13 +17,13 @@ package org.springframework.data.hazelcast;
 
 import com.hazelcast.query.PagingPredicate;
 import com.hazelcast.query.Predicate;
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Map.Entry;
 import org.springframework.data.hazelcast.repository.query.HazelcastCriteriaAccessor;
 import org.springframework.data.hazelcast.repository.query.HazelcastSortAccessor;
 import org.springframework.data.keyvalue.core.QueryEngine;
+
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Map.Entry;
 
 /**
  * <P>
@@ -32,6 +32,7 @@ import org.springframework.data.keyvalue.core.QueryEngine;
  *
  * @author Christoph Strobl
  * @author Neil Stevenson
+ * @author Viacheslav Petriaiev
  */
 public class HazelcastQueryEngine
 		extends QueryEngine<HazelcastKeyValueAdapter, Predicate<?, ?>, Comparator<Entry<?, ?>>> {
@@ -56,8 +57,8 @@ public class HazelcastQueryEngine
 	 * @return Results from Hazelcast
 	 */
 	@Override
-	public Collection<?> execute(final Predicate<?, ?> criteria, final Comparator<Entry<?, ?>> sort, final int offset,
-			final int rows, final Serializable keyspace) {
+	public Collection<?> execute(final Predicate<?, ?> criteria, final Comparator<Entry<?, ?>> sort, final long offset,
+			final int rows, final String keyspace) {
 
 		Predicate<?, ?> predicateToUse = criteria;
 		@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -65,7 +66,7 @@ public class HazelcastQueryEngine
 
 		if (rows > 0) {
 			PagingPredicate pp = new PagingPredicate(predicateToUse, sortToUse, rows);
-			int x = offset / rows;
+			long x = offset / rows;
 			while (x > 0) {
 				pp.nextPage();
 				x--;
@@ -96,7 +97,7 @@ public class HazelcastQueryEngine
 	 * @return Results from Hazelcast
 	 */
 	@Override
-	public long count(final Predicate<?, ?> criteria, final Serializable keyspace) {
+	public long count(final Predicate<?, ?> criteria, final String keyspace) {
 		return this.getAdapter().getMap(keyspace).keySet(criteria).size();
 	}
 

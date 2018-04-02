@@ -26,6 +26,7 @@ import org.springframework.data.keyvalue.core.query.KeyValueQuery;
  * </P>
  *
  * @author Neil Stevenson
+ * @author Viacheslav Petriaiev
  */
 public class HazelcastCriteriaAccessor implements CriteriaAccessor<Predicate<?, ?>> {
 
@@ -35,18 +36,18 @@ public class HazelcastCriteriaAccessor implements CriteriaAccessor<Predicate<?, 
 	 */
 	public Predicate<?, ?> resolve(KeyValueQuery<?> query) {
 
-		if (query == null || query.getCritieria() == null) {
+		if (query == null || query.getCriteria() == null) {
 			return null;
 		}
 
-		if (query.getCritieria() instanceof PagingPredicate) {
-			PagingPredicate pagingPredicate = (PagingPredicate) query.getCritieria();
+		if (query.getCriteria() instanceof PagingPredicate) {
+			PagingPredicate pagingPredicate = (PagingPredicate) query.getCriteria();
 			query.limit(pagingPredicate.getPageSize());
 			return pagingPredicate.getPredicate();
 		}
 
-		if (query.getCritieria() instanceof Predicate) {
-			return (Predicate<?, ?>) query.getCritieria();
+		if (query.getCriteria() instanceof Predicate) {
+			return (Predicate<?, ?>) query.getCriteria();
 		}
 
 		throw new UnsupportedOperationException(query.toString());
