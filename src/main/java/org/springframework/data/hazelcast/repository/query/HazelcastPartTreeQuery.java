@@ -15,12 +15,10 @@
  */
 package org.springframework.data.hazelcast.repository.query;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.keyvalue.core.IterableConverter;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
@@ -35,6 +33,11 @@ import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.data.util.StreamUtils;
+import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * <P>
@@ -258,7 +261,7 @@ public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 
 		KeyValueQuery<?> query = createQuery(accessor);
 
-		if (accessor.getPageable() != null) {
+		if (accessor.getPageable() != Pageable.unpaged()) {
 			query.setOffset(accessor.getPageable().getOffset());
 			query.setRows(accessor.getPageable().getPageSize());
 		} else {
@@ -266,7 +269,7 @@ public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 			query.setRows(-1);
 		}
 
-		if (accessor.getSort() != null) {
+		if (accessor.getSort() != Sort.unsorted()) {
 			query.setSort(accessor.getSort());
 		}
 
@@ -303,9 +306,9 @@ public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 	 * </LI>
 	 * </OL>
 	 *
-	 * @param parameters Possibly empty
+	 * @param originalParameters Possibly empty
 	 * @param partTree Query tree to traverse
-	 * @return Paremeters in correct order
+	 * @return Parameters in correct order
 	 */
 	private ParametersParameterAccessor prepareAccessor(final Object[] originalParameters, final PartTree partTree) {
 
@@ -315,7 +318,9 @@ public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 		}
 
 		Object[] parameters = originalParameters;
-		if (parameters != null && this.isRearrangeRequired) {
+        Assert.notNull(parameters, "Parameters must not be null.");
+
+		if (this.isRearrangeRequired) {
 			parameters = new Object[originalParameters.length];
 
 			for (int i = 0; i < parameters.length; i++) {

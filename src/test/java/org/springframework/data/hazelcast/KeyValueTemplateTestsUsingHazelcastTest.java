@@ -15,17 +15,9 @@
  */
 package org.springframework.data.hazelcast;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import java.io.Serializable;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.List;
-
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.query.Predicate;
+import com.hazelcast.query.PredicateBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -37,12 +29,25 @@ import org.springframework.data.keyvalue.annotation.KeySpace;
 import org.springframework.data.keyvalue.core.KeyValueTemplate;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 import org.springframework.util.ObjectUtils;
-
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.query.Predicate;
-import com.hazelcast.query.PredicateBuilder;
-
 import test.utils.InstanceHelper;
+
+import java.io.Serializable;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.List;
+import java.util.Optional;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for {@link KeyValueTemplate} using a {@link HazelcastKeyValueAdapter}.
@@ -129,28 +134,28 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
 
 		operations.insert(source);
 
-		assertThat(operations.findById("one", ClassWithStringId.class), is(source));
+		assertThat(operations.findById("one", ClassWithStringId.class), is(Optional.of(source)));
 	}
 
 	@Test
 	public void findByIdShouldReturnObjectWithMatchingIdAndType() {
 
 		operations.insert("1", FOO_ONE);
-		assertThat(operations.findById("1", Foo.class), is(FOO_ONE));
+		assertThat(operations.findById("1", Foo.class), is(Optional.of(FOO_ONE)));
 	}
 
 	@Test
-	public void findByIdSouldReturnNullIfNoMatchingIdFound() {
+	public void findByIdShouldReturnEmptyOptionalIfNoMatchingIdFound() {
 
 		operations.insert("1", FOO_ONE);
-		assertThat(operations.findById("2", Foo.class), nullValue());
+		assertFalse(operations.findById("2", Foo.class).isPresent());
 	}
 
 	@Test
-	public void findByIdShouldReturnNullIfNoMatchingTypeFound() {
+	public void findByIdShouldReturnEmptyOptionalIfNoMatchingTypeFound() {
 
 		operations.insert("1", FOO_ONE);
-		assertThat(operations.findById("1", Bar.class), nullValue());
+		assertFalse(operations.findById("1", Bar.class).isPresent());
 	}
 
 	@Test
@@ -179,7 +184,7 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
 
 		operations.insert("1", FOO_ONE);
 		operations.update("1", FOO_TWO);
-		assertThat(operations.findById("1", Foo.class), is(FOO_TWO));
+		assertThat(operations.findById("1", Foo.class), is(Optional.of(FOO_TWO)));
 	}
 
 	@Test
@@ -188,7 +193,7 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
 		operations.insert("1", FOO_ONE);
 		operations.update("1", BAR_ONE);
 
-		assertThat(operations.findById("1", Foo.class), is(FOO_ONE));
+		assertThat(operations.findById("1", Foo.class), is(Optional.of(FOO_ONE)));
 	}
 
 	@Test
@@ -196,7 +201,7 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
 
 		operations.insert("1", FOO_ONE);
 		operations.delete("1", Foo.class);
-		assertThat(operations.findById("1", Foo.class), nullValue());
+		assertFalse(operations.findById("1", Foo.class).isPresent());
 	}
 
 	@Test

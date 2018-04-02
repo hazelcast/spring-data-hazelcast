@@ -1,14 +1,5 @@
 package org.springframework.data.hazelcast.repository.support;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +10,24 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.repository.core.support.ReflectionEntityInformation;
 import org.springframework.test.context.ActiveProfiles;
-import test.utils.TestConstants;
 import test.utils.Oscars;
+import test.utils.TestConstants;
 import test.utils.TestDataHelper;
 import test.utils.domain.Makeup;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * <P>
@@ -32,6 +37,7 @@ import test.utils.domain.Makeup;
  * </P>
  *
  * @author Neil Stevenson
+ * @author Viacheslav Petriaiev
  */
 @ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_SINGLETON)
 public class SimpleHazelcastRepositoryIT extends TestDataHelper {
@@ -88,7 +94,7 @@ public class SimpleHazelcastRepositoryIT extends TestDataHelper {
 			yearsExpected.add(datum[0].toString());
 		}
 
-		Pageable pageRequest = new PageRequest(PAGE_0, SIZE_10);
+		Pageable pageRequest = PageRequest.of(PAGE_0, SIZE_10);
 		
 		Page<Makeup> pageResponse = this.theRepository.findAll(pageRequest);
 		int page = 0;
@@ -119,14 +125,14 @@ public class SimpleHazelcastRepositoryIT extends TestDataHelper {
 	@Test
 	public void count() {
 		long count = this.theRepository.count();
-		assertThat(count, equalTo(Long.valueOf(Oscars.bestMakeUp.length)));
+		assertThat(count, equalTo(Oscars.bestMakeUp.length));
 	}
 
 	@Test
 	public void delete_ID() {
 		assertThat("Exists before", this.makeupMap.containsKey(YEAR_2009), equalTo(true));
 		
-		this.theRepository.delete(YEAR_2009);
+		this.theRepository.deleteById(YEAR_2009);
 		
 		assertThat("Does not exist after", this.makeupMap.containsKey(YEAR_2009), equalTo(false));
 	}
@@ -164,7 +170,7 @@ public class SimpleHazelcastRepositoryIT extends TestDataHelper {
 		list.add(starTrek);
 		list.add(theFly);
 		
-		this.theRepository.delete(list);
+		this.theRepository.deleteAll(list);
 
 		assertThat("2009 does not exist after", this.makeupMap.containsKey(YEAR_2009), equalTo(false));
 		assertThat("1986 does not exist after", this.makeupMap.containsKey(YEAR_1986), equalTo(false));
@@ -181,8 +187,8 @@ public class SimpleHazelcastRepositoryIT extends TestDataHelper {
 
 	@Test
 	public void exists_ID() {
-		assertThat(YEAR_1986, this.theRepository.exists(YEAR_1986), equalTo(true));
-		assertThat(YEAR_9999, this.theRepository.exists(YEAR_9999), equalTo(false));
+		assertThat(YEAR_1986, this.theRepository.existsById(YEAR_1986), equalTo(true));
+		assertThat(YEAR_9999, this.theRepository.existsById(YEAR_9999), equalTo(false));
 	}
 
 	@Test
@@ -200,14 +206,11 @@ public class SimpleHazelcastRepositoryIT extends TestDataHelper {
 		
 		Iterable<Makeup> iterable = this.theRepository.findAll();
 		assertThat("iterable", iterable, not(nullValue()));
-		
-		Iterator<Makeup> iterator = iterable.iterator();
-		while (iterator.hasNext()) {
-			Makeup makeup = iterator.next();
 
-			assertThat(makeup.toString(), expected.contains(makeup), equalTo(true));
-			expected.remove(makeup);
-		}
+        for (Makeup makeup : iterable) {
+            assertThat(makeup.toString(), expected.contains(makeup), equalTo(true));
+            expected.remove(makeup);
+        }
 		
 		assertThat("All expected accounted for", expected, equalTo(new TreeSet<Makeup>()));
 	}
@@ -218,7 +221,7 @@ public class SimpleHazelcastRepositoryIT extends TestDataHelper {
 		years.add(YEAR_1986);
 		years.add(YEAR_2009);
 		
-		Iterable<Makeup> iterable = this.theRepository.findAll(years);
+		Iterable<Makeup> iterable = this.theRepository.findAllById(years);
 		assertThat("iterable", iterable, not(nullValue()));
 		
 		Iterator<Makeup> iterator = iterable.iterator();
@@ -245,7 +248,7 @@ public class SimpleHazelcastRepositoryIT extends TestDataHelper {
 
 	@Test
 	public void findOne_ID() {
-		Makeup makeup = this.theRepository.findOne(YEAR_1986);
+		Makeup makeup = this.theRepository.findById(YEAR_1986).orElse(null);
 		
 		assertThat("1986 found", makeup, not(nullValue()));
 		assertThat(makeup.getId(), equalTo(YEAR_1986));
@@ -287,7 +290,7 @@ public class SimpleHazelcastRepositoryIT extends TestDataHelper {
 		list.add(citizenKane);
 		list.add(goneWithTheWind);
 		
-		Iterable<Makeup> iterable = this.theRepository.save(list);
+		Iterable<Makeup> iterable = this.theRepository.saveAll(list);
 		assertThat("iterable", iterable, not(nullValue()));
 		
 		Iterator<Makeup> iterator = iterable.iterator();

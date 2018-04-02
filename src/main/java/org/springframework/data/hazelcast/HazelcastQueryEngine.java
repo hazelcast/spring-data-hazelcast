@@ -20,6 +20,7 @@ import com.hazelcast.query.Predicate;
 import org.springframework.data.hazelcast.repository.query.HazelcastCriteriaAccessor;
 import org.springframework.data.hazelcast.repository.query.HazelcastSortAccessor;
 import org.springframework.data.keyvalue.core.QueryEngine;
+import org.springframework.util.Assert;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -60,6 +61,9 @@ public class HazelcastQueryEngine
 	public Collection<?> execute(final Predicate<?, ?> criteria, final Comparator<Entry<?, ?>> sort, final long offset,
 			final int rows, final String keyspace) {
 
+        final HazelcastKeyValueAdapter adapter = getAdapter();
+        Assert.notNull(adapter, "Adapter must not be 'null'.");
+
 		Predicate<?, ?> predicateToUse = criteria;
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		Comparator<Entry> sortToUse = ((Comparator<Entry>) (Comparator) sort);
@@ -80,9 +84,9 @@ public class HazelcastQueryEngine
 		}
 
 		if (predicateToUse == null) {
-			return this.getAdapter().getMap(keyspace).values();
+			return adapter.getMap(keyspace).values();
 		} else {
-			return this.getAdapter().getMap(keyspace).values(predicateToUse);
+			return adapter.getMap(keyspace).values(predicateToUse);
 		}
 
 	}
@@ -98,7 +102,9 @@ public class HazelcastQueryEngine
 	 */
 	@Override
 	public long count(final Predicate<?, ?> criteria, final String keyspace) {
-		return this.getAdapter().getMap(keyspace).keySet(criteria).size();
+	    final HazelcastKeyValueAdapter adapter = getAdapter();
+        Assert.notNull(adapter, "Adapter must not be 'null'.");
+		return adapter.getMap(keyspace).keySet(criteria).size();
 	}
 
 }

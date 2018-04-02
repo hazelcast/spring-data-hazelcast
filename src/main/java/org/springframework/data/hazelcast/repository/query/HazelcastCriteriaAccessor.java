@@ -36,18 +36,23 @@ public class HazelcastCriteriaAccessor implements CriteriaAccessor<Predicate<?, 
 	 */
 	public Predicate<?, ?> resolve(KeyValueQuery<?> query) {
 
-		if (query == null || query.getCriteria() == null) {
-			return null;
-		}
+	    if (query == null) {
+	        return null;
+        }
 
-		if (query.getCriteria() instanceof PagingPredicate) {
-			PagingPredicate pagingPredicate = (PagingPredicate) query.getCriteria();
+		final Object criteria = query.getCriteria();
+		if (criteria == null) {
+		    return null;
+        }
+
+		if (criteria instanceof PagingPredicate) {
+			PagingPredicate pagingPredicate = (PagingPredicate) criteria;
 			query.limit(pagingPredicate.getPageSize());
 			return pagingPredicate.getPredicate();
 		}
 
-		if (query.getCriteria() instanceof Predicate) {
-			return (Predicate<?, ?>) query.getCriteria();
+		if (criteria instanceof Predicate) {
+			return (Predicate<?, ?>) criteria;
 		}
 
 		throw new UnsupportedOperationException(query.toString());

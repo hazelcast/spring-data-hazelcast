@@ -1,15 +1,5 @@
 package org.springframework.data.hazelcast.repository;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.annotation.Resource;
-
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,11 +7,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.test.context.ActiveProfiles;
-
+import test.utils.Oscars;
+import test.utils.TestConstants;
 import test.utils.TestDataHelper;
 import test.utils.domain.Person;
-import test.utils.TestConstants;
-import test.utils.Oscars;
+
+import javax.annotation.Resource;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * <P>
@@ -64,7 +66,7 @@ public class PagingSortingIT extends TestDataHelper {
 		int SIZE_5 = 5;
 		int SIZE_20 = 20;
 
-		PageRequest thirdPageOf5Request = new PageRequest(PAGE_2, SIZE_5);
+		PageRequest thirdPageOf5Request = PageRequest.of(PAGE_2, SIZE_5);
 		Page<Person> thirdPageOf5Response = this.personRepository.findAll(thirdPageOf5Request);
 		assertThat("11 onwards returned", thirdPageOf5Response, notNullValue());
 
@@ -78,7 +80,7 @@ public class PagingSortingIT extends TestDataHelper {
 		List<Person> fourthPageOf5Content = fourthPageOf5Response.getContent();
 		assertThat("16-20 returned", fourthPageOf5Content.size(), equalTo(5));
 
-		PageRequest firstPageOf20Request = new PageRequest(PAGE_0, SIZE_20);
+		PageRequest firstPageOf20Request = PageRequest.of(PAGE_0, SIZE_20);
 		Page<Person> firstPageOf20Response = this.personRepository.findAll(firstPageOf20Request);
 		assertThat("1 onwards returned", firstPageOf20Response, notNullValue());
 

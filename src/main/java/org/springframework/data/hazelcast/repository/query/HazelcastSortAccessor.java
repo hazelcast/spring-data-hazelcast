@@ -15,13 +15,15 @@
  */
 package org.springframework.data.hazelcast.repository.query;
 
-import java.util.Comparator;
-import java.util.Map.Entry;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.NullHandling;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.keyvalue.core.SortAccessor;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 import org.springframework.util.comparator.CompoundComparator;
+
+import java.util.Comparator;
+import java.util.Map.Entry;
 
 /**
  * <P>
@@ -46,7 +48,7 @@ public class HazelcastSortAccessor implements SortAccessor<Comparator<Entry<?, ?
 	 */
 	public Comparator<Entry<?, ?>> resolve(KeyValueQuery<?> query) {
 
-		if (query == null || query.getSort() == null) {
+		if (query == null || query.getSort() == Sort.unsorted()) {
 			return null;
 		}
 

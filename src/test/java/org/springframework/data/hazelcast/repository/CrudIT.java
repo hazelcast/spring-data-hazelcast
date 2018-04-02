@@ -1,13 +1,5 @@
 package org.springframework.data.hazelcast.repository;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import javax.annotation.Resource;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -15,10 +7,24 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.context.ActiveProfiles;
-
+import test.utils.TestConstants;
 import test.utils.TestDataHelper;
 import test.utils.domain.Person;
-import test.utils.TestConstants;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * <P>
@@ -29,6 +35,7 @@ import test.utils.TestConstants;
  * </P>
  *
  * @author Neil Stevenson
+ * @author Viacheslav Petriaiev
  */
 @ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_SINGLETON)
 public class CrudIT extends TestDataHelper {
@@ -70,13 +77,13 @@ public class CrudIT extends TestDataHelper {
 		assertThat("Spring==Hazelcast before", this.springCountBefore, equalTo(this.hazelcastCountBefore));
 
 		assertNull("Key '1800' not in Hazelcast", super.personMap.get(EIGHTEEN_HUNDRED));
-		assertNull("Key '1800' not in Spring", this.personRepository.findOne(EIGHTEEN_HUNDRED));
+		assertFalse("Key '1800' not in Spring", this.personRepository.findById(EIGHTEEN_HUNDRED).isPresent());
 
 		assertNull("Key '1900' not in Hazelcast", super.personMap.get(NINETEEN_HUNDRED));
-		assertNull("Key '1900' not in Spring", this.personRepository.findOne(NINETEEN_HUNDRED));
+		assertFalse("Key '1900' not in Spring", this.personRepository.findById(NINETEEN_HUNDRED).isPresent());
 
 		assertNotNull("Key '2000' in Hazelcast", super.personMap.get(TWO_THOUSAND));
-		assertNotNull("Key '2000' in Spring", this.personRepository.findOne(TWO_THOUSAND));
+		assertTrue("Key '2000' in Spring", this.personRepository.findById(TWO_THOUSAND).isPresent());
 	}
 
 	@Test
@@ -104,7 +111,7 @@ public class CrudIT extends TestDataHelper {
 
 		assertThat("Deletion list contains both missing and existing entries", people.size(), greaterThan(1));
 
-		this.personRepository.delete(people);
+		this.personRepository.deleteAll(people);
 
 		// Missing items should not be deleted
 		this.checkAfterCounts(1 - people.size());
@@ -113,7 +120,7 @@ public class CrudIT extends TestDataHelper {
 		for (int i = 1; i < people.size(); i++) {
 			String key = people.get(i).getId();
 			assertNull("List item " + i + ", key " + key + " not in Hazelcast", super.personMap.get(key));
-			assertNull("List item " + i + ", key " + key + " not Spring", this.personRepository.findOne(key));
+			assertFalse("List item " + i + ", key " + key + " not Spring", this.personRepository.findById(key).isPresent());
 		}
 	}
 
@@ -127,7 +134,7 @@ public class CrudIT extends TestDataHelper {
 		this.personRepository.delete(person);
 
 		assertNull("Person not in Hazelcast after deletion", super.personMap.get(year));
-		assertNull("Person not in Spring after deletion", this.personRepository.findOne(year));
+		assertFalse("Person not in Spring after deletion", this.personRepository.findById(year).isPresent());
 
 		this.checkAfterCounts(-1);
 	}
@@ -137,10 +144,10 @@ public class CrudIT extends TestDataHelper {
 		String year = TWO_THOUSAND;
 
 		// Use KEY, otherwise same as deleteValue()
-		this.personRepository.delete(year);
+		this.personRepository.deleteById(year);
 
 		assertNull("Person not in Hazelcast after deletion", super.personMap.get(year));
-		assertNull("Person not in Spring after deletion", this.personRepository.findOne(year));
+		assertFalse("Person not in Spring after deletion", this.personRepository.findById(year).isPresent());
 
 		this.checkAfterCounts(-1);
 	}
@@ -159,10 +166,10 @@ public class CrudIT extends TestDataHelper {
 	@Test
 	public void exists() {
 		assertNull("Key '1800' not in Hazelcast", super.personMap.get(EIGHTEEN_HUNDRED));
-		assertFalse("Key '1800' not in Spring", this.personRepository.exists(EIGHTEEN_HUNDRED));
+		assertFalse("Key '1800' not in Spring", this.personRepository.existsById(EIGHTEEN_HUNDRED));
 
 		assertNotNull("Key '2000' in Hazelcast", super.personMap.get(TWO_THOUSAND));
-		assertTrue("Key '2000' in Spring", this.personRepository.exists(TWO_THOUSAND));
+		assertTrue("Key '2000' in Spring", this.personRepository.existsById(TWO_THOUSAND));
 	}
 
 	@Test
@@ -210,7 +217,7 @@ public class CrudIT extends TestDataHelper {
 		assertThat("Input list contains both missing and existing entries", keys.size(), greaterThan(1));
 		assertThat("Input list is a true subset", new Long(keys.size()), lessThan(this.hazelcastCountBefore));
 
-		Iterable<Person> iterable = this.personRepository.findAll(keys);
+		Iterable<Person> iterable = this.personRepository.findAllById(keys);
 
 		assertNotNull("Iterable", iterable);
 
@@ -243,7 +250,7 @@ public class CrudIT extends TestDataHelper {
 	@Test
 	public void findOneKey() {
 		String key = TWO_THOUSAND;
-		Person winner = this.personRepository.findOne(key);
+		Person winner = this.personRepository.findById(key).orElse(null);
 
 		assertNotNull("Winner found for year " + key, winner);
 		assertThat("Correct id for " + key, winner.getId(), equalTo(key));
@@ -259,7 +266,7 @@ public class CrudIT extends TestDataHelper {
 		suggestedWinners.add(suggestedWinner1900);
 		suggestedWinners.add(suggestedWinner2000);
 
-		Iterable<Person> updatedWinners = this.personRepository.save(suggestedWinners);
+		Iterable<Person> updatedWinners = this.personRepository.saveAll(suggestedWinners);
 		assertNotNull("Updated winners", updatedWinners);
 
 		Set<String> keys = new TreeSet<>();
@@ -289,7 +296,7 @@ public class CrudIT extends TestDataHelper {
 			assertThat("Unchanged last name for " + key, updatedWinner.getLastname(), equalTo(suggestedWinner.getLastname()));
 
 			// Confirm change stored
-			Person springWinner = this.personRepository.findOne(key);
+			Person springWinner = this.personRepository.findById(key).orElse(null);
 			Person hazelcastWinner = super.personMap.get(key);
 
 			assertNotNull("Spring person for " + key, springWinner);
@@ -326,7 +333,7 @@ public class CrudIT extends TestDataHelper {
 			assertThat("Unchanged last name for " + key, updatedWinner.getLastname(), equalTo(suggestedWinner.getLastname()));
 
 			// Confirm change stored
-			Person springWinner = this.personRepository.findOne(key);
+			Person springWinner = this.personRepository.findById(key).orElse(null);
 			Person hazelcastWinner = super.personMap.get(key);
 
 			assertNotNull("Spring person for " + key, springWinner);
