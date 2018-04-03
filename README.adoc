@@ -149,7 +149,7 @@ public List<Person> peoplewithFirstAndLastName(String firstName,String lastName)
 <dependency>
     <groupId>com.hazelcast</groupId>
     <artifactId>spring-data-hazelcast</artifactId>
-    <version>2.0.0</version>
+    <version>${LATEST_VERSION}</version>
 </dependency>
 ----
 
@@ -159,7 +159,7 @@ public List<Person> peoplewithFirstAndLastName(String firstName,String lastName)
 ----
 // Add dependency
 dependencies {
-    compile 'com.hazelcast:spring-data-hazelcast:2.0.0'
+    compile 'com.hazelcast:spring-data-hazelcast:${LATEST_VERSION}'
 }
 ----
 
@@ -169,7 +169,7 @@ Hazelcast is available under the Apache 2 License. Please see the Licensing appe
 
 == Copyright
 
-Copyright (c) 2008-2016, Hazelcast, Inc. All Rights Reserved.
+Copyright (c) 2008-2018, Hazelcast, Inc. All Rights Reserved.
 
 Visit http://www.hazelcast.com for more information.
 
