@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Persistent;
@@ -32,7 +33,6 @@ import org.springframework.util.ObjectUtils;
 import test.utils.InstanceHelper;
 
 import java.io.Serializable;
-import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -350,7 +350,7 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
 
 	}
 
-	@KeySpace("aliased")
+	@ExplicitKeySpace(name = "aliased")
 	static class ClassWithTypeAlias implements Serializable {
 
 		@Id String id;
@@ -416,14 +416,13 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
 
 	}
 
-	@Documented
-	@Persistent
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.TYPE })
-	private static @interface ExplicitKeySpace {
+    @KeySpace
+    @Persistent
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ ElementType.TYPE })
+    private static @interface ExplicitKeySpace {
 
-		@KeySpace
-		String name() default "";
-
-	}
+        @AliasFor(annotation = KeySpace.class, attribute = "value")
+        String name() default "";
+    }
 }
