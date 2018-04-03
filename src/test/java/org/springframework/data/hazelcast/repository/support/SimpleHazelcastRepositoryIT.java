@@ -37,7 +37,6 @@ import static org.junit.Assert.assertThat;
  * </P>
  *
  * @author Neil Stevenson
- * @author Viacheslav Petriaiev
  */
 @ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_SINGLETON)
 public class SimpleHazelcastRepositoryIT extends TestDataHelper {
@@ -125,7 +124,7 @@ public class SimpleHazelcastRepositoryIT extends TestDataHelper {
 	@Test
 	public void count() {
 		long count = this.theRepository.count();
-		assertThat(count, equalTo(Oscars.bestMakeUp.length));
+		assertThat(count, equalTo((long)Oscars.bestMakeUp.length));
 	}
 
 	@Test

@@ -35,7 +35,6 @@ import static org.junit.Assert.assertTrue;
  * </P>
  *
  * @author Neil Stevenson
- * @author Viacheslav Petriaiev
  */
 @ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_SINGLETON)
 public class CrudIT extends TestDataHelper {

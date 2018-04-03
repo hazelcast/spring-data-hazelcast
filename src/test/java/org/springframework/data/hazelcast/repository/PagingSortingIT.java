@@ -44,8 +44,8 @@ public class PagingSortingIT extends TestDataHelper {
 
 	// If no paging provided, everything is returned on a single page
 	@Test
-	public void pagingNull() {
-		Page<Person> page = this.personRepository.findAll((Pageable) null);
+	public void unpaged() {
+		Page<Person> page = this.personRepository.findAll(Pageable.unpaged());
 
 		assertThat("Page returned for null input", page, notNullValue());
 
@@ -105,8 +105,8 @@ public class PagingSortingIT extends TestDataHelper {
 	}
 
 	@Test
-	public void sortingNull() {
-		Iterable<Person> iterable = this.personRepository.findAll((Sort) null);
+	public void unsorted() {
+		Iterable<Person> iterable = this.personRepository.findAll(Sort.unsorted());
 
 		assertThat("Results returned", iterable, notNullValue());
 

@@ -350,7 +350,7 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
 
 	}
 
-	@ExplicitKeySpace(name = "aliased")
+	@KeySpace("aliased")
 	static class ClassWithTypeAlias implements Serializable {
 
 		@Id String id;

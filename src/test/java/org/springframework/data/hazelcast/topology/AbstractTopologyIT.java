@@ -33,7 +33,6 @@ import static org.junit.Assert.assertThat;
  * </P>
  *
  * @author Neil Stevenson
- * @author Viacheslav Petriaiev
  */
 public abstract class AbstractTopologyIT extends TestDataHelper {
 
