@@ -219,6 +219,7 @@ public class HazelcastPartTreeQuery extends KeyValuePartTreeQuery {
 			}
 			return new PageImpl(content, pageRequest, totalElements);
 		} else {
+			// SliceQuery specific optimization
 			boolean hasNext = content.size() > requiredRows;
 			return new SliceImpl(hasNext ? content.subList(0, requiredRows) : content, pageRequest, hasNext);
 		}
