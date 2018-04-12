@@ -139,6 +139,32 @@ Query with multiple variable values
 public List<Person> peoplewithFirstAndLastName(String firstName,String lastName);
 ----
 
+== Supported Query Keywords
+----
+True
+False
+Equal
+NotEqual
+Before
+LessThan
+LessThanEqual
+After
+GreaterThan
+GreaterThanEqual
+Between
+IsNull
+IsNotNull
+In
+NotIn
+Containing
+NotContaining
+StartingWith
+EndingWith
+Like
+NotLike
+Regex
+----
+
 == Installation
 
 === Maven
