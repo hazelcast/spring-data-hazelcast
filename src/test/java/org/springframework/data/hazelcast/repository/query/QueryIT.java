@@ -593,13 +593,13 @@ public class QueryIT extends TestDataHelper {
 	@Test
 	public void countByIdAfter() {
 		Long count = this.personRepository.countByIdAfter("2000");
-		assertThat("Oscars began in 1928", count, equalTo(15L));
+		assertThat("> 2000 & <= 2015 ", count, equalTo(15L));
 	}
 
 	@Test
 	public void countByIdBetween() {
 		Long count = this.personRepository.countByIdBetween("1959", "1962");
-		assertThat("Oscars began in 1928", count, equalTo(4L));
+		assertThat("between 1959 and 1962", count, equalTo(4L));
 	}
 
 	@Test
