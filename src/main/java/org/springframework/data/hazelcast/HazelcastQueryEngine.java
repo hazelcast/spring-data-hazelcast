@@ -102,8 +102,8 @@ public class HazelcastQueryEngine
 	 */
 	@Override
 	public long count(final Predicate<?, ?> criteria, final String keyspace) {
-	    final HazelcastKeyValueAdapter adapter = getAdapter();
-        Assert.notNull(adapter, "Adapter must not be 'null'.");
+		final HazelcastKeyValueAdapter adapter = getAdapter();
+		Assert.notNull(adapter, "Adapter must not be 'null'.");
 		return adapter.getMap(keyspace).keySet(criteria).size();
 	}
 
