@@ -569,4 +569,62 @@ public class QueryIT extends TestDataHelper {
 		assertThat("All years matched", expectedYears, hasSize(0));
 	}
 
+	@Test
+	public void findByFirstnameContains() {
+		List<Person> matches = this.personRepository.findByFirstnameContains("ll");
+
+		assertThat("Wallace, 2xWilliam, Russell", matches.size(), equalTo(4));
+		assertThat("Wallace, 2xWilliam, Russell", matches,
+				hasItems(allOf(hasProperty("firstname", equalTo("Wallace")), hasProperty("lastname", equalTo("Beery"))),
+						allOf(hasProperty("firstname", equalTo("William")), hasProperty("lastname", equalTo("Holden"))),
+						allOf(hasProperty("firstname", equalTo("William")), hasProperty("lastname", equalTo("Hurt"))),
+						allOf(hasProperty("firstname", equalTo("Russell")), hasProperty("lastname", equalTo("Crowe")))));
+	}
+
+	@Test
+	public void findByFirstnameContainsAndLastnameStartsWithAllIgnoreCase() {
+		List<Person> matches = this.personRepository.findByFirstnameContainsAndLastnameStartsWithAllIgnoreCase("En", "tR");
+
+		assertThat("2xSpencer", matches.size(), equalTo(2));
+		assertThat("2xSpencer", matches,
+				hasItems(allOf(hasProperty("firstname", equalTo("Spencer")), hasProperty("lastname", equalTo("Tracy")))));
+
+	}
+
+	@Test
+	public void countByIdAfter() {
+		Long count = this.personRepository.countByIdAfter("2000");
+		assertThat("> 2000 & <= 2015 ", count, equalTo(15L));
+	}
+
+	@Test
+	public void countByIdBetween() {
+		Long count = this.personRepository.countByIdBetween("1959", "1962");
+		assertThat("between 1959 and 1962", count, equalTo(4L));
+	}
+
+	@Test
+	public void findByFirstnameIn() {
+		List<Person> matches = this.personRepository.findByFirstnameIn(Arrays.asList("Jack", "Robert"));
+
+		assertThat("3xJack, 3xRobert", matches.size(), equalTo(6));
+		assertThat("3xJack, 3xRobert", matches,
+				hasItems(allOf(hasProperty("firstname", equalTo("Jack")), hasProperty("lastname", equalTo("Lemmon"))),
+						allOf(hasProperty("firstname", equalTo("Jack")), hasProperty("lastname", equalTo("Nicholson"))),
+						allOf(hasProperty("firstname", equalTo("Jack")), hasProperty("lastname", equalTo("Nicholson"))),
+						allOf(hasProperty("firstname", equalTo("Robert")), hasProperty("lastname", equalTo("Donat"))),
+						allOf(hasProperty("firstname", equalTo("Robert")), hasProperty("lastname", equalTo("De Niro"))),
+						allOf(hasProperty("firstname", equalTo("Robert")), hasProperty("lastname", equalTo("Duvall")))));
+
+	}
+
+	@Test
+	public void findByFirstnameEndsWithAndLastnameNotIn() {
+		List<Person> matches = this.personRepository.findByFirstnameEndsWithAndLastnameNotIn("on", Arrays.asList("Heston", "Brando"));
+
+		assertThat("Jon", matches.size(), equalTo(1));
+		assertThat("Jon", matches,
+				hasItems(allOf(hasProperty("firstname", equalTo("Jon")), hasProperty("lastname", equalTo("Voight")))));
+
+	}
 }
