@@ -25,6 +25,7 @@
 		<maven.javadoc.plugin.version>2.9</maven.javadoc.plugin.version>
 		<maven.sonar.plugin.version>3.3.0.603</maven.sonar.plugin.version>
 		<maven.jacoco.plugin.version>0.7.9</maven.jacoco.plugin.version>
+		<maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
 	</properties>
 
 	<dependencies>
