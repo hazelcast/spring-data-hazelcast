@@ -1,11 +1,15 @@
 package test.utils.repository.custom;
 
 import java.io.Serializable;
+
+import com.hazelcast.core.HazelcastInstance;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.data.hazelcast.repository.support.HazelcastRepositoryFactoryBean;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
+
+import javax.annotation.Resource;
 
 /**
  * <P>Factory bean for creating instances of {@link MyTitleRepository},
@@ -20,15 +24,15 @@ import org.springframework.data.keyvalue.core.KeyValueOperations;
  */
 public class MyTitleRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable>
  extends HazelcastRepositoryFactoryBean<T, S, ID> {
+    @Resource private HazelcastInstance hazelcastInstance;
 
 	/*
 	 * Creates a new {@link MyTitleRepositoryFactoryBean} for the given repository interface.
-	 *
-	 * @param repositoryInterface must not be {@literal null}.
 	 */
 	public MyTitleRepositoryFactoryBean(Class<? extends T> repositoryInterface) {
 		super(repositoryInterface);
 	}
+
 	/* Create a specialised repository factory.
 	 * 
 	 * (non-Javadoc)
@@ -38,7 +42,7 @@ public class MyTitleRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ext
 	protected MyTitleRepositoryFactory createRepositoryFactory(KeyValueOperations operations,
 			Class<? extends AbstractQueryCreator<?, ?>> queryCreator, Class<? extends RepositoryQuery> repositoryQueryType) {
 
-		return new MyTitleRepositoryFactory(operations, queryCreator);
+		return new MyTitleRepositoryFactory(operations, queryCreator, hazelcastInstance);
 	}
 
 }

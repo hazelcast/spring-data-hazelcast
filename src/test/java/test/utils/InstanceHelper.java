@@ -43,214 +43,214 @@ import org.springframework.data.keyvalue.core.KeyValueTemplate;
 @Configuration
 @EnableHazelcastRepositories(basePackages="test.utils.repository.standard")
 public class InstanceHelper {
-	private static final Logger LOG = LoggerFactory.getLogger(InstanceHelper.class);
-	private static final String CLUSTER_HOST = "127.0.0.1";
-	private static final int CLUSTER_PORT = 5701;
-	private static final String MASTER_SERVER = CLUSTER_HOST + ":" + CLUSTER_PORT;
+    private static final Logger LOG = LoggerFactory.getLogger(InstanceHelper.class);
+    private static final String CLUSTER_HOST = "127.0.0.1";
+    private static final int CLUSTER_PORT = 5701;
+    private static final String MASTER_SERVER = CLUSTER_HOST + ":" + CLUSTER_PORT;
 
-	static {
-		System.setProperty("hazelcast.logging.type", "slf4j");
-	}
+    static {
+        System.setProperty("hazelcast.logging.type", "slf4j");
+    }
 
-	@Resource(name = Constants.HAZELCAST_INSTANCE_NAME) private HazelcastInstance hazelcastInstance;
+    @Resource(name = Constants.HAZELCAST_INSTANCE_NAME) private HazelcastInstance hazelcastInstance;
 
-	/**
-	 * <P>The {@code @EnableHazelcastRepositories} annotation is not repeatable,
-	 * so use an inner class to scan a second package.
-	 * </P>
-	 */
-	@EnableHazelcastRepositories(basePackages="test.utils.repository.custom",
-		repositoryFactoryBeanClass=MyTitleRepositoryFactoryBean.class)
-	static class InstanceHelperInner {
-	}
-	
-	/**
-	 * <P>
-	 * {@link org.springframework.data.keyvalue.core.KeyValueOperations KeyValueOperations} are implemented by a
-	 * {@link org.springframework.data.keyvalue.core.KeyValueTemplate KeyValueTemplate} that uses an adapter class
-	 * encapsulating the implementation.
-	 * </P>
-	 * 
-	 * @return One Hazelcast instance wrapped as a key/value implementation
-	 */
-	@Bean
-	public KeyValueOperations keyValueTemplate() {
-		HazelcastKeyValueAdapter hazelcastKeyValueAdapter = new HazelcastKeyValueAdapter(this.hazelcastInstance);
-		return new KeyValueTemplate(hazelcastKeyValueAdapter);
-	}
+    /**
+     * <P>The {@code @EnableHazelcastRepositories} annotation is not repeatable,
+     * so use an inner class to scan a second package.
+     * </P>
+     */
+    @EnableHazelcastRepositories(basePackages="test.utils.repository.custom",
+            repositoryFactoryBeanClass=MyTitleRepositoryFactoryBean.class)
+    static class InstanceHelperInner {
+    }
 
-	/**
-	 * <P>
-	 * Spring will shutdown the test Hazelcast instance, as the {@code @Bean} is defined as a
-	 * {@link org.springframework.beans.factory.DisposableBean}. Shut down any other server instances started, which may
-	 * be needed for cluster tests.
-	 * </P>
-	 */
-	@PreDestroy
-	public void preDestroy() {
-		boolean testInstanceWasRunning = false;
+    /**
+     * <P>
+     * {@link org.springframework.data.keyvalue.core.KeyValueOperations KeyValueOperations} are implemented by a
+     * {@link org.springframework.data.keyvalue.core.KeyValueTemplate KeyValueTemplate} that uses an adapter class
+     * encapsulating the implementation.
+     * </P>
+     *
+     * @return One Hazelcast instance wrapped as a key/value implementation
+     */
+    @Bean
+    public KeyValueOperations keyValueTemplate() {
+        HazelcastKeyValueAdapter hazelcastKeyValueAdapter = new HazelcastKeyValueAdapter(this.hazelcastInstance);
+        return new KeyValueTemplate(hazelcastKeyValueAdapter);
+    }
 
-		Set<HazelcastInstance> hazelcastInstances = Hazelcast.getAllHazelcastInstances();
-		if (hazelcastInstances.size() != 0) {
-			for (HazelcastInstance hazelcastInstance : hazelcastInstances) {
-				if (Constants.HAZELCAST_INSTANCE_NAME.equals(hazelcastInstance.getName())) {
-					testInstanceWasRunning = true;
-				}
-				LOG.debug("Closing '{}'", hazelcastInstance);
-				hazelcastInstance.shutdown();
-			}
-		}
-		;
+    /**
+     * <P>
+     * Spring will shutdown the test Hazelcast instance, as the {@code @Bean} is defined as a
+     * {@link org.springframework.beans.factory.DisposableBean}. Shut down any other server instances started, which may
+     * be needed for cluster tests.
+     * </P>
+     */
+    @PreDestroy
+    public void preDestroy() {
+        boolean testInstanceWasRunning = false;
 
-		if (testInstanceWasRunning) {
-			LOG.error("'{}' was still running", Constants.HAZELCAST_INSTANCE_NAME);
-		} else {
-			LOG.debug("'{}' already closed by Spring", Constants.HAZELCAST_INSTANCE_NAME);
-		}
-	}
+        Set<HazelcastInstance> hazelcastInstances = Hazelcast.getAllHazelcastInstances();
+        if (hazelcastInstances.size() != 0) {
+            for (HazelcastInstance hazelcastInstance : hazelcastInstances) {
+                if (Constants.HAZELCAST_INSTANCE_NAME.equals(hazelcastInstance.getName())) {
+                    testInstanceWasRunning = true;
+                }
+                LOG.debug("Closing '{}'", hazelcastInstance);
+                hazelcastInstance.shutdown();
+            }
+        }
+        ;
 
-	/**
-	 * <P>
-	 * A single Hazelcast instance is the simplest, and sufficient for most of the tests.
-	 * </P>
-	 */
-	@Configuration
-	@Profile(TestConstants.SPRING_TEST_PROFILE_SINGLETON)
-	public static class Singleton {
-		/**
-		 * <P>
-		 * Create a singleton {@link HazelcastInstance} server {@code @Bean}.
-		 * </P>
-		 * 
-		 * @return A standalone Hazelcast instance, a cluster of one
-		 */
-		@Bean(name = Constants.HAZELCAST_INSTANCE_NAME)
-		public HazelcastInstance singleton() {
-			HazelcastInstance hazelcastInstance = InstanceHelper.makeServer(Constants.HAZELCAST_INSTANCE_NAME,
-					CLUSTER_PORT);
-			LOG.trace("@Bean=='{}'", hazelcastInstance);
-			return hazelcastInstance;
-		}
-	}
+        if (testInstanceWasRunning) {
+            LOG.error("'{}' was still running", Constants.HAZELCAST_INSTANCE_NAME);
+        } else {
+            LOG.debug("'{}' already closed by Spring", Constants.HAZELCAST_INSTANCE_NAME);
+        }
+    }
 
-	/**
-	 * <P>
-	 * Create a cluster with more than one instance, for use in more complex tests.
-	 * </P>
-	 * <P>
-	 * Although one per JVM is more typical, create them all in the one JVM to simplify control from JUnit.
-	 * </P>
-	 * <P>
-	 * To avoid overloading the JVM, "multiple" instances means 2.
-	 * </P>
-	 */
-	@Configuration
-	@Profile(TestConstants.SPRING_TEST_PROFILE_CLUSTER)
-	public static class Cluster {
-		/**
-		 * <P>
-		 * Create two {@link HazelcastInstance} server {@code @Bean}s clustered together.
-		 * </P>
-		 * 
-		 * @return One of two Hazelcast instances created.
-		 */
-		@Bean(name = Constants.HAZELCAST_INSTANCE_NAME)
-		public HazelcastInstance cluster() {
-			HazelcastInstance hazelcastInstance = InstanceHelper.makeServer(Constants.HAZELCAST_INSTANCE_NAME,
-					CLUSTER_PORT);
-			LOG.trace("@Bean == '{}'", hazelcastInstance);
+    /**
+     * <P>
+     * A single Hazelcast instance is the simplest, and sufficient for most of the tests.
+     * </P>
+     */
+    @Configuration
+    @Profile(TestConstants.SPRING_TEST_PROFILE_SINGLETON)
+    public static class Singleton {
+        /**
+         * <P>
+         * Create a singleton {@link HazelcastInstance} server {@code @Bean}.
+         * </P>
+         *
+         * @return A standalone Hazelcast instance, a cluster of one
+         */
+        @Bean(name = Constants.HAZELCAST_INSTANCE_NAME)
+        public HazelcastInstance singleton() {
+            HazelcastInstance hazelcastInstance = InstanceHelper.makeServer(Constants.HAZELCAST_INSTANCE_NAME,
+                    CLUSTER_PORT);
+            LOG.trace("@Bean=='{}'", hazelcastInstance);
+            return hazelcastInstance;
+        }
+    }
 
-			InstanceHelper.makeServer("Not" + Constants.HAZELCAST_INSTANCE_NAME, (1 + CLUSTER_PORT));
+    /**
+     * <P>
+     * Create a cluster with more than one instance, for use in more complex tests.
+     * </P>
+     * <P>
+     * Although one per JVM is more typical, create them all in the one JVM to simplify control from JUnit.
+     * </P>
+     * <P>
+     * To avoid overloading the JVM, "multiple" instances means 2.
+     * </P>
+     */
+    @Configuration
+    @Profile(TestConstants.SPRING_TEST_PROFILE_CLUSTER)
+    public static class Cluster {
+        /**
+         * <P>
+         * Create two {@link HazelcastInstance} server {@code @Bean}s clustered together.
+         * </P>
+         *
+         * @return One of two Hazelcast instances created.
+         */
+        @Bean(name = Constants.HAZELCAST_INSTANCE_NAME)
+        public HazelcastInstance cluster() {
+            HazelcastInstance hazelcastInstance = InstanceHelper.makeServer(Constants.HAZELCAST_INSTANCE_NAME,
+                    CLUSTER_PORT);
+            LOG.trace("@Bean == '{}'", hazelcastInstance);
 
-			return hazelcastInstance;
-		}
-	}
+            InstanceHelper.makeServer("Not" + Constants.HAZELCAST_INSTANCE_NAME, (1 + CLUSTER_PORT));
 
-	/**
-	 * <P>
-	 * Create a client-server topology, for use in more complex tests.
-	 * </P>
-	 * <P>
-	 * As per {@code Constants.SPRING_TEST_PROFILE_CLUSTER}, these instances are all in the one JVM and the minimum number
-	 * (1 client, 1 server) is made.
-	 * </P>
-	 */
-	@Configuration
-	@Profile(TestConstants.SPRING_TEST_PROFILE_CLIENT_SERVER)
-	public static class ClientServer {
-		/**
-		 * <P>
-		 * Create a client-server topology, using one {@link HazelcastInstance} server and one {@link HazelcastInstance}
-		 * client. The client is the returned as the {@code @Bean}.
-		 * </P>
-		 * 
-		 * @return The client Hazelcast instance.
-		 */
-		@Bean(name = Constants.HAZELCAST_INSTANCE_NAME)
-		public HazelcastInstance cluster() {
-			InstanceHelper.makeServer("Not" + Constants.HAZELCAST_INSTANCE_NAME, CLUSTER_PORT);
+            return hazelcastInstance;
+        }
+    }
 
-			HazelcastInstance hazelcastInstance = InstanceHelper.makeClient(Constants.HAZELCAST_INSTANCE_NAME);
-			LOG.trace("@Bean == '{}'", hazelcastInstance);
+    /**
+     * <P>
+     * Create a client-server topology, for use in more complex tests.
+     * </P>
+     * <P>
+     * As per {@code Constants.SPRING_TEST_PROFILE_CLUSTER}, these instances are all in the one JVM and the minimum number
+     * (1 client, 1 server) is made.
+     * </P>
+     */
+    @Configuration
+    @Profile(TestConstants.SPRING_TEST_PROFILE_CLIENT_SERVER)
+    public static class ClientServer {
+        /**
+         * <P>
+         * Create a client-server topology, using one {@link HazelcastInstance} server and one {@link HazelcastInstance}
+         * client. The client is the returned as the {@code @Bean}.
+         * </P>
+         *
+         * @return The client Hazelcast instance.
+         */
+        @Bean(name = Constants.HAZELCAST_INSTANCE_NAME)
+        public HazelcastInstance cluster() {
+            InstanceHelper.makeServer("Not" + Constants.HAZELCAST_INSTANCE_NAME, CLUSTER_PORT);
 
-			return hazelcastInstance;
-		}
-	}
+            HazelcastInstance hazelcastInstance = InstanceHelper.makeClient(Constants.HAZELCAST_INSTANCE_NAME);
+            LOG.trace("@Bean == '{}'", hazelcastInstance);
 
-	/**
-	 * <P>
-	 * Create a cluster using {@code 127.0.0.1:5701} as the master. The master must be created first, and may be the only
-	 * server instance in this JVM.
-	 * </P>
-	 * 
-	 * @param name Enables easy identification
-	 * @param port The only port this server can use.
-	 * @return The master or the 2nd server in the cluster
-	 */
-	public static HazelcastInstance makeServer(final String name, final int port) {
-		Config hazelcastConfig = new Config(name);
+            return hazelcastInstance;
+        }
+    }
 
-		hazelcastConfig.getNetworkConfig().setReuseAddress(true);
+    /**
+     * <P>
+     * Create a cluster using {@code 127.0.0.1:5701} as the master. The master must be created first, and may be the only
+     * server instance in this JVM.
+     * </P>
+     *
+     * @param name Enables easy identification
+     * @param port The only port this server can use.
+     * @return The master or the 2nd server in the cluster
+     */
+    public static HazelcastInstance makeServer(final String name, final int port) {
+        Config hazelcastConfig = new Config(name);
 
-		hazelcastConfig.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
-		hazelcastConfig.getNetworkConfig().getJoin().getAwsConfig().setEnabled(false);
+        hazelcastConfig.getNetworkConfig().setReuseAddress(true);
 
-		TcpIpConfig tcpIpConfig = hazelcastConfig.getNetworkConfig().getJoin().getTcpIpConfig();
-		tcpIpConfig.setEnabled(true);
-		tcpIpConfig.setMembers(Arrays.asList(MASTER_SERVER));
-		tcpIpConfig.setRequiredMember(MASTER_SERVER);
+        hazelcastConfig.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+        hazelcastConfig.getNetworkConfig().getJoin().getAwsConfig().setEnabled(false);
 
-		hazelcastConfig.getNetworkConfig().setPort(port);
-		hazelcastConfig.getNetworkConfig().setPortAutoIncrement(false);
+        TcpIpConfig tcpIpConfig = hazelcastConfig.getNetworkConfig().getJoin().getTcpIpConfig();
+        tcpIpConfig.setEnabled(true);
+        tcpIpConfig.setMembers(Arrays.asList(MASTER_SERVER));
+        tcpIpConfig.setRequiredMember(MASTER_SERVER);
 
-		HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
+        hazelcastConfig.getNetworkConfig().setPort(port);
+        hazelcastConfig.getNetworkConfig().setPortAutoIncrement(false);
 
-		LOG.debug("Created {}", hazelcastInstance);
+        HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(hazelcastConfig);
 
-		return hazelcastInstance;
-	}
+        LOG.debug("Created {}", hazelcastInstance);
 
-	/**
-	 * <P>
-	 * Create a client that can connect to the cluster via the master server {@code 127.0.0.1:5701}. The server will be in
-	 * the same JVM, but connect via the network.
-	 * </P>
-	 * 
-	 * @param name The client's instance name
-	 * @return A client in a client-server topology.
-	 */
-	public static HazelcastInstance makeClient(final String name) {
-		ClientConfig clientConfig = new ClientConfig();
+        return hazelcastInstance;
+    }
 
-		clientConfig.setInstanceName(name);
-		clientConfig.getNetworkConfig().setAddresses(Arrays.asList(MASTER_SERVER));
-		clientConfig.getNetworkConfig().setConnectionAttemptLimit(1);
+    /**
+     * <P>
+     * Create a client that can connect to the cluster via the master server {@code 127.0.0.1:5701}. The server will be in
+     * the same JVM, but connect via the network.
+     * </P>
+     *
+     * @param name The client's instance name
+     * @return A client in a client-server topology.
+     */
+    public static HazelcastInstance makeClient(final String name) {
+        ClientConfig clientConfig = new ClientConfig();
 
-		HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(clientConfig);
+        clientConfig.setInstanceName(name);
+        clientConfig.getNetworkConfig().setAddresses(Arrays.asList(MASTER_SERVER));
+        clientConfig.getNetworkConfig().setConnectionAttemptLimit(1);
 
-		LOG.debug("Created {}", hazelcastInstance);
+        HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(clientConfig);
 
-		return hazelcastInstance;
-	}
+        LOG.debug("Created {}", hazelcastInstance);
+
+        return hazelcastInstance;
+    }
 
 }

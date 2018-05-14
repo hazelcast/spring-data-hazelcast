@@ -50,7 +50,7 @@ public abstract class TestDataHelper {
 	protected IMap<String, Movie>  movieMap;
 	protected IMap<String, Person> personMap;
 	protected IMap<String, Song>   songMap;
-	
+
 	/* Use Hazelcast directly, minimise reliance on Spring as the object is
 	 * to test Spring encapsulation of Hazelcast.
 	 */
@@ -66,13 +66,13 @@ public abstract class TestDataHelper {
 
 		this.movieMap = this.hazelcastInstance.getMap(TestConstants.MOVIE_MAP_NAME);
 		loadMovie(this.movieMap);
-		
+
 		this.personMap = this.hazelcastInstance.getMap(TestConstants.PERSON_MAP_NAME);
 		loadPerson(this.personMap);
-		
+
 		this.songMap = this.hazelcastInstance.getMap(TestConstants.SONG_MAP_NAME);
 		loadSong(this.songMap);
-		
+
 		checkMapsNotEmpty("setUp");
 
 		/* As Hazelcast will create objects on demand, check no more are present
@@ -86,7 +86,7 @@ public abstract class TestDataHelper {
 	private void checkMapsEmpty(String phase) {
 		for (String mapName : TestConstants.OSCAR_MAP_NAMES) {
 			IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
-			assertThat(phase + "(): No test data left behind by previous tests in '" + iMap.getName() + "'", 
+			assertThat(phase + "(): No test data left behind by previous tests in '" + iMap.getName() + "'",
 					iMap.size(), equalTo(0));
 		}
 	}
@@ -94,7 +94,7 @@ public abstract class TestDataHelper {
 	private void checkMapsNotEmpty(String phase) {
 		for (String mapName : TestConstants.OSCAR_MAP_NAMES) {
 			IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
-			assertThat(phase + "(): Test data has been loaded into '" + iMap.getName() + "'", 
+			assertThat(phase + "(): Test data has been loaded into '" + iMap.getName() + "'",
 					iMap.size(), greaterThan(0));
 		}
 	}
@@ -151,11 +151,11 @@ public abstract class TestDataHelper {
 			IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
 			iMap.clear();
 		}
-		
+
 		checkMapsEmpty("tearDown");
 
 		Collection<DistributedObject> distributedObjects = this.hazelcastInstance.getDistributedObjects();
-		
+
 		for (DistributedObject distributedObject : distributedObjects) {
 			assertThat(distributedObject.getName(), distributedObject, instanceOf(IMap.class));
 			assertThat(distributedObject.getName(), isIn(TestConstants.OSCAR_MAP_NAMES));
