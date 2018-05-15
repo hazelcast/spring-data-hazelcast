@@ -7,7 +7,6 @@ import com.hazelcast.config.TcpIpConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
-import org.springframework.data.hazelcast.repository.config.Constants;
 import test.utils.repository.custom.MyTitleRepositoryFactoryBean;
 
 import java.util.Arrays;
@@ -52,7 +51,7 @@ public class InstanceHelper {
         System.setProperty("hazelcast.logging.type", "slf4j");
     }
 
-    @Resource(name = Constants.HAZELCAST_INSTANCE_NAME) private HazelcastInstance hazelcastInstance;
+    @Resource(name = TestConstants.CLIENT_INSTANCE_NAME) private HazelcastInstance hazelcastInstance;
 
     /**
      * <P>The {@code @EnableHazelcastRepositories} annotation is not repeatable,
@@ -93,7 +92,7 @@ public class InstanceHelper {
         Set<HazelcastInstance> hazelcastInstances = Hazelcast.getAllHazelcastInstances();
         if (hazelcastInstances.size() != 0) {
             for (HazelcastInstance hazelcastInstance : hazelcastInstances) {
-                if (Constants.HAZELCAST_INSTANCE_NAME.equals(hazelcastInstance.getName())) {
+                if (TestConstants.CLIENT_INSTANCE_NAME.equals(hazelcastInstance.getName())) {
                     testInstanceWasRunning = true;
                 }
                 LOG.debug("Closing '{}'", hazelcastInstance);
@@ -103,9 +102,9 @@ public class InstanceHelper {
         ;
 
         if (testInstanceWasRunning) {
-            LOG.error("'{}' was still running", Constants.HAZELCAST_INSTANCE_NAME);
+            LOG.error("'{}' was still running", TestConstants.CLIENT_INSTANCE_NAME);
         } else {
-            LOG.debug("'{}' already closed by Spring", Constants.HAZELCAST_INSTANCE_NAME);
+            LOG.debug("'{}' already closed by Spring", TestConstants.CLIENT_INSTANCE_NAME);
         }
     }
 
@@ -124,9 +123,9 @@ public class InstanceHelper {
          *
          * @return A standalone Hazelcast instance, a cluster of one
          */
-        @Bean(name = Constants.HAZELCAST_INSTANCE_NAME)
+        @Bean(name = TestConstants.CLIENT_INSTANCE_NAME)
         public HazelcastInstance singleton() {
-            HazelcastInstance hazelcastInstance = InstanceHelper.makeServer(Constants.HAZELCAST_INSTANCE_NAME,
+            HazelcastInstance hazelcastInstance = InstanceHelper.makeServer(TestConstants.CLIENT_INSTANCE_NAME,
                     CLUSTER_PORT);
             LOG.trace("@Bean=='{}'", hazelcastInstance);
             return hazelcastInstance;
@@ -154,13 +153,13 @@ public class InstanceHelper {
          *
          * @return One of two Hazelcast instances created.
          */
-        @Bean(name = Constants.HAZELCAST_INSTANCE_NAME)
+        @Bean(name = TestConstants.CLIENT_INSTANCE_NAME)
         public HazelcastInstance cluster() {
-            HazelcastInstance hazelcastInstance = InstanceHelper.makeServer(Constants.HAZELCAST_INSTANCE_NAME,
+            HazelcastInstance hazelcastInstance = InstanceHelper.makeServer(TestConstants.CLIENT_INSTANCE_NAME,
                     CLUSTER_PORT);
             LOG.trace("@Bean == '{}'", hazelcastInstance);
 
-            InstanceHelper.makeServer("Not" + Constants.HAZELCAST_INSTANCE_NAME, (1 + CLUSTER_PORT));
+            InstanceHelper.makeServer(TestConstants.SERVER_INSTANCE_NAME, (1 + CLUSTER_PORT));
 
             return hazelcastInstance;
         }
@@ -186,11 +185,11 @@ public class InstanceHelper {
          *
          * @return The client Hazelcast instance.
          */
-        @Bean(name = Constants.HAZELCAST_INSTANCE_NAME)
+        @Bean(name = TestConstants.CLIENT_INSTANCE_NAME)
         public HazelcastInstance cluster() {
-            InstanceHelper.makeServer("Not" + Constants.HAZELCAST_INSTANCE_NAME, CLUSTER_PORT);
+            InstanceHelper.makeServer(TestConstants.SERVER_INSTANCE_NAME, CLUSTER_PORT);
 
-            HazelcastInstance hazelcastInstance = InstanceHelper.makeClient(Constants.HAZELCAST_INSTANCE_NAME);
+            HazelcastInstance hazelcastInstance = InstanceHelper.makeClient(TestConstants.CLIENT_INSTANCE_NAME);
             LOG.trace("@Bean == '{}'", hazelcastInstance);
 
             return hazelcastInstance;
