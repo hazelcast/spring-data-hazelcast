@@ -15,6 +15,7 @@
  */
 package org.springframework.data.hazelcast.repository.support;
 
+import com.hazelcast.core.HazelcastInstance;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.repository.query.SpelQueryCreator;
 import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory;
@@ -42,23 +43,25 @@ public class HazelcastRepositoryFactory extends KeyValueRepositoryFactory {
 
 	private final KeyValueOperations keyValueOperations;
 	private final Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
+	private final HazelcastInstance hazelcastInstance;
 
 	/* Mirror functionality of super, to ensure private
 	 * fields are set.
 	 */
-	public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations) {
-		this(keyValueOperations, DEFAULT_QUERY_CREATOR);
+	public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations, HazelcastInstance hazelcastInstance) {
+		this(keyValueOperations, DEFAULT_QUERY_CREATOR, hazelcastInstance);
 	}
 
 	/* Capture KeyValueOperations and QueryCreator objects after passing to super.
 	 */
 	public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations,
-			Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
+			Class<? extends AbstractQueryCreator<?, ?>> queryCreator, HazelcastInstance hazelcastInstance) {
 
 		super(keyValueOperations, queryCreator);
 
 		this.keyValueOperations = keyValueOperations;
 		this.queryCreator = queryCreator;
+		this.hazelcastInstance = hazelcastInstance;
 	}
 
 	/**
@@ -70,7 +73,8 @@ public class HazelcastRepositoryFactory extends KeyValueRepositoryFactory {
 	@Override
 	protected QueryLookupStrategy getQueryLookupStrategy(QueryLookupStrategy.Key key,
 			EvaluationContextProvider evaluationContextProvider) {
-		return new HazelcastQueryLookupStrategy(key, evaluationContextProvider, this.keyValueOperations, this.queryCreator);
+		return new HazelcastQueryLookupStrategy(key, evaluationContextProvider, keyValueOperations, queryCreator,
+                hazelcastInstance);
 	}
 
 }

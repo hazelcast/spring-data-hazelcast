@@ -79,8 +79,8 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public KeyValueOperations keyValueTemplate() {  // <3> 
-        return new KeyValueTemplate(new HazelcastKeyValueAdapter(hazelcastInstance()));
+    public KeyValueOperations keyValueTemplate(HazelcastInstance hazelcastInstance) {  // <3>
+        return new KeyValueTemplate(new HazelcastKeyValueAdapter(hazelcastInstance));
     }
 
     @Bean

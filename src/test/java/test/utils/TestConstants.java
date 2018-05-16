@@ -7,6 +7,9 @@ import test.utils.domain.Song;
  */
 public class TestConstants {
 
+	public static final String CLIENT_INSTANCE_NAME = "hazelcast-instance-client";
+	public static final String SERVER_INSTANCE_NAME = "hazelcast-instance-server";
+
 	public static final String SPRING_TEST_PROFILE_CLIENT_SERVER = "client-server";
 	public static final String SPRING_TEST_PROFILE_CLUSTER = "cluster";
 	public static final String SPRING_TEST_PROFILE_SINGLETON = "singleton";

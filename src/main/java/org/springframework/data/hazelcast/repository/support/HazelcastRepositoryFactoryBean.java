@@ -17,6 +17,11 @@ package org.springframework.data.hazelcast.repository.support;
 
 import java.io.Serializable;
 
+import com.hazelcast.config.Config;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.instance.HazelcastInstanceFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.hazelcast.repository.config.Constants;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
@@ -49,6 +54,9 @@ import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFa
 public class HazelcastRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable>
 		extends KeyValueRepositoryFactoryBean<T, S, ID> {
 
+    @Autowired(required = false)
+    private HazelcastInstance hazelcastInstance;
+
 	/**
 	 * <p>
 	 * Default Spring Data KeyValue constructor {@link KeyValueRepositoryFactoryBean}
@@ -79,8 +87,9 @@ public class HazelcastRepositoryFactoryBean<T extends Repository<S, ID>, S, ID e
 	@Override
 	protected KeyValueRepositoryFactory createRepositoryFactory(KeyValueOperations operations,
 			Class<? extends AbstractQueryCreator<?, ?>> queryCreator, Class<? extends RepositoryQuery> repositoryQueryType) {
-
-		return new HazelcastRepositoryFactory(operations, queryCreator);
+        HazelcastInstance notNullHazelcastInstance = hazelcastInstance == null ? HazelcastInstanceFactory
+                .getOrCreateHazelcastInstance(new Config(Constants.HAZELCAST_INSTANCE_NAME)) : hazelcastInstance;
+		return new HazelcastRepositoryFactory(operations, queryCreator, notNullHazelcastInstance);
 	}
 
 }

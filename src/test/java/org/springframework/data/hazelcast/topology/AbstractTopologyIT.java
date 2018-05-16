@@ -5,7 +5,6 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.data.hazelcast.repository.config.Constants;
 import test.utils.TestConstants;
 import test.utils.TestDataHelper;
 import test.utils.domain.Person;
@@ -48,11 +47,7 @@ public abstract class AbstractTopologyIT extends TestDataHelper {
 		HazelcastInstance hazelcastServer = null;
 
 		// Look for any instance apart from Spring's one
-		for (HazelcastInstance hazelcastInstance : Hazelcast.getAllHazelcastInstances()) {
-			if (!hazelcastInstance.getName().equals(Constants.HAZELCAST_INSTANCE_NAME)) {
-				hazelcastServer = hazelcastInstance;
-			}
-		}
+		hazelcastServer = Hazelcast.getHazelcastInstanceByName(TestConstants.SERVER_INSTANCE_NAME);
 
 		assertThat("Server found", hazelcastServer, notNullValue());
 		this.server_personMap = hazelcastServer.getMap(TestConstants.PERSON_MAP_NAME);
