@@ -15,8 +15,11 @@
  */
 package org.springframework.data.hazelcast;
 
+import com.hazelcast.config.Config;
+import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
+import org.springframework.data.hazelcast.repository.config.Constants;
 import org.springframework.data.keyvalue.core.AbstractKeyValueAdapter;
 import org.springframework.data.keyvalue.core.ForwardingCloseableIterator;
 import org.springframework.data.util.CloseableIterator;
@@ -34,6 +37,17 @@ import java.util.Map.Entry;
 public class HazelcastKeyValueAdapter extends AbstractKeyValueAdapter {
 
 	private HazelcastInstance hzInstance;
+
+    /**
+     * Creates an instance of {@link HazelcastKeyValueAdapter}.
+     *
+     * @deprecated Use {@code new HazelcastKeyValueAdapter(Hazelcast.getOrCreateHazelcastInstance(new Config(Constants
+     * .HAZELCAST_INSTANCE_NAME))} instead.
+     */
+	@Deprecated
+	public HazelcastKeyValueAdapter() {
+	    this(Hazelcast.getOrCreateHazelcastInstance(new Config(Constants.HAZELCAST_INSTANCE_NAME)));
+	}
 
 	public HazelcastKeyValueAdapter(HazelcastInstance hzInstance) {
 		super(new HazelcastQueryEngine());
