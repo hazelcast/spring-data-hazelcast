@@ -42,7 +42,7 @@ public class HazelcastKeyValueAdapter extends AbstractKeyValueAdapter {
      * Creates an instance of {@link HazelcastKeyValueAdapter}.
      *
      * @deprecated Use {@code new HazelcastKeyValueAdapter(Hazelcast.getOrCreateHazelcastInstance(new Config(Constants
-     * .HAZELCAST_INSTANCE_NAME))} instead.
+     * .HAZELCAST_INSTANCE_NAME))} instead. This method will be removed in a future release.
      */
 	@Deprecated
 	public HazelcastKeyValueAdapter() {

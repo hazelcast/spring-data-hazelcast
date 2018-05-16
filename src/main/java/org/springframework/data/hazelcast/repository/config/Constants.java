@@ -19,7 +19,7 @@ package org.springframework.data.hazelcast.repository.config;
  * Constants used in this project.
  *
  * @deprecated Don't use these constants, since it's not guaranteed that a HazelcastInstace with the name {@literal
- * HAZELCAST_INSTANCE_NAME} is running.
+ * HAZELCAST_INSTANCE_NAME} is running. This class will be removed in a future release.
  */
 @Deprecated
 public final class Constants {
