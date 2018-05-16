@@ -18,9 +18,13 @@ package org.springframework.data.hazelcast.repository.support;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.repository.query.SpelQueryCreator;
 import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory;
+import org.springframework.data.mapping.PersistentEntity;
+import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
+
+import java.io.Serializable;
 
 /**
  * <P>
@@ -73,4 +77,10 @@ public class HazelcastRepositoryFactory extends KeyValueRepositoryFactory {
 		return new HazelcastQueryLookupStrategy(key, evaluationContextProvider, this.keyValueOperations, this.queryCreator);
 	}
 
+
+	@Override
+	public <T, ID extends Serializable> EntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
+		PersistentEntity<T, ?> entity = (PersistentEntity<T, ?>) keyValueOperations.getMappingContext().getPersistentEntity(domainClass);
+		return new HazelcastEntityInformation<>(entity);
+	}
 }
