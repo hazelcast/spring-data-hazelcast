@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.hazelcast;
+package org.springframework.data.hazelcast.repository.support;
 
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.data.hazelcast.repository.support.HazelcastEntityInformation;
+import org.springframework.data.hazelcast.HazelcastUtils;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.core.KeyValueTemplate;
 import org.springframework.data.mapping.PersistentEntity;

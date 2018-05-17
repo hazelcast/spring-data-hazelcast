@@ -18,26 +18,22 @@ package org.springframework.data.hazelcast.repository.support;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.model.MappingException;
+import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.core.support.PersistentEntityInformation;
 
 import java.io.Serializable;
 
 /**
- * <P>
- * {@link HazelcastEntityInformation} implementation checks for {@link Id} field eagarly to prevent NPE if not found
- * </P>
+ * {@link EntityInformation} implementation checks for {@link Id} field eagarly to prevent NPE if not found.
  *
  * @author Gokhan Oner
- * @param <T>
- * @param <ID>
  */
-public class HazelcastEntityInformation<T, ID extends Serializable> extends PersistentEntityInformation<T, ID> {
+class HazelcastEntityInformation<T, ID extends Serializable> extends PersistentEntityInformation<T, ID> {
 
     /**
-     *
      * @param entity must not be {@literal null}.
      */
-    public HazelcastEntityInformation(PersistentEntity<T, ?> entity) {
+    HazelcastEntityInformation(PersistentEntity<T, ?> entity) {
         super(entity);
         if (!entity.hasIdProperty()) {
             throw new MappingException(
