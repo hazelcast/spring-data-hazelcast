@@ -16,6 +16,8 @@
 package org.springframework.data.hazelcast.repository.support;
 
 import java.lang.reflect.Method;
+
+import com.hazelcast.core.HazelcastInstance;
 import org.springframework.data.hazelcast.repository.query.HazelcastPartTreeQuery;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.projection.ProjectionFactory;
@@ -37,9 +39,10 @@ import org.springframework.util.Assert;
  */
 public class HazelcastQueryLookupStrategy implements QueryLookupStrategy {
 
-	private EvaluationContextProvider evaluationContextProvider;
-	private KeyValueOperations keyValueOperations;
-	private Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
+	private final EvaluationContextProvider evaluationContextProvider;
+	private final KeyValueOperations keyValueOperations;
+	private final Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
+	private final HazelcastInstance hazelcastInstance;
 
 	/**
 	 * <P>
@@ -54,17 +57,21 @@ public class HazelcastQueryLookupStrategy implements QueryLookupStrategy {
 	 * @param evaluationContextProvider For evaluation of query expressions
 	 * @param keyValueOperations Bean to use for Key/Value operations on Hazelcast repos
 	 * @param queryCreator Likely to be {@link HazelcastQueryCreator}
+	 * @param hazelcastInstance Instance of Hazelcast
 	 */
 	public HazelcastQueryLookupStrategy(QueryLookupStrategy.Key key, EvaluationContextProvider evaluationContextProvider,
-			KeyValueOperations keyValueOperations, Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
+                                        KeyValueOperations keyValueOperations, Class<? extends AbstractQueryCreator<?, ?>> queryCreator,
+                                        HazelcastInstance hazelcastInstance) {
 
 		Assert.notNull(evaluationContextProvider, "EvaluationContextProvider must not be null!");
 		Assert.notNull(keyValueOperations, "KeyValueOperations must not be null!");
 		Assert.notNull(queryCreator, "Query creator type must not be null!");
+        Assert.notNull(hazelcastInstance, "HazelcastInstance must not be null!");
 
 		this.evaluationContextProvider = evaluationContextProvider;
 		this.keyValueOperations = keyValueOperations;
 		this.queryCreator = queryCreator;
+		this.hazelcastInstance = hazelcastInstance;
 	}
 
 	/**
@@ -78,18 +85,17 @@ public class HazelcastQueryLookupStrategy implements QueryLookupStrategy {
 	 * @param NamedQueries, not used
 	 * @return A mechanism for querying Hazelcast repositories
 	 */
-	public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, 
+	public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata,
 			ProjectionFactory projectionFactory, NamedQueries namedQueries) {
 
 		HazelcastQueryMethod queryMethod = new HazelcastQueryMethod(method, metadata, projectionFactory);
 
 		if (queryMethod.hasAnnotatedQuery()) {
-			return new StringBasedHazelcastRepositoryQuery(queryMethod);
-
+			return new StringBasedHazelcastRepositoryQuery(queryMethod, hazelcastInstance);
 		}
 
 		return new HazelcastPartTreeQuery(queryMethod, evaluationContextProvider, this.keyValueOperations,
 				this.queryCreator);
 	}
-	
+
 }

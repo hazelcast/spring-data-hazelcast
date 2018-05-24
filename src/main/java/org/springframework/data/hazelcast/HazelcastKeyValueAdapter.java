@@ -38,9 +38,16 @@ public class HazelcastKeyValueAdapter extends AbstractKeyValueAdapter {
 
     private HazelcastInstance hzInstance;
 
-    public HazelcastKeyValueAdapter() {
-        this(Hazelcast.getOrCreateHazelcastInstance(new Config(Constants.HAZELCAST_INSTANCE_NAME)));
-    }
+    /**
+     * Creates an instance of {@link HazelcastKeyValueAdapter}.
+     *
+     * @deprecated Use {@code new HazelcastKeyValueAdapter(Hazelcast.getOrCreateHazelcastInstance(new Config(Constants
+     * .HAZELCAST_INSTANCE_NAME))} instead. This method will be removed in a future release.
+     */
+	@Deprecated
+	public HazelcastKeyValueAdapter() {
+	    this(Hazelcast.getOrCreateHazelcastInstance(new Config(Constants.HAZELCAST_INSTANCE_NAME)));
+	}
 
     public HazelcastKeyValueAdapter(HazelcastInstance hzInstance) {
         super(new HazelcastQueryEngine());

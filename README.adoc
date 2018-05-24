@@ -79,8 +79,8 @@ public class ApplicationConfiguration {
     }
 
     @Bean
-    public KeyValueOperations keyValueTemplate() {  // <3> 
-        return new KeyValueTemplate(new HazelcastKeyValueAdapter(hazelcastInstance()));
+    public KeyValueOperations keyValueTemplate(HazelcastInstance hazelcastInstance) {  // <3>
+        return new KeyValueTemplate(new HazelcastKeyValueAdapter(hazelcastInstance));
     }
 
     @Bean
@@ -173,7 +173,7 @@ Regex
 <dependency>
     <groupId>com.hazelcast</groupId>
     <artifactId>spring-data-hazelcast</artifactId>
-    <version>${LATEST_VERSION}</version>
+    <version>${version}</version>
 </dependency>
 ----
 
@@ -183,7 +183,7 @@ Regex
 ----
 // Add dependency
 dependencies {
-    compile 'com.hazelcast:spring-data-hazelcast:${LATEST_VERSION}'
+    compile 'com.hazelcast:spring-data-hazelcast:${version}'
 }
 ----
 

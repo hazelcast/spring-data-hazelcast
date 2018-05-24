@@ -15,10 +15,9 @@
  */
 package org.springframework.data.hazelcast.repository.support;
 
-import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 import com.hazelcast.query.SqlPredicate;
-import org.springframework.data.hazelcast.repository.config.Constants;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 
@@ -27,29 +26,26 @@ import org.springframework.data.repository.query.RepositoryQuery;
  */
 public class StringBasedHazelcastRepositoryQuery implements RepositoryQuery {
 
-
     private final HazelcastQueryMethod queryMethod;
     private final String keySpace;
+    private final HazelcastInstance hazelcastInstance;
 
-    public StringBasedHazelcastRepositoryQuery(HazelcastQueryMethod queryMethod) {
+    public StringBasedHazelcastRepositoryQuery(HazelcastQueryMethod queryMethod, HazelcastInstance hazelcastInstance) {
         this.queryMethod = queryMethod;
         this.keySpace = queryMethod.getKeySpace();
+        this.hazelcastInstance = hazelcastInstance;
     }
 
     @Override
     public Object execute(Object[] parameters) {
-
         String queryStringTemplate = queryMethod.getAnnotatedQuery();
-
         String queryString = String.format(queryStringTemplate, parameters);
-
         SqlPredicate sqlPredicate = new SqlPredicate(queryString);
-
         return getMap(keySpace).values(sqlPredicate);
     }
 
     private IMap getMap(String keySpace) {
-        return Hazelcast.getHazelcastInstanceByName(Constants.HAZELCAST_INSTANCE_NAME).getMap(keySpace);
+        return hazelcastInstance.getMap(keySpace);
     }
 
     @Override

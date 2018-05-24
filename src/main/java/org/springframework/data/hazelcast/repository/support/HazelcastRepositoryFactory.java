@@ -15,12 +15,17 @@
  */
 package org.springframework.data.hazelcast.repository.support;
 
+import com.hazelcast.core.HazelcastInstance;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.repository.query.SpelQueryCreator;
 import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory;
+import org.springframework.data.mapping.PersistentEntity;
+import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
+
+import java.io.Serializable;
 
 import java.util.Optional;
 
@@ -44,23 +49,25 @@ public class HazelcastRepositoryFactory extends KeyValueRepositoryFactory {
 
 	private final KeyValueOperations keyValueOperations;
 	private final Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
+	private final HazelcastInstance hazelcastInstance;
 
 	/* Mirror functionality of super, to ensure private
 	 * fields are set.
 	 */
-	public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations) {
-		this(keyValueOperations, DEFAULT_QUERY_CREATOR);
+	public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations, HazelcastInstance hazelcastInstance) {
+		this(keyValueOperations, DEFAULT_QUERY_CREATOR, hazelcastInstance);
 	}
 
 	/* Capture KeyValueOperations and QueryCreator objects after passing to super.
 	 */
 	public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations,
-			Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
+			Class<? extends AbstractQueryCreator<?, ?>> queryCreator, HazelcastInstance hazelcastInstance) {
 
 		super(keyValueOperations, queryCreator);
 
 		this.keyValueOperations = keyValueOperations;
 		this.queryCreator = queryCreator;
+		this.hazelcastInstance = hazelcastInstance;
 	}
 
 	/**
@@ -70,9 +77,16 @@ public class HazelcastRepositoryFactory extends KeyValueRepositoryFactory {
 	 * </P>
 	 */
 	@Override
-	protected Optional<QueryLookupStrategy> getQueryLookupStrategy(QueryLookupStrategy.Key key,
-																   EvaluationContextProvider evaluationContextProvider) {
-		return Optional.of(new HazelcastQueryLookupStrategy(key, evaluationContextProvider, this.keyValueOperations, this.queryCreator));
+	protected QueryLookupStrategy getQueryLookupStrategy(QueryLookupStrategy.Key key,
+			EvaluationContextProvider evaluationContextProvider) {
+		return new HazelcastQueryLookupStrategy(key, evaluationContextProvider, keyValueOperations, queryCreator,
+                hazelcastInstance);
 	}
 
+
+	@Override
+	public <T, ID extends Serializable> EntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
+		PersistentEntity<T, ?> entity = (PersistentEntity<T, ?>) keyValueOperations.getMappingContext().getPersistentEntity(domainClass);
+		return new HazelcastEntityInformation<>(entity);
+	}
 }
