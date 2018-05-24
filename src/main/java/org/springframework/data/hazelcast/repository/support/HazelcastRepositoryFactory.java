@@ -24,8 +24,7 @@ import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
-
-import java.io.Serializable;
+import org.springframework.util.Assert;
 
 import java.util.Optional;
 
@@ -73,20 +72,21 @@ public class HazelcastRepositoryFactory extends KeyValueRepositoryFactory {
 	/**
 	 * <P>
 	 * Ensure the mechanism for query evaluation is Hazelcast specific, as the original
-	 * {@link KeyValueRepositoryFactory.KeyValueQueryLookStrategy} does not function correctly for Hazelcast.
+	 * {@link KeyValueRepositoryFactory.KeyValueQueryLookupStrategy} does not function correctly for Hazelcast.
 	 * </P>
 	 */
 	@Override
-	protected QueryLookupStrategy getQueryLookupStrategy(QueryLookupStrategy.Key key,
-			EvaluationContextProvider evaluationContextProvider) {
-		return new HazelcastQueryLookupStrategy(key, evaluationContextProvider, keyValueOperations, queryCreator,
-                hazelcastInstance);
+	protected Optional<QueryLookupStrategy> getQueryLookupStrategy(QueryLookupStrategy.Key key,
+																   EvaluationContextProvider evaluationContextProvider) {
+		return Optional.of(new HazelcastQueryLookupStrategy(key, evaluationContextProvider, keyValueOperations, queryCreator,
+                hazelcastInstance));
 	}
 
 
 	@Override
-	public <T, ID extends Serializable> EntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
+	public <T, ID> EntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
 		PersistentEntity<T, ?> entity = (PersistentEntity<T, ?>) keyValueOperations.getMappingContext().getPersistentEntity(domainClass);
+		Assert.notNull(entity, "Entity must not be 'null'.");
 		return new HazelcastEntityInformation<>(entity);
 	}
 }
