@@ -173,7 +173,7 @@ Regex
 <dependency>
     <groupId>com.hazelcast</groupId>
     <artifactId>spring-data-hazelcast</artifactId>
-    <version>1.1.1</version>
+    <version>${version}</version>
 </dependency>
 ----
 
@@ -183,7 +183,7 @@ Regex
 ----
 // Add dependency
 dependencies {
-    compile 'com.hazelcast:spring-data-hazelcast:1.1.1'
+    compile 'com.hazelcast:spring-data-hazelcast:${version}'
 }
 ----
 
