@@ -38,6 +38,7 @@ import static org.springframework.data.repository.query.parser.Part.Type.NOT_LIK
 /**
  * @author Christoph Strobl
  * @author Neil Stevenson
+ * @author Viacheslav Petriaiev
  */
 public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Predicate<?, ?>>, Predicate<?, ?>> {
     private final int limit;
@@ -50,8 +51,9 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
     public HazelcastQueryCreator(PartTree tree) {
         super(tree);
 
-        if (tree.isLimiting() && tree.getMaxResults() > 0) {
-            this.limit = tree.getMaxResults();
+        final Integer maxResults = tree.getMaxResults();
+        if (tree.isLimiting() && maxResults != null && maxResults > 0) {
+            this.limit = maxResults;
         } else {
             this.limit = 0;
         }
@@ -68,8 +70,9 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
     public HazelcastQueryCreator(PartTree tree, ParameterAccessor parameters) {
         super(tree, parameters);
 
-        if (tree.isLimiting() && tree.getMaxResults() > 0) {
-            this.limit = tree.getMaxResults();
+        final Integer maxResults = tree.getMaxResults();
+        if (tree.isLimiting() && maxResults != null && maxResults > 0) {
+            this.limit = maxResults;
         } else {
             this.limit = 0;
         }

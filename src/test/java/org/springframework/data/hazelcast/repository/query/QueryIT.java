@@ -34,6 +34,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
@@ -136,17 +137,17 @@ public class QueryIT extends TestDataHelper {
 		Person person = this.personRepository.deleteByLastname("abcdefghijklmnopqrstuvwxyz");
 		
 		assertThat("Delete for unmatched name does nothing to map", this.personMap.size(), equalTo(Oscars.bestActors.length));
-		assertThat("Delete for unmatched name does nothing to @Repository", this.personRepository.count(), equalTo(Long.valueOf(Oscars.bestActors.length)));
+		assertThat("Delete for unmatched name does nothing to @Repository", this.personRepository.count(), equalTo((long)Oscars.bestActors.length));
 		assertThat("Delete for unmatched name returns null", person, nullValue());
 		
 		// Spencer Tracy, 1937 & 1938
 		int count = 0;
-		while ( (person = this.personRepository.deleteByLastname("Tracy")) != null ) {
+		while ( this.personRepository.deleteByLastname("Tracy") != null ) {
 			count++;
 		}
 		
 		assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(Oscars.bestActors.length - 2));
-		assertThat("Delete for matched name removes from @Repository", this.personRepository.count(), equalTo(Long.valueOf(Oscars.bestActors.length - 2)));
+		assertThat("Delete for matched name removes from @Repository", this.personRepository.count(), equalTo((long)(Oscars.bestActors.length - 2)));
 		assertThat("Delete for matched name returns correct count", count, equalTo(2));
 		assertThat("1937 deleted", this.personMap.get("1937"), nullValue());
 		assertThat("1938 deleted", this.personMap.get("1938"), nullValue());
@@ -421,7 +422,7 @@ public class QueryIT extends TestDataHelper {
 		String[] LASTNAMES = { "Bridges", "Dujardin", "Foxx", "Irons", "Nicholson" };
 		Set<String> lastnames = new TreeSet<>(Arrays.asList(LASTNAMES));
 
-		Pageable pageRequest = new PageRequest(PAGE_0, SIZE_1);
+		Pageable pageRequest = PageRequest.of(PAGE_0, SIZE_1);
 		Slice<Person> pageResponse = this.personRepository
 				.findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual("1990", "I", "K", pageRequest);
 		int slice = 0;
@@ -457,7 +458,7 @@ public class QueryIT extends TestDataHelper {
 		Set<String> years = new TreeSet<>(Arrays.asList(YEARS));
 
 		for (int page = 0; page < YEARS.length; page++) {
-			Pageable pageRequest = new PageRequest(page, SIZE_1);
+			Pageable pageRequest = PageRequest.of(page, SIZE_1);
 
 			Page<Person> pageResponse = this.personRepository.findByLastname("Day-Lewis", pageRequest);
 			assertThat("Page " + page + ", has content", pageResponse.hasContent(), equalTo(true));
@@ -480,7 +481,7 @@ public class QueryIT extends TestDataHelper {
 		int pagesRetrieved = 0;
 		String previousLastname = null;
 
-		Pageable pageRequest = new PageRequest(PAGE_0, SIZE_5);
+		Pageable pageRequest = PageRequest.of(PAGE_0, SIZE_5);
 		Page<Person> pageResponse = this.personRepository.findByOrderByLastnameDesc(pageRequest);
 		while (pageResponse != null) {
 
@@ -507,23 +508,23 @@ public class QueryIT extends TestDataHelper {
 						lessThanOrEqualTo(SIZE_5));
 			}
 			assertThat("Page " + pagesRetrieved + ", total item count", pageResponse.getTotalElements(),
-					equalTo(new Long(Oscars.bestActors.length)));
+					equalTo((long)Oscars.bestActors.length));
 
 			for (Person person : pageContent) {
 				if (previousLastname != null) {
 					assertThat("Descending lastname", person.getLastname(), lessThanOrEqualTo(previousLastname));
 				}
-				previousLastname = new String(person.getLastname());
+				previousLastname = person.getLastname();
 			}
 
 			pageRequest = pageResponse.nextPageable();
 			if (pagesRetrieved == expectedNumberOfPages) {
 				assertThat("Page " + pagesRetrieved + ", is last", pageResponse.hasNext(), equalTo(false));
-				assertThat("Page " + pagesRetrieved + ", no following page", pageRequest, nullValue());
+				assertThat("Page " + pagesRetrieved + ", no following page", pageRequest, equalTo(Pageable.unpaged()));
 				pageResponse = null;
 			} else {
 				assertThat("Page " + pagesRetrieved + ", not last", pageResponse.hasNext(), equalTo(true));
-				assertThat("Page " + pagesRetrieved + ", has following page", pageRequest, notNullValue());
+				assertThat("Page " + pagesRetrieved + ", has following page", pageRequest, not(equalTo(Pageable.unpaged())));
 				pageResponse = this.personRepository.findByOrderByLastnameDesc(pageRequest);
 			}
 		}
@@ -537,7 +538,7 @@ public class QueryIT extends TestDataHelper {
 		String[] EXPECTED_YEARS = { "1930", "1940", "1950", "1960", "1970", "1980", "1990" };
 		Set<String> expectedYears = new TreeSet<>(Arrays.asList(EXPECTED_YEARS));
 
-		Pageable pageRequest = new PageRequest(PAGE_0, SIZE_5);
+		Pageable pageRequest = PageRequest.of(PAGE_0, SIZE_5);
 		Slice<Person> pageResponse = this.personRepository.findByIdLike(PATTERN, pageRequest);
 		int slice = 0;
 		while (pageResponse != null) {
