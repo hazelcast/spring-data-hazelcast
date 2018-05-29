@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-2016 the original author or authors.
+ * Copyright (c) 2008-2018, Hazelcast, Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,8 @@ import org.springframework.data.repository.core.support.PersistentEntityInformat
  *
  * @author Gokhan Oner
  */
-class HazelcastEntityInformation<T, ID> extends PersistentEntityInformation<T, ID> {
+class HazelcastEntityInformation<T, ID>
+        extends PersistentEntityInformation<T, ID> {
 
     /**
      * @param entity must not be {@literal null}.
@@ -35,8 +36,7 @@ class HazelcastEntityInformation<T, ID> extends PersistentEntityInformation<T, I
         super(entity);
         if (!entity.hasIdProperty()) {
             throw new MappingException(
-                    String.format("Entity %s requires a field annotated with %s",
-                            entity.getName(), Id.class.getName()));
+                    String.format("Entity %s requires a field annotated with %s", entity.getName(), Id.class.getName()));
         }
     }
 }

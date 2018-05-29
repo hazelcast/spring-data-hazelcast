@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2008-2018, Hazelcast, Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.data.hazelcast.repository;
 
 import org.junit.Before;
@@ -27,347 +43,341 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
- * <P>
+ * <p>
  * Downcast a {@link HazelcastRepository} into a {@link CrudRepository} to test basic C/R/U/D functionality.
  * </P>
- * <P>
+ * <p>
  * Where possible, verify the repository against the underlying Hazelcast instance directly.
  * </P>
  *
  * @author Neil Stevenson
  */
 @ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_SINGLETON)
-public class CrudIT extends TestDataHelper {
-	private static final String EIGHTEEN_HUNDRED = "1800";
-	private static final String NINETEEN_HUNDRED = "1900";
-	private static final String TWO_THOUSAND = "2000";
-	private static Person suggestedWinner1900 = new Person();
-	private static Person suggestedWinner2000 = new Person();
+public class CrudIT
+        extends TestDataHelper {
+    private static final String EIGHTEEN_HUNDRED = "1800";
+    private static final String NINETEEN_HUNDRED = "1900";
+    private static final String TWO_THOUSAND = "2000";
+    private static Person suggestedWinner1900 = new Person();
+    private static Person suggestedWinner2000 = new Person();
+    @Rule
+    public TestName testName = new TestName();
+    // PersonRepository is really a HazelcastRepository
+    @Resource
+    private CrudRepository<Person, String> personRepository;
+    private long hazelcastCountBefore = -1L;
+    private long springCountBefore = -1L;
+
+    @BeforeClass
+    public static void setUpBeforeClass()
+            throws Exception {
+        // Suggest a winner for 1900 - https://en.wikipedia.org/wiki/Georges_M%C3%A9li%C3%A8s
+        suggestedWinner1900.setId(NINETEEN_HUNDRED);
+        suggestedWinner1900.setFirstname("Georges");
+        suggestedWinner1900.setLastname("Melies");
+
+        // Suggest a winner for 2000, for Cast Away
+        suggestedWinner2000.setId(TWO_THOUSAND);
+        suggestedWinner2000.setFirstname("Tom");
+        suggestedWinner2000.setLastname("Hanks");
+    }
+
+    @Before
+    public void setUp() {
+        super.setUp();
+
+        this.hazelcastCountBefore = super.personMap.size();
+        this.springCountBefore = this.personRepository.count();
+
+        assertThat("Test data exists", this.springCountBefore, greaterThan(0L));
+        assertThat("Spring==Hazelcast before", this.springCountBefore, equalTo(this.hazelcastCountBefore));
+
+        assertNull("Key '1800' not in Hazelcast", super.personMap.get(EIGHTEEN_HUNDRED));
+        assertFalse("Key '1800' not in Spring", this.personRepository.findById(EIGHTEEN_HUNDRED).isPresent());
+
+        assertNull("Key '1900' not in Hazelcast", super.personMap.get(NINETEEN_HUNDRED));
+        assertFalse("Key '1900' not in Spring", this.personRepository.findById(NINETEEN_HUNDRED).isPresent());
+
+        assertNotNull("Key '2000' in Hazelcast", super.personMap.get(TWO_THOUSAND));
+        assertTrue("Key '2000' in Spring", this.personRepository.findById(TWO_THOUSAND).isPresent());
+    }
+
+    @Test
+    public void count() {
+        // CrudRepository.count() already tested in @Before this.setup().
+        ;
+    }
+
+    @Test
+    public void deleteIterable() {
+        List<Person> people = new ArrayList<>();
+
+        String missingKey = EIGHTEEN_HUNDRED;
+        Person missingPerson = new Person();
+        missingPerson.setId(missingKey);
 
-	// PersonRepository is really a HazelcastRepository
-	@Resource private CrudRepository<Person, String> personRepository;
+        people.add(missingPerson);
 
-	@Rule public TestName testName = new TestName();
+        for (int year = Integer.valueOf(NINETEEN_HUNDRED); year < Integer.valueOf(TWO_THOUSAND); year += 10) {
+            Person person = this.personMap.get(Integer.toString(year));
+            if (person != null) {
+                people.add(person);
+            }
+        }
 
-	private long hazelcastCountBefore = -1L;
-	private long springCountBefore = -1L;
+        assertThat("Deletion list contains both missing and existing entries", people.size(), greaterThan(1));
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		// Suggest a winner for 1900 - https://en.wikipedia.org/wiki/Georges_M%C3%A9li%C3%A8s
-		suggestedWinner1900.setId(NINETEEN_HUNDRED);
-		suggestedWinner1900.setFirstname("Georges");
-		suggestedWinner1900.setLastname("Melies");
+        this.personRepository.deleteAll(people);
 
-		// Suggest a winner for 2000, for Cast Away
-		suggestedWinner2000.setId(TWO_THOUSAND);
-		suggestedWinner2000.setFirstname("Tom");
-		suggestedWinner2000.setLastname("Hanks");
-	}
+        // Missing items should not be deleted
+        this.checkAfterCounts(1 - people.size());
 
-	@Before
-	public void setUp() {
-		super.setUp();
+        // First item didn't exist to delete, second onwards did
+        for (int i = 1; i < people.size(); i++) {
+            String key = people.get(i).getId();
+            assertNull("List item " + i + ", key " + key + " not in Hazelcast", super.personMap.get(key));
+            assertFalse("List item " + i + ", key " + key + " not Spring", this.personRepository.findById(key).isPresent());
+        }
+    }
 
-		this.hazelcastCountBefore = super.personMap.size();
-		this.springCountBefore = this.personRepository.count();
+    @Test
+    public void deleteValue() {
+        String year = TWO_THOUSAND;
 
-		assertThat("Test data exists", this.springCountBefore, greaterThan(0L));
-		assertThat("Spring==Hazelcast before", this.springCountBefore, equalTo(this.hazelcastCountBefore));
+        Person person = super.personMap.get(year);
 
-		assertNull("Key '1800' not in Hazelcast", super.personMap.get(EIGHTEEN_HUNDRED));
-		assertFalse("Key '1800' not in Spring", this.personRepository.findById(EIGHTEEN_HUNDRED).isPresent());
+        // Use VALUE, otherwise same as deleteKey()
+        this.personRepository.delete(person);
 
-		assertNull("Key '1900' not in Hazelcast", super.personMap.get(NINETEEN_HUNDRED));
-		assertFalse("Key '1900' not in Spring", this.personRepository.findById(NINETEEN_HUNDRED).isPresent());
+        assertNull("Person not in Hazelcast after deletion", super.personMap.get(year));
+        assertFalse("Person not in Spring after deletion", this.personRepository.findById(year).isPresent());
 
-		assertNotNull("Key '2000' in Hazelcast", super.personMap.get(TWO_THOUSAND));
-		assertTrue("Key '2000' in Spring", this.personRepository.findById(TWO_THOUSAND).isPresent());
-	}
+        this.checkAfterCounts(-1);
+    }
 
-	@Test
-	public void count() {
-		// CrudRepository.count() already tested in @Before this.setup().
-		;
-	}
+    @Test
+    public void deleteKey() {
+        String year = TWO_THOUSAND;
 
-	@Test
-	public void deleteIterable() {
-		List<Person> people = new ArrayList<>();
+        // Use KEY, otherwise same as deleteValue()
+        this.personRepository.deleteById(year);
 
-		String missingKey = EIGHTEEN_HUNDRED;
-		Person missingPerson = new Person();
-		missingPerson.setId(missingKey);
+        assertNull("Person not in Hazelcast after deletion", super.personMap.get(year));
+        assertFalse("Person not in Spring after deletion", this.personRepository.findById(year).isPresent());
 
-		people.add(missingPerson);
+        this.checkAfterCounts(-1);
+    }
 
-		for (int year = Integer.valueOf(NINETEEN_HUNDRED); year < Integer.valueOf(TWO_THOUSAND); year += 10) {
-			Person person = this.personMap.get(Integer.toString(year));
-			if (person != null) {
-				people.add(person);
-			}
-		}
+    @Test
+    public void deleteAll() {
+        this.personRepository.deleteAll();
 
-		assertThat("Deletion list contains both missing and existing entries", people.size(), greaterThan(1));
+        long hazelcastCountAfter = super.personMap.size();
+        long springCountAfter = this.personRepository.count();
 
-		this.personRepository.deleteAll(people);
+        assertThat("All Hazelcast data deleted", hazelcastCountAfter, equalTo(0L));
+        assertThat("All Spring data deleted", springCountAfter, equalTo(0L));
+    }
 
-		// Missing items should not be deleted
-		this.checkAfterCounts(1 - people.size());
+    @Test
+    public void exists() {
+        assertNull("Key '1800' not in Hazelcast", super.personMap.get(EIGHTEEN_HUNDRED));
+        assertFalse("Key '1800' not in Spring", this.personRepository.existsById(EIGHTEEN_HUNDRED));
 
-		// First item didn't exist to delete, second onwards did
-		for (int i = 1; i < people.size(); i++) {
-			String key = people.get(i).getId();
-			assertNull("List item " + i + ", key " + key + " not in Hazelcast", super.personMap.get(key));
-			assertFalse("List item " + i + ", key " + key + " not Spring", this.personRepository.findById(key).isPresent());
-		}
-	}
+        assertNotNull("Key '2000' in Hazelcast", super.personMap.get(TWO_THOUSAND));
+        assertTrue("Key '2000' in Spring", this.personRepository.existsById(TWO_THOUSAND));
+    }
 
-	@Test
-	public void deleteValue() {
-		String year = TWO_THOUSAND;
+    @Test
+    public void findAll() {
+        Iterable<Person> iterable = this.personRepository.findAll();
 
-		Person person = super.personMap.get(year);
+        assertNotNull("Iterable", iterable);
 
-		// Use VALUE, otherwise same as deleteKey()
-		this.personRepository.delete(person);
+        int count = 0;
+        Set<String> keysRetrieved = new TreeSet<>();
 
-		assertNull("Person not in Hazelcast after deletion", super.personMap.get(year));
-		assertFalse("Person not in Spring after deletion", this.personRepository.findById(year).isPresent());
+        for (Person springPerson : iterable) {
+            assertNotNull("List item " + count, springPerson);
 
-		this.checkAfterCounts(-1);
-	}
+            String key = springPerson.getId();
+            assertNotNull("List item " + count + ", key", key);
 
-	@Test
-	public void deleteKey() {
-		String year = TWO_THOUSAND;
+            assertFalse("List item " + count + ", key " + key + " is unique in the list", keysRetrieved.contains(key));
 
-		// Use KEY, otherwise same as deleteValue()
-		this.personRepository.deleteById(year);
+            Person hazelcastPerson = super.personMap.get(key);
+            assertThat("List item " + count + ", key " + key + " is correct", hazelcastPerson, equalTo(springPerson));
 
-		assertNull("Person not in Hazelcast after deletion", super.personMap.get(year));
-		assertFalse("Person not in Spring after deletion", this.personRepository.findById(year).isPresent());
+            count++;
+            keysRetrieved.add(key);
+        }
 
-		this.checkAfterCounts(-1);
-	}
+        assertThat("All data retrieved", new Long(count), equalTo(hazelcastCountBefore));
+    }
 
-	@Test
-	public void deleteAll() {
-		this.personRepository.deleteAll();
+    @Test
+    public void findAllIterable() {
+        List<String> keys = new ArrayList<>();
 
-		long hazelcastCountAfter = super.personMap.size();
-		long springCountAfter = this.personRepository.count();
+        String missingKey = EIGHTEEN_HUNDRED;
 
-		assertThat("All Hazelcast data deleted", hazelcastCountAfter, equalTo(0L));
-		assertThat("All Spring data deleted", springCountAfter, equalTo(0L));
-	}
+        keys.add(missingKey);
 
-	@Test
-	public void exists() {
-		assertNull("Key '1800' not in Hazelcast", super.personMap.get(EIGHTEEN_HUNDRED));
-		assertFalse("Key '1800' not in Spring", this.personRepository.existsById(EIGHTEEN_HUNDRED));
+        for (int year = Integer.valueOf(NINETEEN_HUNDRED); year < Integer.valueOf(TWO_THOUSAND); year += 10) {
+            String key = Integer.toString(year);
+            if (this.personMap.containsKey(key)) {
+                keys.add(key);
+            }
+        }
 
-		assertNotNull("Key '2000' in Hazelcast", super.personMap.get(TWO_THOUSAND));
-		assertTrue("Key '2000' in Spring", this.personRepository.existsById(TWO_THOUSAND));
-	}
+        assertThat("Input list contains both missing and existing entries", keys.size(), greaterThan(1));
+        assertThat("Input list is a true subset", new Long(keys.size()), lessThan(this.hazelcastCountBefore));
 
-	@Test
-	public void findAll() {
-		Iterable<Person> iterable = this.personRepository.findAll();
+        Iterable<Person> iterable = this.personRepository.findAllById(keys);
 
-		assertNotNull("Iterable", iterable);
+        assertNotNull("Iterable", iterable);
 
-		int count = 0;
-		Set<String> keysRetrieved = new TreeSet<>();
+        // Missing items should not be retrieved
+        int expectedRetrievals = keys.size() - 1;
 
-		for (Person springPerson : iterable) {
-			assertNotNull("List item " + count, springPerson);
+        int count = 0;
+        Set<String> keysRetrieved = new TreeSet<>();
 
-			String key = springPerson.getId();
-			assertNotNull("List item " + count + ", key", key);
+        for (Person springPerson : iterable) {
+            assertNotNull("List item " + count, springPerson);
 
-			assertFalse("List item " + count + ", key " + key + " is unique in the list", keysRetrieved.contains(key));
+            String key = springPerson.getId();
+            assertNotNull("List item " + count + ", key", key);
 
-			Person hazelcastPerson = super.personMap.get(key);
-			assertThat("List item " + count + ", key " + key + " is correct", hazelcastPerson, equalTo(springPerson));
+            assertFalse("List item " + count + ", key " + key + " is unique in the list", keysRetrieved.contains(key));
 
-			count++;
-			keysRetrieved.add(key);
-		}
+            Person hazelcastPerson = super.personMap.get(key);
+            assertThat("List item " + count + ", key " + key + " does exist", hazelcastPerson, equalTo(springPerson));
 
-		assertThat("All data retrieved", new Long(count), equalTo(hazelcastCountBefore));
-	}
+            assertTrue("List item " + count + ", key " + key + " was requested", keys.contains(key));
 
-	@Test
-	public void findAllIterable() {
-		List<String> keys = new ArrayList<>();
+            count++;
+            keysRetrieved.add(key);
+        }
 
-		String missingKey = EIGHTEEN_HUNDRED;
+        assertThat("All available selections retrieved", expectedRetrievals, equalTo(keysRetrieved.size()));
+    }
 
-		keys.add(missingKey);
+    @Test
+    public void findOneKey() {
+        String key = TWO_THOUSAND;
+        Person winner = this.personRepository.findById(key).orElse(null);
 
-		for (int year = Integer.valueOf(NINETEEN_HUNDRED); year < Integer.valueOf(TWO_THOUSAND); year += 10) {
-			String key = Integer.toString(year);
-			if (this.personMap.containsKey(key)) {
-				keys.add(key);
-			}
-		}
+        assertNotNull("Winner found for year " + key, winner);
+        assertThat("Correct id for " + key, winner.getId(), equalTo(key));
+        assertThat("Correct last name for " + key, winner.getFirstname(), equalTo("Russell"));
+        assertThat("Correct last name for " + key, winner.getLastname(), equalTo("Crowe"));
+    }
 
-		assertThat("Input list contains both missing and existing entries", keys.size(), greaterThan(1));
-		assertThat("Input list is a true subset", new Long(keys.size()), lessThan(this.hazelcastCountBefore));
+    @Test
+    public void saveIterable() {
 
-		Iterable<Person> iterable = this.personRepository.findAllById(keys);
+        // Insert new for 1900 and update for 2000
+        List<Person> suggestedWinners = new ArrayList<>();
+        suggestedWinners.add(suggestedWinner1900);
+        suggestedWinners.add(suggestedWinner2000);
 
-		assertNotNull("Iterable", iterable);
+        Iterable<Person> updatedWinners = this.personRepository.saveAll(suggestedWinners);
+        assertNotNull("Updated winners", updatedWinners);
 
-		// Missing items should not be retrieved
-		int expectedRetrievals = keys.size() - 1;
+        Set<String> keys = new TreeSet<>();
+        for (Person updatedWinner : updatedWinners) {
+            assertNotNull("updatedWinner", updatedWinner);
 
-		int count = 0;
-		Set<String> keysRetrieved = new TreeSet<>();
+            String key = updatedWinner.getId();
+            assertNotNull("updatedWinner.getKey()", key);
 
-		for (Person springPerson : iterable) {
-			assertNotNull("List item " + count, springPerson);
+            // Check no duplicates in returned list
+            assertFalse("Key only returned once for " + key, keys.contains(key));
+            keys.add(key);
 
-			String key = springPerson.getId();
-			assertNotNull("List item " + count + ", key", key);
+            // Capture match in list, not just that it contains it
+            Person suggestedWinner = null;
+            for (Person p : suggestedWinners) {
+                if (p.getId().equals(key)) {
+                    suggestedWinner = p;
+                }
+            }
+            assertNotNull("Key returned " + key + " was requested", suggestedWinner);
 
-			assertFalse("List item " + count + ", key " + key + " is unique in the list", keysRetrieved.contains(key));
+            // Save returns possibly updated instance, for Haelcast should be a clone
+            assertThat("Unchanged id for " + key, updatedWinner.getId(), equalTo(suggestedWinner.getId()));
+            assertThat("Unchanged last name for " + key, updatedWinner.getFirstname(), equalTo(suggestedWinner.getFirstname()));
+            assertThat("Unchanged last name for " + key, updatedWinner.getLastname(), equalTo(suggestedWinner.getLastname()));
 
-			Person hazelcastPerson = super.personMap.get(key);
-			assertThat("List item " + count + ", key " + key + " does exist", hazelcastPerson, equalTo(springPerson));
+            // Confirm change stored
+            Person springWinner = this.personRepository.findById(key).orElse(null);
+            Person hazelcastWinner = super.personMap.get(key);
 
-			assertTrue("List item " + count + ", key " + key + " was requested", keys.contains(key));
+            assertNotNull("Spring person for " + key, springWinner);
+            assertThat("Spring id for " + key, springWinner.getId(), equalTo(suggestedWinner.getId()));
+            assertThat("Spring last name for " + key, springWinner.getFirstname(), equalTo(suggestedWinner.getFirstname()));
+            assertThat("Spring last name for " + key, springWinner.getLastname(), equalTo(suggestedWinner.getLastname()));
 
-			count++;
-			keysRetrieved.add(key);
-		}
+            assertNotNull("Hazelcast person for " + key, hazelcastWinner);
+            assertThat("Hazelcast id for " + key, hazelcastWinner.getId(), equalTo(suggestedWinner.getId()));
+            assertThat("Hazelcast last name for " + key, hazelcastWinner.getFirstname(), equalTo(suggestedWinner.getFirstname()));
+            assertThat("Hazelcast last name for " + key, hazelcastWinner.getLastname(), equalTo(suggestedWinner.getLastname()));
+        }
 
-		assertThat("All available selections retrieved", expectedRetrievals, equalTo(keysRetrieved.size()));
-	}
+        assertThat("All updates processed", keys.size(), equalTo(suggestedWinners.size()));
 
-	@Test
-	public void findOneKey() {
-		String key = TWO_THOUSAND;
-		Person winner = this.personRepository.findById(key).orElse(null);
+        this.checkAfterCounts(+1);
+    }
 
-		assertNotNull("Winner found for year " + key, winner);
-		assertThat("Correct id for " + key, winner.getId(), equalTo(key));
-		assertThat("Correct last name for " + key, winner.getFirstname(), equalTo("Russell"));
-		assertThat("Correct last name for " + key, winner.getLastname(), equalTo("Crowe"));
-	}
+    @Test
+    public void saveValue() {
 
-	@Test
-	public void saveIterable() {
+        // Insert new for 1900 and update for 2000
+        for (Person suggestedWinner : new Person[]{suggestedWinner1900, suggestedWinner2000}) {
 
-		// Insert new for 1900 and update for 2000
-		List<Person> suggestedWinners = new ArrayList<>();
-		suggestedWinners.add(suggestedWinner1900);
-		suggestedWinners.add(suggestedWinner2000);
+            // Save returns possibly updated instance, for Haelcast should be a clone
+            String key = suggestedWinner.getId();
+            Person updatedWinner = this.personRepository.save(suggestedWinner);
+            assertNotNull("Updated person returned for " + key, updatedWinner);
+            assertThat("Unchanged id for " + key, updatedWinner.getId(), equalTo(suggestedWinner.getId()));
+            assertThat("Unchanged last name for " + key, updatedWinner.getFirstname(), equalTo(suggestedWinner.getFirstname()));
+            assertThat("Unchanged last name for " + key, updatedWinner.getLastname(), equalTo(suggestedWinner.getLastname()));
 
-		Iterable<Person> updatedWinners = this.personRepository.saveAll(suggestedWinners);
-		assertNotNull("Updated winners", updatedWinners);
+            // Confirm change stored
+            Person springWinner = this.personRepository.findById(key).orElse(null);
+            Person hazelcastWinner = super.personMap.get(key);
 
-		Set<String> keys = new TreeSet<>();
-		for (Person updatedWinner : updatedWinners) {
-			assertNotNull("updatedWinner", updatedWinner);
+            assertNotNull("Spring person for " + key, springWinner);
+            assertThat("Spring id for " + key, springWinner.getId(), equalTo(suggestedWinner.getId()));
+            assertThat("Spring last name for " + key, springWinner.getFirstname(), equalTo(suggestedWinner.getFirstname()));
+            assertThat("Spring last name for " + key, springWinner.getLastname(), equalTo(suggestedWinner.getLastname()));
 
-			String key = updatedWinner.getId();
-			assertNotNull("updatedWinner.getKey()", key);
+            assertNotNull("Hazelcast person for " + key, hazelcastWinner);
+            assertThat("Hazelcast id for " + key, hazelcastWinner.getId(), equalTo(suggestedWinner.getId()));
+            assertThat("Hazelcast last name for " + key, hazelcastWinner.getFirstname(), equalTo(suggestedWinner.getFirstname()));
+            assertThat("Hazelcast last name for " + key, hazelcastWinner.getLastname(), equalTo(suggestedWinner.getLastname()));
+        }
 
-			// Check no duplicates in returned list
-			assertFalse("Key only returned once for " + key, keys.contains(key));
-			keys.add(key);
+        this.checkAfterCounts(+1);
+    }
 
-			// Capture match in list, not just that it contains it
-			Person suggestedWinner = null;
-			for (Person p : suggestedWinners) {
-				if (p.getId().equals(key)) {
-					suggestedWinner = p;
-				}
-			}
-			assertNotNull("Key returned " + key + " was requested", suggestedWinner);
+    // Common methods used by tests
 
-			// Save returns possibly updated instance, for Haelcast should be a clone
-			assertThat("Unchanged id for " + key, updatedWinner.getId(), equalTo(suggestedWinner.getId()));
-			assertThat("Unchanged last name for " + key, updatedWinner.getFirstname(),
-					equalTo(suggestedWinner.getFirstname()));
-			assertThat("Unchanged last name for " + key, updatedWinner.getLastname(), equalTo(suggestedWinner.getLastname()));
+    private void checkAfterCounts(int delta) {
+        long hazelcastCountAfter = super.personMap.size();
+        long springCountAfter = this.personRepository.count();
 
-			// Confirm change stored
-			Person springWinner = this.personRepository.findById(key).orElse(null);
-			Person hazelcastWinner = super.personMap.get(key);
+        String message;
+        if (delta < 0) {
+            message = this.testName.getMethodName() + "Inserted correct amount into ";
+        } else {
+            message = this.testName.getMethodName() + "Deleted correct amount from ";
+        }
 
-			assertNotNull("Spring person for " + key, springWinner);
-			assertThat("Spring id for " + key, springWinner.getId(), equalTo(suggestedWinner.getId()));
-			assertThat("Spring last name for " + key, springWinner.getFirstname(), equalTo(suggestedWinner.getFirstname()));
-			assertThat("Spring last name for " + key, springWinner.getLastname(), equalTo(suggestedWinner.getLastname()));
-
-			assertNotNull("Hazelcast person for " + key, hazelcastWinner);
-			assertThat("Hazelcast id for " + key, hazelcastWinner.getId(), equalTo(suggestedWinner.getId()));
-			assertThat("Hazelcast last name for " + key, hazelcastWinner.getFirstname(),
-					equalTo(suggestedWinner.getFirstname()));
-			assertThat("Hazelcast last name for " + key, hazelcastWinner.getLastname(),
-					equalTo(suggestedWinner.getLastname()));
-		}
-
-		assertThat("All updates processed", keys.size(), equalTo(suggestedWinners.size()));
-
-		this.checkAfterCounts(+1);
-	}
-
-	@Test
-	public void saveValue() {
-
-		// Insert new for 1900 and update for 2000
-		for (Person suggestedWinner : new Person[] { suggestedWinner1900, suggestedWinner2000 }) {
-
-			// Save returns possibly updated instance, for Haelcast should be a clone
-			String key = suggestedWinner.getId();
-			Person updatedWinner = this.personRepository.save(suggestedWinner);
-			assertNotNull("Updated person returned for " + key, updatedWinner);
-			assertThat("Unchanged id for " + key, updatedWinner.getId(), equalTo(suggestedWinner.getId()));
-			assertThat("Unchanged last name for " + key, updatedWinner.getFirstname(),
-					equalTo(suggestedWinner.getFirstname()));
-			assertThat("Unchanged last name for " + key, updatedWinner.getLastname(), equalTo(suggestedWinner.getLastname()));
-
-			// Confirm change stored
-			Person springWinner = this.personRepository.findById(key).orElse(null);
-			Person hazelcastWinner = super.personMap.get(key);
-
-			assertNotNull("Spring person for " + key, springWinner);
-			assertThat("Spring id for " + key, springWinner.getId(), equalTo(suggestedWinner.getId()));
-			assertThat("Spring last name for " + key, springWinner.getFirstname(), equalTo(suggestedWinner.getFirstname()));
-			assertThat("Spring last name for " + key, springWinner.getLastname(), equalTo(suggestedWinner.getLastname()));
-
-			assertNotNull("Hazelcast person for " + key, hazelcastWinner);
-			assertThat("Hazelcast id for " + key, hazelcastWinner.getId(), equalTo(suggestedWinner.getId()));
-			assertThat("Hazelcast last name for " + key, hazelcastWinner.getFirstname(),
-					equalTo(suggestedWinner.getFirstname()));
-			assertThat("Hazelcast last name for " + key, hazelcastWinner.getLastname(),
-					equalTo(suggestedWinner.getLastname()));
-		}
-
-		this.checkAfterCounts(+1);
-	}
-
-	// Common methods used by tests
-
-	private void checkAfterCounts(int delta) {
-		long hazelcastCountAfter = super.personMap.size();
-		long springCountAfter = this.personRepository.count();
-
-		String message;
-		if (delta < 0) {
-			message = this.testName.getMethodName() + "Inserted correct amount into ";
-		} else {
-			message = this.testName.getMethodName() + "Deleted correct amount from ";
-		}
-
-		assertThat(message + "Hazelcast", this.hazelcastCountBefore + delta, equalTo(hazelcastCountAfter));
-		assertThat(message + "Spring", this.springCountBefore + delta, equalTo(springCountAfter));
-		assertThat(this.testName.getMethodName() + ":Spring==Hazelcast after", springCountAfter,
-				equalTo(hazelcastCountAfter));
-	}
+        assertThat(message + "Hazelcast", this.hazelcastCountBefore + delta, equalTo(hazelcastCountAfter));
+        assertThat(message + "Spring", this.springCountBefore + delta, equalTo(springCountAfter));
+        assertThat(this.testName.getMethodName() + ":Spring==Hazelcast after", springCountAfter, equalTo(hazelcastCountAfter));
+    }
 
 }

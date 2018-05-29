@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2008-2018, Hazelcast, Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package test.utils;
 
 import com.hazelcast.core.DistributedObject;
@@ -24,14 +40,14 @@ import static org.hamcrest.Matchers.isIn;
 import static org.junit.Assert.assertThat;
 
 /**
- * <P>
+ * <p>
  * Common processing for integration tests.
  * </P>
- * <P>
+ * <p>
  * Test data is based around
  * <a href=https://en.wikipedia.org/wiki/Academy_Awards>the Oscars</a>.
  * </P>
- * <P>
+ * <p>
  * Load the {@code Movie} {@code IMap} with the Oscar winners for best movies,
  * {@code Person} with the Oscar winners for best actor, and {@code Song}
  * with the best theme songs.
@@ -40,129 +56,128 @@ import static org.junit.Assert.assertThat;
  * @author Neil Stevenson
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { InstanceHelper.class })
+@ContextConfiguration(classes = {InstanceHelper.class})
 @DirtiesContext
 public abstract class TestDataHelper {
-	@Autowired protected HazelcastInstance hazelcastInstance;
+    @Autowired
+    protected HazelcastInstance hazelcastInstance;
 
-	protected IMap<String, Makeup>  makeupMap;
-	protected IMap<String, Movie>  movieMap;
-	protected IMap<String, Person> personMap;
-	protected IMap<String, Song>   songMap;
+    protected IMap<String, Makeup> makeupMap;
+    protected IMap<String, Movie> movieMap;
+    protected IMap<String, Person> personMap;
+    protected IMap<String, Song> songMap;
 
-	/* Use Hazelcast directly, minimise reliance on Spring as the object is
-	 * to test Spring encapsulation of Hazelcast.
-	 */
-	@Before
-	public void setUp() {
-		assertThat("Correct Hazelcast instance", this.hazelcastInstance.getName(),
-				equalTo(TestConstants.CLIENT_INSTANCE_NAME));
+    /* Use Hazelcast directly, minimise reliance on Spring as the object is
+     * to test Spring encapsulation of Hazelcast.
+     */
+    @Before
+    public void setUp() {
+        assertThat("Correct Hazelcast instance", this.hazelcastInstance.getName(), equalTo(TestConstants.CLIENT_INSTANCE_NAME));
 
-		checkMapsEmpty("setUp");
+        checkMapsEmpty("setUp");
 
-		this.makeupMap = this.hazelcastInstance.getMap(TestConstants.MAKEUP_MAP_NAME);
-		loadMakeup(this.makeupMap);
+        this.makeupMap = this.hazelcastInstance.getMap(TestConstants.MAKEUP_MAP_NAME);
+        loadMakeup(this.makeupMap);
 
-		this.movieMap = this.hazelcastInstance.getMap(TestConstants.MOVIE_MAP_NAME);
-		loadMovie(this.movieMap);
+        this.movieMap = this.hazelcastInstance.getMap(TestConstants.MOVIE_MAP_NAME);
+        loadMovie(this.movieMap);
 
-		this.personMap = this.hazelcastInstance.getMap(TestConstants.PERSON_MAP_NAME);
-		loadPerson(this.personMap);
+        this.personMap = this.hazelcastInstance.getMap(TestConstants.PERSON_MAP_NAME);
+        loadPerson(this.personMap);
 
-		this.songMap = this.hazelcastInstance.getMap(TestConstants.SONG_MAP_NAME);
-		loadSong(this.songMap);
+        this.songMap = this.hazelcastInstance.getMap(TestConstants.SONG_MAP_NAME);
+        loadSong(this.songMap);
 
-		checkMapsNotEmpty("setUp");
+        checkMapsNotEmpty("setUp");
 
-		/* As Hazelcast will create objects on demand, check no more are present
-		 * than should be.
-		 */
-		Collection<DistributedObject> distributedObjects = this.hazelcastInstance.getDistributedObjects();
-		assertThat("Correct number of distributed objects",
-				distributedObjects.size(), equalTo(TestConstants.OSCAR_MAP_NAMES.length));
-	}
+        /* As Hazelcast will create objects on demand, check no more are present
+         * than should be.
+         */
+        Collection<DistributedObject> distributedObjects = this.hazelcastInstance.getDistributedObjects();
+        assertThat("Correct number of distributed objects", distributedObjects.size(),
+                equalTo(TestConstants.OSCAR_MAP_NAMES.length));
+    }
 
-	private void checkMapsEmpty(String phase) {
-		for (String mapName : TestConstants.OSCAR_MAP_NAMES) {
-			IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
-			assertThat(phase + "(): No test data left behind by previous tests in '" + iMap.getName() + "'",
-					iMap.size(), equalTo(0));
-		}
-	}
+    private void checkMapsEmpty(String phase) {
+        for (String mapName : TestConstants.OSCAR_MAP_NAMES) {
+            IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
+            assertThat(phase + "(): No test data left behind by previous tests in '" + iMap.getName() + "'", iMap.size(),
+                    equalTo(0));
+        }
+    }
 
-	private void checkMapsNotEmpty(String phase) {
-		for (String mapName : TestConstants.OSCAR_MAP_NAMES) {
-			IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
-			assertThat(phase + "(): Test data has been loaded into '" + iMap.getName() + "'",
-					iMap.size(), greaterThan(0));
-		}
-	}
+    private void checkMapsNotEmpty(String phase) {
+        for (String mapName : TestConstants.OSCAR_MAP_NAMES) {
+            IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
+            assertThat(phase + "(): Test data has been loaded into '" + iMap.getName() + "'", iMap.size(), greaterThan(0));
+        }
+    }
 
-	private void loadMakeup(IMap<String, Makeup> akeupMap) {
-		for (int i = 0; i < Oscars.bestMakeUp.length; i++) {
-			Makeup makeup = new Makeup();
+    private void loadMakeup(IMap<String, Makeup> akeupMap) {
+        for (int i = 0; i < Oscars.bestMakeUp.length; i++) {
+            Makeup makeup = new Makeup();
 
-			makeup.setId(Integer.toString((int) Oscars.bestMakeUp[i][0]));
-			makeup.setFilmTitle(Oscars.bestMakeUp[i][1].toString());
-			makeup.setArtistOrArtists(Oscars.bestMakeUp[i][2].toString());
+            makeup.setId(Integer.toString((int) Oscars.bestMakeUp[i][0]));
+            makeup.setFilmTitle(Oscars.bestMakeUp[i][1].toString());
+            makeup.setArtistOrArtists(Oscars.bestMakeUp[i][2].toString());
 
-			makeupMap.put(makeup.getId(), makeup);
-		}
-	}
+            makeupMap.put(makeup.getId(), makeup);
+        }
+    }
 
-	private void loadMovie(IMap<String, Movie> movieMap) {
-		for (int i = 0; i < Oscars.bestPictures.length; i++) {
-			Movie movie = new Movie();
+    private void loadMovie(IMap<String, Movie> movieMap) {
+        for (int i = 0; i < Oscars.bestPictures.length; i++) {
+            Movie movie = new Movie();
 
-			movie.setId(Integer.toString((int) Oscars.bestPictures[i][0]));
-			movie.setTitle(Oscars.bestPictures[i][1].toString());
+            movie.setId(Integer.toString((int) Oscars.bestPictures[i][0]));
+            movie.setTitle(Oscars.bestPictures[i][1].toString());
 
-			movieMap.put(movie.getId(), movie);
-		}
-	}
+            movieMap.put(movie.getId(), movie);
+        }
+    }
 
-	private void loadPerson(IMap<String, Person> personMap) {
-		for (int i = 0; i < Oscars.bestActors.length; i++) {
-			Person person = new Person();
+    private void loadPerson(IMap<String, Person> personMap) {
+        for (int i = 0; i < Oscars.bestActors.length; i++) {
+            Person person = new Person();
 
-			person.setId(Integer.toString((int) Oscars.bestActors[i][0]));
-			person.setFirstname(Oscars.bestActors[i][1].toString());
-			person.setLastname(Oscars.bestActors[i][2].toString());
+            person.setId(Integer.toString((int) Oscars.bestActors[i][0]));
+            person.setFirstname(Oscars.bestActors[i][1].toString());
+            person.setLastname(Oscars.bestActors[i][2].toString());
 
-			personMap.put(person.getId(), person);
-		}
-	}
+            personMap.put(person.getId(), person);
+        }
+    }
 
-	private void loadSong(IMap<String, Song> songMap) {
-		for (int i = 0; i < Oscars.bestSongs.length; i++) {
-			Song song = new Song();
+    private void loadSong(IMap<String, Song> songMap) {
+        for (int i = 0; i < Oscars.bestSongs.length; i++) {
+            Song song = new Song();
 
-			song.setId(Integer.toString((int) Oscars.bestSongs[i][0]));
-			song.setTitle(Oscars.bestSongs[i][1].toString());
+            song.setId(Integer.toString((int) Oscars.bestSongs[i][0]));
+            song.setTitle(Oscars.bestSongs[i][1].toString());
 
-			songMap.put(song.getId(), song);
-		}
-	}
+            songMap.put(song.getId(), song);
+        }
+    }
 
-	@After
-	public void tearDown() {
-		for (String mapName : TestConstants.OSCAR_MAP_NAMES) {
-			IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
-			iMap.clear();
-		}
+    @After
+    public void tearDown() {
+        for (String mapName : TestConstants.OSCAR_MAP_NAMES) {
+            IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
+            iMap.clear();
+        }
 
-		checkMapsEmpty("tearDown");
+        checkMapsEmpty("tearDown");
 
-		Collection<DistributedObject> distributedObjects = this.hazelcastInstance.getDistributedObjects();
+        Collection<DistributedObject> distributedObjects = this.hazelcastInstance.getDistributedObjects();
 
-		for (DistributedObject distributedObject : distributedObjects) {
-			assertThat(distributedObject.getName(), distributedObject, instanceOf(IMap.class));
-			assertThat(distributedObject.getName(), isIn(TestConstants.OSCAR_MAP_NAMES));
-		}
+        for (DistributedObject distributedObject : distributedObjects) {
+            assertThat(distributedObject.getName(), distributedObject, instanceOf(IMap.class));
+            assertThat(distributedObject.getName(), isIn(TestConstants.OSCAR_MAP_NAMES));
+        }
 
-		assertThat("Correct number of distributed objects",
-				distributedObjects.size(), equalTo(TestConstants.OSCAR_MAP_NAMES.length));
+        assertThat("Correct number of distributed objects", distributedObjects.size(),
+                equalTo(TestConstants.OSCAR_MAP_NAMES.length));
 
-	}
+    }
 
 }

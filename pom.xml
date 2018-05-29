@@ -1,106 +1,123 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<!--
+  ~ Copyright (c) 2008-2018, Hazelcast, Inc. All Rights Reserved.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
 
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<groupId>com.hazelcast</groupId>
-	<artifactId>spring-data-hazelcast</artifactId>
-	<version>2.0.0-SNAPSHOT</version>
+    <modelVersion>4.0.0</modelVersion>
 
-	<name>Spring Data Hazelcast</name>
-  <description>Spring Data module for Hazelcast repositories.</description>
+    <groupId>com.hazelcast</groupId>
+    <artifactId>spring-data-hazelcast</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
 
-	<parent>
-		<groupId>org.springframework.data.build</groupId>
-		<artifactId>spring-data-parent</artifactId>
-		<version>2.0.5.RELEASE</version>
-	</parent>
+    <name>Spring Data Hazelcast</name>
+    <description>Spring Data module for Hazelcast repositories.</description>
 
-	<properties>
-		<dist.key>DATAHC</dist.key>
-		<hazelcast>3.9.3</hazelcast>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-  		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<springdata.keyvalue>2.0.5.RELEASE</springdata.keyvalue>
-		<maven.gpg.plugin.version>1.4</maven.gpg.plugin.version>
-		<maven.javadoc.plugin.version>2.9</maven.javadoc.plugin.version>
-		<maven.sonar.plugin.version>3.3.0.603</maven.sonar.plugin.version>
-		<maven.jacoco.plugin.version>0.7.9</maven.jacoco.plugin.version>
-	</properties>
+    <parent>
+        <groupId>org.springframework.data.build</groupId>
+        <artifactId>spring-data-parent</artifactId>
+        <version>2.0.5.RELEASE</version>
+    </parent>
 
-	<dependencies>
+    <properties>
+        <dist.key>DATAHC</dist.key>
+        <hazelcast>3.9.3</hazelcast>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <springdata.keyvalue>2.0.5.RELEASE</springdata.keyvalue>
+        <maven.gpg.plugin.version>1.4</maven.gpg.plugin.version>
+        <maven.javadoc.plugin.version>2.9</maven.javadoc.plugin.version>
+        <maven.sonar.plugin.version>3.3.0.603</maven.sonar.plugin.version>
+        <maven.jacoco.plugin.version>0.7.9</maven.jacoco.plugin.version>
+    </properties>
 
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-keyvalue</artifactId>
-			<version>${springdata.keyvalue}</version>
-		</dependency>
+    <dependencies>
 
-		<dependency>
-			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast</artifactId>
-			<version>${hazelcast}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-keyvalue</artifactId>
+            <version>${springdata.keyvalue}</version>
+        </dependency>
 
-		<!-- SCOPE==test -->
-		<dependency>
-			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast-client</artifactId>
-			<version>${hazelcast}</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+            <version>${hazelcast}</version>
+        </dependency>
 
-	</dependencies>
+        <!-- SCOPE==test -->
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast-client</artifactId>
+            <version>${hazelcast}</version>
+            <scope>test</scope>
+        </dependency>
 
-	<build>
-		<plugins>
+    </dependencies>
 
-  			<plugin>
-  				<artifactId>maven-checkstyle-plugin</artifactId>
-  				<version>2.17</version>
-  				<configuration>
-  				    <!--  Checkstyle file copied from https://github.com/hazelcast/hazelcast/tree/master/checkstyle -->
-  					<failOnViolation>true</failOnViolation>
-      				<configLocation>${project.basedir}/checkstyle/checkstyle.xml</configLocation>
+    <build>
+        <plugins>
+
+            <plugin>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <!--  Checkstyle file copied from https://github.com/hazelcast/hazelcast/tree/master/checkstyle -->
+                    <failOnViolation>true</failOnViolation>
+                    <configLocation>${project.basedir}/checkstyle/checkstyle.xml</configLocation>
                     <propertyExpansion>main.basedir=${project.basedir}</propertyExpansion>
-  				</configuration>
-  				<executions>
-  					<execution>
-  						<phase>compile</phase>
-  						<goals>
-  							<goal>check</goal>
-  						</goals>
-  					</execution>
-  				</executions>
-  			</plugin>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-  			<plugin>
-  				<artifactId>maven-compiler-plugin</artifactId>
-  				<configuration>
-  					<source>1.8</source>
-  					<target>1.8</target>
-  				</configuration>
-  			</plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>1.4.1</version>
-				<executions>
-					<execution>
-						<id>enforce-rules</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<rules>
-						<requireJavaVersion>
-							<version>[1.8,1.9)</version>
-						</requireJavaVersion>
-					</rules>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce-rules</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <rules>
+                        <requireJavaVersion>
+                            <version>[1.8,1.9)</version>
+                        </requireJavaVersion>
+                    </rules>
+                </configuration>
+            </plugin>
 
             <!--  Run unit "*Test.java" and integration tests "*IT.java" from same module  -->
             <!-- so can remain single module maven project. Not necessarily ideal.         -->
@@ -119,7 +136,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                    	<id>default-integration-test</id>
+                        <id>default-integration-test</id>
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
@@ -139,7 +156,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                    	<id>default-test</id>
+                        <id>default-test</id>
                         <goals>
                             <goal>test</goal>
                         </goals>
@@ -147,35 +164,35 @@
                 </executions>
             </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>wagon-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.asciidoctor</groupId>
-				<artifactId>asciidoctor-maven-plugin</artifactId>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+            </plugin>
 
- 			<plugin>
- 				<groupId>org.codehaus.mojo</groupId>
- 				<artifactId>findbugs-maven-plugin</artifactId>
- 				<version>3.0.3</version>
- 				<configuration>
- 					<failOnError>true</failOnError>
- 				</configuration>
- 				<executions>
- 					<execution>
- 						<phase>compile</phase>
- 						<goals>
- 							<goal>check</goal>
- 						</goals>
- 					</execution>
- 				</executions>
- 			</plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>3.0.3</version>
+                <configuration>
+                    <failOnError>true</failOnError>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -191,9 +208,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<source>1.8</source>
-				</configuration>
+                <configuration>
+                    <source>1.8</source>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -203,143 +220,143 @@
                     </execution>
                 </executions>
             </plugin>
-		</plugins>
-	</build>
-<profiles>
-	<profile>
-		<id>release</id>
-		<properties>
-			<javadoc>true</javadoc>
-		</properties>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-gpg-plugin</artifactId>
-					<version>${maven.gpg.plugin.version}</version>
-					<executions>
-						<execution>
-							<id>sign-artifacts</id>
-							<phase>verify</phase>
-							<goals>
-								<goal>sign</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>release</id>
+            <properties>
+                <javadoc>true</javadoc>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.gpg.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>${maven.javadoc.plugin.version}</version>
-					<configuration>
-						<javaApiLinks>
-							<property>
-								<name>api_1.6</name>
-								<value>http://download.oracle.com/javase/1.6.0/docs/api/</value>
-							</property>
-							<property>
-								<name>api_1.7</name>
-								<value>http://download.oracle.com/javase/1.7.0/docs/api/</value>
-							</property>
-						</javaApiLinks>
-						<maxmemory>1024</maxmemory>
-					</configuration>
-					<executions>
-						<execution>
-							<id>attach-javadocs</id>
-							<goals>
-								<goal>jar</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven.javadoc.plugin.version}</version>
+                        <configuration>
+                            <javaApiLinks>
+                                <property>
+                                    <name>api_1.6</name>
+                                    <value>http://download.oracle.com/javase/1.6.0/docs/api/</value>
+                                </property>
+                                <property>
+                                    <name>api_1.7</name>
+                                    <value>http://download.oracle.com/javase/1.7.0/docs/api/</value>
+                                </property>
+                            </javaApiLinks>
+                            <maxmemory>1024</maxmemory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
 
-				<plugin>
-					<groupId>org.sonatype.plugins</groupId>
-					<artifactId>nexus-staging-maven-plugin</artifactId>
-					<version>1.6.3</version>
-					<extensions>true</extensions>
-					<configuration>
-						<serverId>release-repository</serverId>
-						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-						<autoReleaseAfterClose>true</autoReleaseAfterClose>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
-	</profile>
-	<profile>
-		<id>test-coverage</id>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.jacoco</groupId>
-					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>${maven.jacoco.plugin.version}</version>
-					<executions>
-						<execution>
-							<goals>
-								<goal>prepare-agent</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>2.19.1</version>
-					<configuration>
-						<failIfNoTests>true</failIfNoTests>
-						<includes>
-							<include>**/IT*.java</include>
-							<include>**/*IT.java</include>
-							<include>**/*ITCase.java</include>
-						</includes>
-					</configuration>
-					<executions>
-						<execution>
-							<id>default-integration-test</id>
-							<goals>
-								<goal>integration-test</goal>
-								<goal>verify</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<configuration>
-						<failIfNoTests>true</failIfNoTests>
-						<includes>
-							<include>**/Test*.java</include>
-							<include>**/*Test.java</include>
-							<include>**/*TestCase.java</include>
-						</includes>
-					</configuration>
-					<executions>
-						<execution>
-							<id>default-test</id>
-							<goals>
-								<goal>test</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>sonar-maven-plugin</artifactId>
-					<version>${maven.sonar.plugin.version}</version>
-				</plugin>
-			</plugins>
-		</build>
-	</profile>
-</profiles>
-	<!-- For Spring Bundlor plugin -->
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-plugins-release</id>
-			<url>http://repo.spring.io/plugins-release</url>
-		</pluginRepository>
-	</pluginRepositories>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.3</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>release-repository</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>test-coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${maven.jacoco.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.19.1</version>
+                        <configuration>
+                            <failIfNoTests>true</failIfNoTests>
+                            <includes>
+                                <include>**/IT*.java</include>
+                                <include>**/*IT.java</include>
+                                <include>**/*ITCase.java</include>
+                            </includes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>default-integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <failIfNoTests>true</failIfNoTests>
+                            <includes>
+                                <include>**/Test*.java</include>
+                                <include>**/*Test.java</include>
+                                <include>**/*TestCase.java</include>
+                            </includes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>default-test</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>sonar-maven-plugin</artifactId>
+                        <version>${maven.sonar.plugin.version}</version>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    <!-- For Spring Bundlor plugin -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-plugins-release</id>
+            <url>http://repo.spring.io/plugins-release</url>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>
