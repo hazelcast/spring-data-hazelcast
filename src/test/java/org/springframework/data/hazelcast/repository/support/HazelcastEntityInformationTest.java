@@ -21,8 +21,8 @@ import org.junit.Test;
 import org.springframework.data.hazelcast.HazelcastUtils;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.core.KeyValueTemplate;
+import org.springframework.data.mapping.MappingException;
 import org.springframework.data.mapping.PersistentEntity;
-import org.springframework.data.mapping.model.MappingException;
 import test.utils.domain.NoIdEntity;
 
 public class HazelcastEntityInformationTest {

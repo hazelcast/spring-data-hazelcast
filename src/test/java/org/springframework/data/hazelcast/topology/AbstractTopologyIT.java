@@ -60,7 +60,7 @@ public abstract class AbstractTopologyIT extends TestDataHelper {
 	public void obiWanKenobi() {
 		String NINETEEN_FIFTY_SEVEN = "1957";
 
-		Person springBefore = this.personRepository.findOne(NINETEEN_FIFTY_SEVEN);
+		Person springBefore = this.personRepository.findById(NINETEEN_FIFTY_SEVEN).orElse(null);
 
 		assertThat("1957 winner found", springBefore, notNullValue());
 		assertThat("Firstname Alec", springBefore.getFirstname(), equalTo("Alec"));
@@ -73,13 +73,13 @@ public abstract class AbstractTopologyIT extends TestDataHelper {
 
 		this.server_personMap.put(person.getId(), person);
 
-		Person springAfter = this.personRepository.findOne(NINETEEN_FIFTY_SEVEN);
+		Person springAfter = this.personRepository.findById(NINETEEN_FIFTY_SEVEN).orElse(null);
 
 		assertThat("1957 winner found again", springAfter, notNullValue());
 		assertThat("Firstname changed", springAfter.getFirstname(), not(equalTo("Alec")));
 		assertThat("Lastname changed", springAfter.getLastname(), not(equalTo("Guinness")));
 
-		this.personRepository.delete(NINETEEN_FIFTY_SEVEN);
+		this.personRepository.deleteById(NINETEEN_FIFTY_SEVEN);
 
 		assertThat("Obi-Wan has vanished", this.server_personMap.containsKey(NINETEEN_FIFTY_SEVEN), equalTo(false));
 	}
