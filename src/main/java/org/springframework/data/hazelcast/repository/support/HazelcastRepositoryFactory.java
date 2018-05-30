@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-2016 the original author or authors.
+ * Copyright (c) 2008-2018, Hazelcast, Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,64 +29,66 @@ import org.springframework.util.Assert;
 import java.util.Optional;
 
 /**
- * <P>
+ * <p>
  * Hazelcast version of {@link KeyValueRepositoryFactory}, a factory to build {@link HazelcastRepository} instances.
  * </P>
- * <P>
+ * <p>
  * The purpose of extending is to ensure that the {@link #getQueryLookupStrategy} method returns a
  * {@link HazelcastQueryLookupStrategy} rather than the default.
  * </P>
- * <P>
+ * <p>
  * The end goal of this bean is for {@link HazelcastPartTreeQuery} to be used for query preparation.
  * </P>
  *
  * @author Neil Stevenson
  */
-public class HazelcastRepositoryFactory extends KeyValueRepositoryFactory {
+public class HazelcastRepositoryFactory
+        extends KeyValueRepositoryFactory {
 
-	private static final Class<SpelQueryCreator> DEFAULT_QUERY_CREATOR = SpelQueryCreator.class;
+    private static final Class<SpelQueryCreator> DEFAULT_QUERY_CREATOR = SpelQueryCreator.class;
 
-	private final KeyValueOperations keyValueOperations;
-	private final Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
-	private final HazelcastInstance hazelcastInstance;
+    private final KeyValueOperations keyValueOperations;
+    private final Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
+    private final HazelcastInstance hazelcastInstance;
 
-	/* Mirror functionality of super, to ensure private
-	 * fields are set.
-	 */
-	public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations, HazelcastInstance hazelcastInstance) {
-		this(keyValueOperations, DEFAULT_QUERY_CREATOR, hazelcastInstance);
-	}
+    /* Mirror functionality of super, to ensure private
+     * fields are set.
+     */
+    public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations, HazelcastInstance hazelcastInstance) {
+        this(keyValueOperations, DEFAULT_QUERY_CREATOR, hazelcastInstance);
+    }
 
-	/* Capture KeyValueOperations and QueryCreator objects after passing to super.
-	 */
-	public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations,
-			Class<? extends AbstractQueryCreator<?, ?>> queryCreator, HazelcastInstance hazelcastInstance) {
+    /* Capture KeyValueOperations and QueryCreator objects after passing to super.
+     */
+    public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations,
+                                      Class<? extends AbstractQueryCreator<?, ?>> queryCreator,
+                                      HazelcastInstance hazelcastInstance) {
 
-		super(keyValueOperations, queryCreator);
+        super(keyValueOperations, queryCreator);
 
-		this.keyValueOperations = keyValueOperations;
-		this.queryCreator = queryCreator;
-		this.hazelcastInstance = hazelcastInstance;
-	}
+        this.keyValueOperations = keyValueOperations;
+        this.queryCreator = queryCreator;
+        this.hazelcastInstance = hazelcastInstance;
+    }
 
-	/**
-	 * <P>
-	 * Ensure the mechanism for query evaluation is Hazelcast specific, as the original
-	 * {@link KeyValueRepositoryFactory.KeyValueQueryLookupStrategy} does not function correctly for Hazelcast.
-	 * </P>
-	 */
-	@Override
-	protected Optional<QueryLookupStrategy> getQueryLookupStrategy(QueryLookupStrategy.Key key,
-																   EvaluationContextProvider evaluationContextProvider) {
-		return Optional.of(new HazelcastQueryLookupStrategy(key, evaluationContextProvider, keyValueOperations, queryCreator,
+    /**
+     * <p>
+     * Ensure the mechanism for query evaluation is Hazelcast specific, as the original
+     * {@link KeyValueRepositoryFactory.KeyValueQueryLookupStrategy} does not function correctly for Hazelcast.
+     * </P>
+     */
+    @Override
+    protected Optional<QueryLookupStrategy> getQueryLookupStrategy(QueryLookupStrategy.Key key,
+                                                                   EvaluationContextProvider evaluationContextProvider) {
+        return Optional.of(new HazelcastQueryLookupStrategy(key, evaluationContextProvider, keyValueOperations, queryCreator,
                 hazelcastInstance));
-	}
+    }
 
-
-	@Override
-	public <T, ID> EntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
-		PersistentEntity<T, ?> entity = (PersistentEntity<T, ?>) keyValueOperations.getMappingContext().getPersistentEntity(domainClass);
-		Assert.notNull(entity, "Entity must not be 'null'.");
-		return new HazelcastEntityInformation<>(entity);
-	}
+    @Override
+    public <T, ID> EntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
+        PersistentEntity<T, ?> entity = (PersistentEntity<T, ?>) keyValueOperations.getMappingContext()
+                                                                                   .getPersistentEntity(domainClass);
+        Assert.notNull(entity, "Entity must not be 'null'.");
+        return new HazelcastEntityInformation<>(entity);
+    }
 }

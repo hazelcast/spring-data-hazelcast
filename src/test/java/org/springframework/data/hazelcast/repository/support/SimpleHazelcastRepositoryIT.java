@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2008-2018, Hazelcast, Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.data.hazelcast.repository.support;
 
 import org.junit.Before;
@@ -30,7 +46,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- * <P>
+ * <p>
  * Validate the methods provided by {@link SimpleHazelcastRepository}
  * by creating a repository for {@link Makeup} which doesn't
  * have one created by Spring from a repository interface.
@@ -39,268 +55,269 @@ import static org.junit.Assert.assertThat;
  * @author Neil Stevenson
  */
 @ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_SINGLETON)
-public class SimpleHazelcastRepositoryIT extends TestDataHelper {
-	private static final String YEAR_1939 = "1939";
-	private static final String YEAR_1941 = "1941";
-	private static final String YEAR_1986 = "1986";
-	private static final String YEAR_2009 = "2009";
-	private static final String YEAR_9999 = "9999";
-	private static final int PAGE_0 = 0;
-	private static final int SIZE_10 = 10;
+public class SimpleHazelcastRepositoryIT
+        extends TestDataHelper {
+    private static final String YEAR_1939 = "1939";
+    private static final String YEAR_1941 = "1941";
+    private static final String YEAR_1986 = "1986";
+    private static final String YEAR_2009 = "2009";
+    private static final String YEAR_9999 = "9999";
+    private static final int PAGE_0 = 0;
+    private static final int SIZE_10 = 10;
 
-	private SimpleHazelcastRepository<Makeup, String> theRepository;
+    private SimpleHazelcastRepository<Makeup, String> theRepository;
 
-	@Autowired
-	private KeyValueOperations keyValueOperations;
-	
-	@Before
-	public void setUp_After_Super_SetUp() throws Exception {
-		ReflectionEntityInformation<Makeup, String> entityInformation = new ReflectionEntityInformation<>(Makeup.class);
+    @Autowired
+    private KeyValueOperations keyValueOperations;
 
-		this.theRepository = new SimpleHazelcastRepository<>(entityInformation, keyValueOperations);
-	}
-	
-	@Test
-	public void findAll_Sort() {
-		Sort sort = new Sort(Sort.Direction.DESC, "id");
-		
-		Iterable<Makeup> iterable = this.theRepository.findAll(sort);
-		assertThat("iterable", iterable, not(nullValue()));
-		
-		Iterator<Makeup> iterator = iterable.iterator();
-		int count = 0;
-		String previous = YEAR_9999;
-		while (iterator.hasNext()) {
-			Makeup makeup = iterator.next();
-			assertThat("Makeup after " + previous, makeup, not(nullValue()));
-			
-			count++;
-			String current = makeup.getId();
+    @Before
+    public void setUp_After_Super_SetUp()
+            throws Exception {
+        ReflectionEntityInformation<Makeup, String> entityInformation = new ReflectionEntityInformation<>(Makeup.class);
 
-			assertThat("CCYY " + current, current.length(), equalTo(4));
-			assertThat(current, lessThan(previous));
-			
-			previous = current;
-		}
-		
-		assertThat(count, equalTo(Oscars.bestMakeUp.length));
-	}
+        this.theRepository = new SimpleHazelcastRepository<>(entityInformation, keyValueOperations);
+    }
 
-	@Test
-	public void findAll_Pageable() {
-		Set<String> yearsExpected = new TreeSet<>();
-		for (Object[] datum : Oscars.bestMakeUp) {
-			yearsExpected.add(datum[0].toString());
-		}
+    @Test
+    public void findAll_Sort() {
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
 
-		Pageable pageRequest = PageRequest.of(PAGE_0, SIZE_10);
-		
-		Page<Makeup> pageResponse = this.theRepository.findAll(pageRequest);
-		int page = 0;
-		while (pageResponse != null) {
-			assertThat("Page " + page + ", has content", pageResponse.hasContent(), equalTo(true));
-			
-			List<Makeup> makeups = pageResponse.getContent();
-			assertThat("Page " + page + ", has makeups", makeups.size(), greaterThan(0));
-			
-			for (Makeup makeup : makeups) {
-				assertThat(makeup.toString(), yearsExpected.contains(makeup.getId()), equalTo(true));
-				yearsExpected.remove(makeup.getId());
-			}
-			
-			
-			if (pageResponse.hasNext()) {
-				pageRequest = pageResponse.nextPageable();
-				pageResponse = this.theRepository.findAll(pageRequest);
-			} else {
-				pageResponse = null;
-			}
-			page++;
-		}
-		
-		assertThat("All years matched", yearsExpected, hasSize(0));
-	}
+        Iterable<Makeup> iterable = this.theRepository.findAll(sort);
+        assertThat("iterable", iterable, not(nullValue()));
 
-	@Test
-	public void count() {
-		long count = this.theRepository.count();
-		assertThat(count, equalTo((long)Oscars.bestMakeUp.length));
-	}
+        Iterator<Makeup> iterator = iterable.iterator();
+        int count = 0;
+        String previous = YEAR_9999;
+        while (iterator.hasNext()) {
+            Makeup makeup = iterator.next();
+            assertThat("Makeup after " + previous, makeup, not(nullValue()));
 
-	@Test
-	public void delete_ID() {
-		assertThat("Exists before", this.makeupMap.containsKey(YEAR_2009), equalTo(true));
-		
-		this.theRepository.deleteById(YEAR_2009);
-		
-		assertThat("Does not exist after", this.makeupMap.containsKey(YEAR_2009), equalTo(false));
-	}
+            count++;
+            String current = makeup.getId();
 
-	@Test
-	public void delete_T() {
-		Makeup starTrek = new Makeup();
-		starTrek.setId(YEAR_2009);
-		starTrek.setFilmTitle("Star Trek");
-		starTrek.setArtistOrArtists("Barney Burman & Mindy Hall & Joel Harlow");
+            assertThat("CCYY " + current, current.length(), equalTo(4));
+            assertThat(current, lessThan(previous));
 
-		assertThat("2009 exists before", this.makeupMap.containsKey(YEAR_2009), equalTo(true));
+            previous = current;
+        }
 
-		this.theRepository.delete(starTrek);
+        assertThat(count, equalTo(Oscars.bestMakeUp.length));
+    }
 
-		assertThat("2009 does not exist after", this.makeupMap.containsKey(YEAR_2009), equalTo(false));
-	}
+    @Test
+    public void findAll_Pageable() {
+        Set<String> yearsExpected = new TreeSet<>();
+        for (Object[] datum : Oscars.bestMakeUp) {
+            yearsExpected.add(datum[0].toString());
+        }
 
-	@Test
-	public void delete_Iterable_T() {
-		Makeup starTrek = new Makeup();
-		starTrek.setId(YEAR_2009);
-		starTrek.setFilmTitle("Star Trek");
-		starTrek.setArtistOrArtists("Barney Burman & Mindy Hall & Joel Harlow");
-		
-		Makeup theFly = new Makeup();
-		theFly.setId(YEAR_1986);
-		theFly.setFilmTitle("The Fly");
-		theFly.setArtistOrArtists("Chris Walas & Stephan Dupuis");
-		
-		assertThat("2009 exists before", this.makeupMap.containsKey(YEAR_2009), equalTo(true));
-		assertThat("1986 exists before", this.makeupMap.containsKey(YEAR_1986), equalTo(true));
-		
-		List<Makeup> list = new ArrayList<>();
-		list.add(starTrek);
-		list.add(theFly);
-		
-		this.theRepository.deleteAll(list);
+        Pageable pageRequest = PageRequest.of(PAGE_0, SIZE_10);
 
-		assertThat("2009 does not exist after", this.makeupMap.containsKey(YEAR_2009), equalTo(false));
-		assertThat("1986 does not exist after", this.makeupMap.containsKey(YEAR_1986), equalTo(false));
-	}
+        Page<Makeup> pageResponse = this.theRepository.findAll(pageRequest);
+        int page = 0;
+        while (pageResponse != null) {
+            assertThat("Page " + page + ", has content", pageResponse.hasContent(), equalTo(true));
 
-	@Test
-	public void deleteAll() {
-		assertThat("Before", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length));
-		
-		this.theRepository.deleteAll();
-		
-		assertThat("After", this.makeupMap.size(), equalTo(0));
-	}
+            List<Makeup> makeups = pageResponse.getContent();
+            assertThat("Page " + page + ", has makeups", makeups.size(), greaterThan(0));
 
-	@Test
-	public void exists_ID() {
-		assertThat(YEAR_1986, this.theRepository.existsById(YEAR_1986), equalTo(true));
-		assertThat(YEAR_9999, this.theRepository.existsById(YEAR_9999), equalTo(false));
-	}
+            for (Makeup makeup : makeups) {
+                assertThat(makeup.toString(), yearsExpected.contains(makeup.getId()), equalTo(true));
+                yearsExpected.remove(makeup.getId());
+            }
 
-	@Test
-	public void findAll() {
-		
-		Set<Makeup> expected = new TreeSet<>();
-		for (Object[] datum : Oscars.bestMakeUp) {
-			Makeup makeup = new Makeup();
-			makeup.setId(datum[0].toString());
-			makeup.setFilmTitle(datum[1].toString());
-			makeup.setArtistOrArtists(datum[2].toString());
-			
-			expected.add(makeup);
-		}
-		
-		Iterable<Makeup> iterable = this.theRepository.findAll();
-		assertThat("iterable", iterable, not(nullValue()));
+            if (pageResponse.hasNext()) {
+                pageRequest = pageResponse.nextPageable();
+                pageResponse = this.theRepository.findAll(pageRequest);
+            } else {
+                pageResponse = null;
+            }
+            page++;
+        }
+
+        assertThat("All years matched", yearsExpected, hasSize(0));
+    }
+
+    @Test
+    public void count() {
+        long count = this.theRepository.count();
+        assertThat(count, equalTo((long) Oscars.bestMakeUp.length));
+    }
+
+    @Test
+    public void delete_ID() {
+        assertThat("Exists before", this.makeupMap.containsKey(YEAR_2009), equalTo(true));
+
+        this.theRepository.deleteById(YEAR_2009);
+
+        assertThat("Does not exist after", this.makeupMap.containsKey(YEAR_2009), equalTo(false));
+    }
+
+    @Test
+    public void delete_T() {
+        Makeup starTrek = new Makeup();
+        starTrek.setId(YEAR_2009);
+        starTrek.setFilmTitle("Star Trek");
+        starTrek.setArtistOrArtists("Barney Burman & Mindy Hall & Joel Harlow");
+
+        assertThat("2009 exists before", this.makeupMap.containsKey(YEAR_2009), equalTo(true));
+
+        this.theRepository.delete(starTrek);
+
+        assertThat("2009 does not exist after", this.makeupMap.containsKey(YEAR_2009), equalTo(false));
+    }
+
+    @Test
+    public void delete_Iterable_T() {
+        Makeup starTrek = new Makeup();
+        starTrek.setId(YEAR_2009);
+        starTrek.setFilmTitle("Star Trek");
+        starTrek.setArtistOrArtists("Barney Burman & Mindy Hall & Joel Harlow");
+
+        Makeup theFly = new Makeup();
+        theFly.setId(YEAR_1986);
+        theFly.setFilmTitle("The Fly");
+        theFly.setArtistOrArtists("Chris Walas & Stephan Dupuis");
+
+        assertThat("2009 exists before", this.makeupMap.containsKey(YEAR_2009), equalTo(true));
+        assertThat("1986 exists before", this.makeupMap.containsKey(YEAR_1986), equalTo(true));
+
+        List<Makeup> list = new ArrayList<>();
+        list.add(starTrek);
+        list.add(theFly);
+
+        this.theRepository.deleteAll(list);
+
+        assertThat("2009 does not exist after", this.makeupMap.containsKey(YEAR_2009), equalTo(false));
+        assertThat("1986 does not exist after", this.makeupMap.containsKey(YEAR_1986), equalTo(false));
+    }
+
+    @Test
+    public void deleteAll() {
+        assertThat("Before", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length));
+
+        this.theRepository.deleteAll();
+
+        assertThat("After", this.makeupMap.size(), equalTo(0));
+    }
+
+    @Test
+    public void exists_ID() {
+        assertThat(YEAR_1986, this.theRepository.existsById(YEAR_1986), equalTo(true));
+        assertThat(YEAR_9999, this.theRepository.existsById(YEAR_9999), equalTo(false));
+    }
+
+    @Test
+    public void findAll() {
+
+        Set<Makeup> expected = new TreeSet<>();
+        for (Object[] datum : Oscars.bestMakeUp) {
+            Makeup makeup = new Makeup();
+            makeup.setId(datum[0].toString());
+            makeup.setFilmTitle(datum[1].toString());
+            makeup.setArtistOrArtists(datum[2].toString());
+
+            expected.add(makeup);
+        }
+
+        Iterable<Makeup> iterable = this.theRepository.findAll();
+        assertThat("iterable", iterable, not(nullValue()));
 
         for (Makeup makeup : iterable) {
             assertThat(makeup.toString(), expected.contains(makeup), equalTo(true));
             expected.remove(makeup);
         }
-		
-		assertThat("All expected accounted for", expected, equalTo(new TreeSet<Makeup>()));
-	}
 
-	@Test
-	public void findAll_Iterable_ID() {
-		List<String> years = new ArrayList<>();
-		years.add(YEAR_1986);
-		years.add(YEAR_2009);
-		
-		Iterable<Makeup> iterable = this.theRepository.findAllById(years);
-		assertThat("iterable", iterable, not(nullValue()));
-		
-		Iterator<Makeup> iterator = iterable.iterator();
+        assertThat("All expected accounted for", expected, equalTo(new TreeSet<Makeup>()));
+    }
 
-		boolean found1986 = false;
-		boolean found2009 = false;
-		int count = 0;
-		while (iterator.hasNext()) {
-			Makeup makeup = iterator.next();
-			count++;
-			
-			if (makeup.getId().equals(YEAR_1986)) {
-				found1986 = true;
-			}
-			if (makeup.getId().equals(YEAR_2009)) {
-				found2009 = true;
-			}
-		}
+    @Test
+    public void findAll_Iterable_ID() {
+        List<String> years = new ArrayList<>();
+        years.add(YEAR_1986);
+        years.add(YEAR_2009);
 
-		assertThat(YEAR_1986, found1986, equalTo(true));
-		assertThat(YEAR_2009, found2009, equalTo(true));
-		assertThat("Only 1986 & 2009 found", count, equalTo(2));
-	}
+        Iterable<Makeup> iterable = this.theRepository.findAllById(years);
+        assertThat("iterable", iterable, not(nullValue()));
 
-	@Test
-	public void findOne_ID() {
-		Makeup makeup = this.theRepository.findById(YEAR_1986).orElse(null);
-		
-		assertThat("1986 found", makeup, not(nullValue()));
-		assertThat(makeup.getId(), equalTo(YEAR_1986));
-		assertThat(makeup.getFilmTitle(), equalTo("The Fly"));
-		assertThat(makeup.getArtistOrArtists(), equalTo("Chris Walas & Stephan Dupuis"));
-	}
+        Iterator<Makeup> iterator = iterable.iterator();
 
-	@Test
-	public void save_T() {
-		Makeup citizenKane = new Makeup();
-		citizenKane.setId(YEAR_1941);
-		citizenKane.setFilmTitle("Citizen Kane");
-		citizenKane.setArtistOrArtists("Maurice Seiderman");
+        boolean found1986 = false;
+        boolean found2009 = false;
+        int count = 0;
+        while (iterator.hasNext()) {
+            Makeup makeup = iterator.next();
+            count++;
 
-		assertThat("Before", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length));
-		
-		Makeup saved = this.theRepository.save(citizenKane);
+            if (makeup.getId().equals(YEAR_1986)) {
+                found1986 = true;
+            }
+            if (makeup.getId().equals(YEAR_2009)) {
+                found2009 = true;
+            }
+        }
 
-		assertThat("Saved entry", saved, not(nullValue()));
-		
-		assertThat("After", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length + 1));
-	}
+        assertThat(YEAR_1986, found1986, equalTo(true));
+        assertThat(YEAR_2009, found2009, equalTo(true));
+        assertThat("Only 1986 & 2009 found", count, equalTo(2));
+    }
 
-	@Test
-	public void save_Iterable_T() {
-		Makeup goneWithTheWind = new Makeup();
-		goneWithTheWind.setId(YEAR_1939);
-		goneWithTheWind.setFilmTitle("Gone With The Wind");
-		goneWithTheWind.setArtistOrArtists("Monte Westmore");
+    @Test
+    public void findOne_ID() {
+        Makeup makeup = this.theRepository.findById(YEAR_1986).orElse(null);
 
-		Makeup citizenKane = new Makeup();
-		citizenKane.setId(YEAR_1941);
-		citizenKane.setFilmTitle("Citizen Kane");
-		citizenKane.setArtistOrArtists("Maurice Seiderman");
+        assertThat("1986 found", makeup, not(nullValue()));
+        assertThat(makeup.getId(), equalTo(YEAR_1986));
+        assertThat(makeup.getFilmTitle(), equalTo("The Fly"));
+        assertThat(makeup.getArtistOrArtists(), equalTo("Chris Walas & Stephan Dupuis"));
+    }
 
-		assertThat("Before", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length));
-		
-		List<Makeup> list = new ArrayList<>();
-		list.add(citizenKane);
-		list.add(goneWithTheWind);
-		
-		Iterable<Makeup> iterable = this.theRepository.saveAll(list);
-		assertThat("iterable", iterable, not(nullValue()));
-		
-		Iterator<Makeup> iterator = iterable.iterator();
-		int count = 0;
-		while (iterator.hasNext()) {
-			iterator.next();
-			count++;
-		}
-		assertThat("Correct number saved", count, equalTo(list.size()));
-		
-		assertThat("After", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length + list.size()));
-	}
+    @Test
+    public void save_T() {
+        Makeup citizenKane = new Makeup();
+        citizenKane.setId(YEAR_1941);
+        citizenKane.setFilmTitle("Citizen Kane");
+        citizenKane.setArtistOrArtists("Maurice Seiderman");
+
+        assertThat("Before", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length));
+
+        Makeup saved = this.theRepository.save(citizenKane);
+
+        assertThat("Saved entry", saved, not(nullValue()));
+
+        assertThat("After", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length + 1));
+    }
+
+    @Test
+    public void save_Iterable_T() {
+        Makeup goneWithTheWind = new Makeup();
+        goneWithTheWind.setId(YEAR_1939);
+        goneWithTheWind.setFilmTitle("Gone With The Wind");
+        goneWithTheWind.setArtistOrArtists("Monte Westmore");
+
+        Makeup citizenKane = new Makeup();
+        citizenKane.setId(YEAR_1941);
+        citizenKane.setFilmTitle("Citizen Kane");
+        citizenKane.setArtistOrArtists("Maurice Seiderman");
+
+        assertThat("Before", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length));
+
+        List<Makeup> list = new ArrayList<>();
+        list.add(citizenKane);
+        list.add(goneWithTheWind);
+
+        Iterable<Makeup> iterable = this.theRepository.saveAll(list);
+        assertThat("iterable", iterable, not(nullValue()));
+
+        Iterator<Makeup> iterator = iterable.iterator();
+        int count = 0;
+        while (iterator.hasNext()) {
+            iterator.next();
+            count++;
+        }
+        assertThat("Correct number saved", count, equalTo(list.size()));
+
+        assertThat("After", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length + list.size()));
+    }
 
 }

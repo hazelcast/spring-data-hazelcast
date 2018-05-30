@@ -1,8 +1,21 @@
+/*
+ * Copyright (c) 2008-2018, Hazelcast, Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package test.utils.repository.standard;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Stream;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -10,18 +23,21 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.hazelcast.repository.HazelcastRepository;
 import org.springframework.data.hazelcast.repository.query.Query;
 import org.springframework.data.repository.query.Param;
-
 import test.utils.domain.Person;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
+
 /**
- * <P>
+ * <p>
  * Repository class used for tests, re-factored from inner class in {@link EnableHazelcastRepositoriesIT} for wider use.
  * </P>
- * <P>
+ * <p>
  * The specified methods are implemented by Spring at run-time, using the method name and parameters to deduce the query
  * syntax.
  * </P>
- * <P>
+ * <p>
  * See {@link org.springframework.data.repository.query.parser.PartTree PartTree} for details of the query syntax. A
  * simple example being a concatenation:
  * <UL>
@@ -38,92 +54,94 @@ import test.utils.domain.Person;
  * @author Oliver Gierke
  * @author Neil Stevenson
  */
-public interface PersonRepository extends HazelcastRepository<Person, String> {
+public interface PersonRepository
+        extends HazelcastRepository<Person, String> {
 
-	public Long countByFirstname(String firstname);
+    public Long countByFirstname(String firstname);
 
-	public Long countByIdLessThanEqual(String id);
+    public Long countByIdLessThanEqual(String id);
 
-	public Long countDistinctLastnameByFirstname(String firstname);
+    public Long countDistinctLastnameByFirstname(String firstname);
 
-	public Person deleteByLastname(String firstname);
+    public Person deleteByLastname(String firstname);
 
-	public Person findFirstIdByOrderById();
+    public Person findFirstIdByOrderById();
 
-	public Person findFirstIdByFirstnameOrderByIdDesc(String firstname);
+    public Person findFirstIdByFirstnameOrderByIdDesc(String firstname);
 
-	public List<Person> findByFirstname(String firstname);
+    public List<Person> findByFirstname(String firstname);
 
-	// Underscores are permitted after field names, improving readability slightly
-	public List<Person> findByFirstname_AndLastname(String firstname, String lastname);
+    // Underscores are permitted after field names, improving readability slightly
+    public List<Person> findByFirstname_AndLastname(String firstname, String lastname);
 
-	// Params are positional unless tagged
-	public List<Person> findByFirstnameOrLastname(@Param("lastname") String s1, @Param("firstname") String s2);
+    // Params are positional unless tagged
+    public List<Person> findByFirstnameOrLastname(@Param("lastname") String s1, @Param("firstname") String s2);
 
-	public List<Person> findByFirstnameGreaterThan(String firstname);
+    public List<Person> findByFirstnameGreaterThan(String firstname);
 
-	public List<Person> findByFirstnameLike(String firstname);
+    public List<Person> findByFirstnameLike(String firstname);
 
-	public List<Person> findByFirstnameContains(String firstname);
+    public List<Person> findByFirstnameContains(String firstname);
 
-	public List<Person> findByFirstnameContainsAndLastnameStartsWithAllIgnoreCase(String firstname, String lastname);
+    public List<Person> findByFirstnameContainsAndLastnameStartsWithAllIgnoreCase(String firstname, String lastname);
 
-	public List<Person> findByFirstnameOrderById(String firstname);
+    public List<Person> findByFirstnameOrderById(String firstname);
 
-	public List<Person> findByLastnameOrderByIdAsc(String lastname);
+    public List<Person> findByLastnameOrderByIdAsc(String lastname);
 
-	public List<Person> findByFirstnameOrderByLastnameDesc(String firstname);
+    public List<Person> findByFirstnameOrderByLastnameDesc(String firstname);
 
-	public List<Person> findByFirstname(String firstname, Sort sort);
+    public List<Person> findByFirstname(String firstname, Sort sort);
 
-	public List<Person> findByLastnameIgnoreCase(String lastname);
+    public List<Person> findByLastnameIgnoreCase(String lastname);
 
-	public List<Person> findByLastnameNotNull(Sort sort);
+    public List<Person> findByLastnameNotNull(Sort sort);
 
-	public List<Person> findFirst3ByOrderByFirstnameAsc();
+    public List<Person> findFirst3ByOrderByFirstnameAsc();
 
-	public List<Person> findFirst30ByOrderByFirstnameDescLastnameAsc();
+    public List<Person> findFirst30ByOrderByFirstnameDescLastnameAsc();
 
-	public List<Person> findByFirstnameIn(Collection<String> firstnames);
+    public List<Person> findByFirstnameIn(Collection<String> firstnames);
 
-	public List<Person> findByFirstnameEndsWithAndLastnameNotIn(String firstname, Collection<String> lastnames);
+    public List<Person> findByFirstnameEndsWithAndLastnameNotIn(String firstname, Collection<String> lastnames);
 
-	public Stream<Person> findFirst4By();
+    public Stream<Person> findFirst4By();
 
-	public Stream<Person> streamByLastnameGreaterThanEqual(String lastname);
+    public Stream<Person> streamByLastnameGreaterThanEqual(String lastname);
 
-	public Slice<Person> findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual(String id,
-																								  String firstname1, String firstname2, Pageable pageable);
+    public Slice<Person> findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual(String id, String firstname1,
+                                                                                                  String firstname2,
+                                                                                                  Pageable pageable);
 
-	public Page<Person> findByLastname(String lastname, Pageable pageable);
+    public Page<Person> findByLastname(String lastname, Pageable pageable);
 
-	public Page<Person> findByOrderByLastnameDesc(Pageable pageable);
+    public Page<Person> findByOrderByLastnameDesc(Pageable pageable);
 
-	public Slice<Person> findByIdLike(String pattern, Pageable pageable);
+    public Slice<Person> findByIdLike(String pattern, Pageable pageable);
 
-	public Long countByLastnameAllIgnoreCase(String lastname);
+    public Long countByLastnameAllIgnoreCase(String lastname);
 
-	public Long countByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
+    public Long countByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
 
-	public Long countByFirstnameAndLastnameAllIgnoreCase(String firstname, String lastname);
+    public Long countByFirstnameAndLastnameAllIgnoreCase(String firstname, String lastname);
 
-	public Long countByIdAfter(String id);
+    public Long countByIdAfter(String id);
 
-	public Long countByIdBetween(String firstId, String lastId);
+    public Long countByIdBetween(String firstId, String lastId);
 
-	public Person findByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
+    public Person findByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
 
-	public Person findByFirstnameOrLastnameIgnoreCase(String firstname, String lastname);
+    public Person findByFirstnameOrLastnameIgnoreCase(String firstname, String lastname);
 
-	public Person findByFirstnameIgnoreCaseOrLastname(String firstname, String lastname);
+    public Person findByFirstnameIgnoreCaseOrLastname(String firstname, String lastname);
 
-	@Query("firstname=James")
-	public List<Person> peoplewiththeirFirstNameIsJames();
+    @Query("firstname=James")
+    public List<Person> peoplewiththeirFirstNameIsJames();
 
-	@Query("firstname=%s")
-	public List<Person> peoplewiththeirFirstName(String firstName);
+    @Query("firstname=%s")
+    public List<Person> peoplewiththeirFirstName(String firstName);
 
-	@Query("firstname=%s and lastname=%s")
-	public List<Person> peoplewithFirstAndLastName(String firstName,String lastName);
+    @Query("firstname=%s and lastname=%s")
+    public List<Person> peoplewithFirstAndLastName(String firstName, String lastName);
 
 }

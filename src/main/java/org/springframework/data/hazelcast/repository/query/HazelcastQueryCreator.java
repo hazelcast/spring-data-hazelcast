@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-2016 the original author or authors.
+ * Copyright (c) 2008-2018, Hazelcast, Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,7 +40,8 @@ import static org.springframework.data.repository.query.parser.Part.Type.NOT_LIK
  * @author Neil Stevenson
  * @author Viacheslav Petriaiev
  */
-public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Predicate<?, ?>>, Predicate<?, ?>> {
+public class HazelcastQueryCreator
+        extends AbstractQueryCreator<KeyValueQuery<Predicate<?, ?>>, Predicate<?, ?>> {
     private final int limit;
 
     /**
@@ -176,9 +177,9 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
             case REGEX:
                 return Predicates.regex(property, iterator.next().toString());
             /* case EXISTS:
-			 * case NEAR:
-			 * case WITHIN:
-			 */
+             * case NEAR:
+             * case WITHIN:
+             */
             default:
                 throw new InvalidDataAccessApiUsageException(String.format("Unsupported type '%s'", type));
         }
@@ -243,13 +244,13 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
                                                 Iterator<Comparable<?>> iterator) {
         switch (type) {
             case SIMPLE_PROPERTY:
-                if(ignoreCase) {
+                if (ignoreCase) {
                     return Predicates.ilike(property, iterator.next().toString());
                 } else {
                     return Predicates.equal(property, iterator.next());
                 }
             case NEGATING_SIMPLE_PROPERTY:
-                if(ignoreCase) {
+                if (ignoreCase) {
                     return Predicates.not(Predicates.ilike(property, iterator.next().toString()));
                 } else {
                     return Predicates.notEqual(property, iterator.next());
@@ -259,8 +260,7 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
         }
     }
 
-    private Predicate<?, ?> fromLikeVariant(Type type, boolean ignoreCase, String property,
-                                            Iterator<Comparable<?>> iterator) {
+    private Predicate<?, ?> fromLikeVariant(Type type, boolean ignoreCase, String property, Iterator<Comparable<?>> iterator) {
         String likeExpression = iterator.next().toString();
         switch (type) {
             case CONTAINING:
@@ -277,12 +277,11 @@ public class HazelcastQueryCreator extends AbstractQueryCreator<KeyValueQuery<Pr
             case NOT_LIKE:
                 break;
             default:
-                throw new InvalidDataAccessApiUsageException(String.format("'%s' is not supported for LIKE style query",
-                        type));
+                throw new InvalidDataAccessApiUsageException(String.format("'%s' is not supported for LIKE style query", type));
         }
 
-        Predicate likePredicate = ignoreCase ? Predicates.ilike(property, likeExpression)
-                : Predicates.like(property, likeExpression);
+        Predicate likePredicate = ignoreCase ? Predicates.ilike(property, likeExpression) : Predicates
+                .like(property, likeExpression);
         return type.equals(NOT_LIKE) || type.equals(NOT_CONTAINING) ? Predicates.not(likePredicate) : likePredicate;
     }
 

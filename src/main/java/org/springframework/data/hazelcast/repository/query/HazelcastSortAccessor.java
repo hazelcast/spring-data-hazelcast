@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-2016 the original author or authors.
+ * Copyright (c) 2008-2018, Hazelcast, Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,55 +26,56 @@ import java.util.Comparator;
 import java.util.Map.Entry;
 
 /**
- * <P>
+ * <p>
  * Implements sorting for Hazelcast repository queries.
  * </P>
- * <P>
+ * <p>
  * Although {@code SpelPropertyComparator} would do most of the work, this is not serializable so cannot work in a
  * cluster. Also, do not wish to assume anything other than Hazelcast classes are available on remote nodes.
  * </P>
  *
  * @author Neil Stevenson
  */
-public class HazelcastSortAccessor implements SortAccessor<Comparator<Entry<?, ?>>> {
+public class HazelcastSortAccessor
+        implements SortAccessor<Comparator<Entry<?, ?>>> {
 
-	/**
-	 * <P>
-	 * Sort on a sequence of fields, possibly none.
-	 * </P>
-	 *
-	 * @param query If not null, will contain one of more {@link Sort.Order} objects.
-	 * @return A sequence of comparators or {@code null}
-	 */
-	public Comparator<Entry<?, ?>> resolve(KeyValueQuery<?> query) {
+    /**
+     * <p>
+     * Sort on a sequence of fields, possibly none.
+     * </P>
+     *
+     * @param query If not null, will contain one of more {@link Sort.Order} objects.
+     * @return A sequence of comparators or {@code null}
+     */
+    public Comparator<Entry<?, ?>> resolve(KeyValueQuery<?> query) {
 
-		if (query == null || query.getSort() == Sort.unsorted()) {
-			return null;
-		}
+        if (query == null || query.getSort() == Sort.unsorted()) {
+            return null;
+        }
 
-		CompoundComparator<Entry<?, ?>> compoundComparator = new CompoundComparator<>();
+        CompoundComparator<Entry<?, ?>> compoundComparator = new CompoundComparator<>();
 
-		for (Order order : query.getSort()) {
+        for (Order order : query.getSort()) {
 
-			if (order.getProperty().indexOf('.') > -1) {
-				throw new UnsupportedOperationException("Embedded fields not implemented: " + order);
-			}
+            if (order.getProperty().indexOf('.') > -1) {
+                throw new UnsupportedOperationException("Embedded fields not implemented: " + order);
+            }
 
-			if (order.isIgnoreCase()) {
-				throw new UnsupportedOperationException("Ignore case not implemented: " + order);
-			}
+            if (order.isIgnoreCase()) {
+                throw new UnsupportedOperationException("Ignore case not implemented: " + order);
+            }
 
-			if (NullHandling.NATIVE != order.getNullHandling()) {
-				throw new UnsupportedOperationException("Null handling not implemented: " + order);
-			}
+            if (NullHandling.NATIVE != order.getNullHandling()) {
+                throw new UnsupportedOperationException("Null handling not implemented: " + order);
+            }
 
-			HazelcastPropertyComparator hazelcastPropertyComparator = new HazelcastPropertyComparator(order.getProperty(),
-					order.isAscending());
+            HazelcastPropertyComparator hazelcastPropertyComparator = new HazelcastPropertyComparator(order.getProperty(),
+                    order.isAscending());
 
-			compoundComparator.addComparator(hazelcastPropertyComparator);
-		}
+            compoundComparator.addComparator(hazelcastPropertyComparator);
+        }
 
-		return compoundComparator;
-	}
+        return compoundComparator;
+    }
 
 }

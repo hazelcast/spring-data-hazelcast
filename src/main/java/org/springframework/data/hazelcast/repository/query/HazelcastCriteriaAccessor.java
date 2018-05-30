@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-2016 the original author or authors.
+ * Copyright (c) 2008-2018, Hazelcast, Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,41 +21,42 @@ import org.springframework.data.keyvalue.core.CriteriaAccessor;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 
 /**
- * <P>
+ * <p>
  * Provide a mechanism to convert the abstract query into the direct implementation in Hazelcast.
  * </P>
  *
  * @author Neil Stevenson
  * @author Viacheslav Petriaiev
  */
-public class HazelcastCriteriaAccessor implements CriteriaAccessor<Predicate<?, ?>> {
+public class HazelcastCriteriaAccessor
+        implements CriteriaAccessor<Predicate<?, ?>> {
 
-	/**
-	 * @param A query in Spring form
-	 * @return The same in Hazelcast form
-	 */
-	public Predicate<?, ?> resolve(KeyValueQuery<?> query) {
+    /**
+     * @param A query in Spring form
+     * @return The same in Hazelcast form
+     */
+    public Predicate<?, ?> resolve(KeyValueQuery<?> query) {
 
-	    if (query == null) {
-	        return null;
+        if (query == null) {
+            return null;
         }
 
-		final Object criteria = query.getCriteria();
-		if (criteria == null) {
-		    return null;
+        final Object criteria = query.getCriteria();
+        if (criteria == null) {
+            return null;
         }
 
-		if (criteria instanceof PagingPredicate) {
-			PagingPredicate pagingPredicate = (PagingPredicate) criteria;
-			query.limit(pagingPredicate.getPageSize());
-			return pagingPredicate.getPredicate();
-		}
+        if (criteria instanceof PagingPredicate) {
+            PagingPredicate pagingPredicate = (PagingPredicate) criteria;
+            query.limit(pagingPredicate.getPageSize());
+            return pagingPredicate.getPredicate();
+        }
 
-		if (criteria instanceof Predicate) {
-			return (Predicate<?, ?>) criteria;
-		}
+        if (criteria instanceof Predicate) {
+            return (Predicate<?, ?>) criteria;
+        }
 
-		throw new UnsupportedOperationException(query.toString());
-	}
+        throw new UnsupportedOperationException(query.toString());
+    }
 
 }
