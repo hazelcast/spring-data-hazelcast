@@ -27,10 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.hazelcast.HazelcastKeyValueAdapter;
 import org.springframework.data.hazelcast.repository.config.EnableHazelcastRepositories;
-import org.springframework.data.keyvalue.core.KeyValueOperations;
-import org.springframework.data.keyvalue.core.KeyValueTemplate;
 import test.utils.repository.custom.MyTitleRepositoryFactoryBean;
 
 import javax.annotation.PreDestroy;
@@ -53,7 +50,7 @@ import java.util.Set;
  * @author Neil Stevenson
  */
 @Configuration
-@EnableHazelcastRepositories(basePackages = "test.utils.repository.standard")
+@EnableHazelcastRepositories(basePackages = "test.utils.repository.standard", hazelcastInstanceRef = TestConstants.CLIENT_INSTANCE_NAME)
 public class InstanceHelper {
     private static final Logger LOG = LoggerFactory.getLogger(InstanceHelper.class);
     private static final String CLUSTER_HOST = "127.0.0.1";
@@ -120,21 +117,6 @@ public class InstanceHelper {
 
     /**
      * <p>
-     * {@link org.springframework.data.keyvalue.core.KeyValueOperations KeyValueOperations} are implemented by a
-     * {@link org.springframework.data.keyvalue.core.KeyValueTemplate KeyValueTemplate} that uses an adapter class
-     * encapsulating the implementation.
-     * </P>
-     *
-     * @return One Hazelcast instance wrapped as a key/value implementation
-     */
-    @Bean
-    public KeyValueOperations keyValueTemplate() {
-        HazelcastKeyValueAdapter hazelcastKeyValueAdapter = new HazelcastKeyValueAdapter(this.hazelcastInstance);
-        return new KeyValueTemplate(hazelcastKeyValueAdapter);
-    }
-
-    /**
-     * <p>
      * Spring will shutdown the test Hazelcast instance, as the {@code @Bean} is defined as a
      * {@link org.springframework.beans.factory.DisposableBean}. Shut down any other server instances started, which may
      * be needed for cluster tests.
@@ -168,7 +150,7 @@ public class InstanceHelper {
      * so use an inner class to scan a second package.
      * </P>
      */
-    @EnableHazelcastRepositories(basePackages = "test.utils.repository.custom", repositoryFactoryBeanClass = MyTitleRepositoryFactoryBean.class)
+    @EnableHazelcastRepositories(basePackages = "test.utils.repository.custom", repositoryFactoryBeanClass = MyTitleRepositoryFactoryBean.class, hazelcastInstanceRef = TestConstants.CLIENT_INSTANCE_NAME)
     static class InstanceHelperInner {
     }
 

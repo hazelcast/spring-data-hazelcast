@@ -77,22 +77,11 @@ public class ApplicationConfiguration {
         return Hazelcast.newHazelcastInstance();
         // return HazelcastClient.newHazelcastClient();
     }
-
-    @Bean
-    public KeyValueOperations keyValueTemplate(HazelcastInstance hazelcastInstance) {  // <3>
-        return new KeyValueTemplate(new HazelcastKeyValueAdapter(hazelcastInstance));
-    }
-
-    @Bean
-    public HazelcastKeyValueAdapter hazelcastKeyValueAdapter(HazelcastInstance hazelcastInstance) {
-        return new HazelcastKeyValueAdapter(hazelcastInstance);
-    }
 }
 ----
 <1> Enables Spring Data magic for Hazelcast. 
     You can specify `basePackages` for component scan.
 <2> Instantiates Hazelcast instance (a member or a client)
-<3> Instantiates KV template
 
 .A repository class definition
 [source,java]
