@@ -34,10 +34,10 @@
 
     <properties>
         <dist.key>DATAHC</dist.key>
-        <hazelcast>3.9.3</hazelcast>
+        <hazelcast>3.10.1</hazelcast>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <springdata.keyvalue>2.0.5.RELEASE</springdata.keyvalue>
+        <springdata.keyvalue>2.0.7.RELEASE</springdata.keyvalue>
         <maven.gpg.plugin.version>1.4</maven.gpg.plugin.version>
         <maven.javadoc.plugin.version>2.9</maven.javadoc.plugin.version>
         <maven.sonar.plugin.version>3.3.0.603</maven.sonar.plugin.version>
