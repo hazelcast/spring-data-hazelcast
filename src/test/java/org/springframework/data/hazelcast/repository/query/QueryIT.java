@@ -33,6 +33,7 @@ import test.utils.repository.standard.PersonRepository;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -148,28 +149,52 @@ public class QueryIT
     }
 
     @Test
-    public void deleteByLastname() {
-        assertThat("Map fully populated before", this.personMap.size(), equalTo(Oscars.bestActors.length));
+    public void deleteBy() {
+        // given
+        // fully populated map
 
-        Person person = this.personRepository.deleteByLastname("abcdefghijklmnopqrstuvwxyz");
+        // when
+        long deletedPersonsSize = this.personRepository.deleteByLastname("Tracy");
 
-        assertThat("Delete for unmatched name does nothing to map", this.personMap.size(), equalTo(Oscars.bestActors.length));
-        assertThat("Delete for unmatched name does nothing to @Repository", this.personRepository.count(),
-                equalTo((long) Oscars.bestActors.length));
-        assertThat("Delete for unmatched name returns null", person, nullValue());
-
-        // Spencer Tracy, 1937 & 1938
-        int count = 0;
-        while (this.personRepository.deleteByLastname("Tracy") != null) {
-            count++;
-        }
-
+        // then
         assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(Oscars.bestActors.length - 2));
         assertThat("Delete for matched name removes from @Repository", this.personRepository.count(),
                 equalTo((long) (Oscars.bestActors.length - 2)));
-        assertThat("Delete for matched name returns correct count", count, equalTo(2));
+        assertThat("Delete for matched name returns correct count", deletedPersonsSize, equalTo(2L));
         assertThat("1937 deleted", this.personMap.get("1937"), nullValue());
         assertThat("1938 deleted", this.personMap.get("1938"), nullValue());
+    }
+
+    @Test
+    public void deleteByReturnCollection() {
+        // given
+        // fully populated map
+
+        // when
+        Collection<Person> deletedPersons = this.personRepository.deleteByFirstname("Spencer");
+
+        // then
+        assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(Oscars.bestActors.length - 2));
+        assertThat("Delete for matched name removes from @Repository", this.personRepository.count(),
+                equalTo((long) (Oscars.bestActors.length - 2)));
+        assertThat("Delete for matched name returns correct count", deletedPersons.size(), equalTo(2));
+        assertThat("1937 deleted", this.personMap.get("1937"), nullValue());
+        assertThat("1938 deleted", this.personMap.get("1938"), nullValue());
+    }
+
+    @Test
+    public void deleteByUnmatched() {
+        // given
+        // fully populated map
+
+        // when
+        long deletedPersonsSize = this.personRepository.deleteByLastname("abcdefghijklmnopqrstuvwxyz");
+
+        // then
+        assertThat("Delete for unmatched name does nothing to map", this.personMap.size(), equalTo(Oscars.bestActors.length));
+        assertThat("Delete for unmatched name does nothing to @Repository", this.personRepository.count(),
+                equalTo((long) Oscars.bestActors.length));
+        assertThat("Delete for unmatched name returns null", deletedPersonsSize, equalTo(0L));
     }
 
     // First by ascending == Min
