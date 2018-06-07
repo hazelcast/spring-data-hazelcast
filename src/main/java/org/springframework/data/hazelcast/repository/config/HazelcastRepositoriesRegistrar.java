@@ -15,7 +15,6 @@
  */
 package org.springframework.data.hazelcast.repository.config;
 
-import org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension;
 import org.springframework.data.repository.config.RepositoryBeanDefinitionRegistrarSupport;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
@@ -27,6 +26,7 @@ import java.lang.annotation.Annotation;
  *
  * @author Oliver Gierke
  * @author Neil Stevenson
+ * @author Rafal Leszko
  */
 class HazelcastRepositoriesRegistrar
         extends RepositoryBeanDefinitionRegistrarSupport {
@@ -49,42 +49,4 @@ class HazelcastRepositoriesRegistrar
         return new HazelcastRepositoryConfigurationExtension();
     }
 
-    /**
-     * Hazelcast-specific {@link RepositoryConfigurationExtension}.
-     *
-     * @author Oliver Gierke
-     */
-    private static class HazelcastRepositoryConfigurationExtension
-            extends KeyValueRepositoryConfigurationExtension {
-
-        /*
-         * (non-Javadoc)
-         * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
-         *                          #getModuleName()
-         */
-        @Override
-        public String getModuleName() {
-            return "Hazelcast";
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
-         *                          #getModulePrefix()
-         */
-        @Override
-        protected String getModulePrefix() {
-            return "hazelcast";
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
-         *                          #getDefaultKeyValueTemplateRef()
-         */
-        @Override
-        protected String getDefaultKeyValueTemplateRef() {
-            return "keyValueTemplate";
-        }
-    }
 }

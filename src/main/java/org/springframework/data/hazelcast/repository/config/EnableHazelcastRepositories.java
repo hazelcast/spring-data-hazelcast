@@ -40,6 +40,7 @@ import java.lang.annotation.Target;
  * @author Christoph Strobl
  * @author Oliver Gierke
  * @author Neil Stevenson
+ * @author Rafal Leszko
  */
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -131,4 +132,11 @@ public @interface EnableHazelcastRepositories {
      * repositories infrastructure.
      */
     boolean considerNestedRepositories() default false;
+
+    /**
+     * Configures the bean name of the {@link HazelcastInstance} to be used. Defaulted to {@literal hazelcastInstance}.
+     *
+     * @return
+     */
+    String hazelcastInstanceRef() default "hazelcastInstance";
 }
