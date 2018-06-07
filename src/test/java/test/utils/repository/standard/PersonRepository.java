@@ -63,7 +63,9 @@ public interface PersonRepository
 
     public Long countDistinctLastnameByFirstname(String firstname);
 
-    public Person deleteByLastname(String firstname);
+    public long deleteByLastname(String firstname);
+
+    public List<Person> deleteByFirstname(String firstname);
 
     public Person findFirstIdByOrderById();
 
