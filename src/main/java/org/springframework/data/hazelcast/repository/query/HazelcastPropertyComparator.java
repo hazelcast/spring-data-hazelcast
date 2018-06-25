@@ -57,6 +57,9 @@ public class HazelcastPropertyComparator
             Object o1Field = ReflectionHelper.extractValue(o1.getValue(), this.attributeName);
             Object o2Field = ReflectionHelper.extractValue(o2.getValue(), this.attributeName);
 
+            if (o1Field == o2Field) {
+                return 0;
+            }
             if (o1Field == null) {
                 return this.direction;
             }
@@ -64,7 +67,7 @@ public class HazelcastPropertyComparator
                 return -1 * this.direction;
             }
             if (o1Field instanceof Comparable && o2Field instanceof Comparable) {
-                return this.direction * ((Comparable) o1Field).compareTo((Comparable) o2Field);
+                return this.direction * ((Comparable) o1Field).compareTo(o2Field);
             }
 
         } catch (Exception ignore) {
