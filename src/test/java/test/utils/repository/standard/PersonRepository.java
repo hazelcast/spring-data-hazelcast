@@ -57,15 +57,31 @@ import java.util.stream.Stream;
 public interface PersonRepository
         extends HazelcastRepository<Person, String> {
 
+    // Count methods
+
     public Long countByFirstname(String firstname);
 
     public Long countByIdLessThanEqual(String id);
 
     public Long countDistinctLastnameByFirstname(String firstname);
 
-    public long deleteByLastname(String firstname);
+    public Long countByLastnameAllIgnoreCase(String lastname);
 
-    public List<Person> deleteByFirstname(String firstname);
+    public Long countByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
+
+    public Long countByFirstnameAndLastnameAllIgnoreCase(String firstname, String lastname);
+
+    public Long countByIdAfter(String id);
+
+    public Long countByIdBetween(String firstId, String lastId);
+
+    // Find methods
+
+    public Person findByFirstnameOrLastnameIgnoreCase(String firstname, String lastname);
+
+    public Person findByFirstnameIgnoreCaseOrLastname(String firstname, String lastname);
+
+    public Person findByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
 
     public Person findFirstIdByOrderById();
 
@@ -93,11 +109,7 @@ public interface PersonRepository
 
     public List<Person> findByFirstnameOrderByLastnameDesc(String firstname);
 
-    public List<Person> findByFirstname(String firstname, Sort sort);
-
     public List<Person> findByLastnameIgnoreCase(String lastname);
-
-    public List<Person> findByLastnameNotNull(Sort sort);
 
     public List<Person> findFirst3ByOrderByFirstnameAsc();
 
@@ -111,9 +123,11 @@ public interface PersonRepository
 
     public Stream<Person> streamByLastnameGreaterThanEqual(String lastname);
 
-    public Slice<Person> findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual(String id, String firstname1,
-                                                                                                  String firstname2,
-                                                                                                  Pageable pageable);
+    // Find methods with special parameters
+
+    public List<Person> findByFirstname(String firstname, Sort sort);
+
+    public List<Person> findByLastnameNotNull(Sort sort);
 
     public Page<Person> findByLastname(String lastname, Pageable pageable);
 
@@ -121,21 +135,17 @@ public interface PersonRepository
 
     public Slice<Person> findByIdLike(String pattern, Pageable pageable);
 
-    public Long countByLastnameAllIgnoreCase(String lastname);
+    public Slice<Person> findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual(String id, String firstname1,
+                                                                                                  String firstname2,
+                                                                                                  Pageable pageable);
 
-    public Long countByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
+    // Delete methods
 
-    public Long countByFirstnameAndLastnameAllIgnoreCase(String firstname, String lastname);
+    public long deleteByLastname(String firstname);
 
-    public Long countByIdAfter(String id);
+    public List<Person> deleteByFirstname(String firstname);
 
-    public Long countByIdBetween(String firstId, String lastId);
-
-    public Person findByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
-
-    public Person findByFirstnameOrLastnameIgnoreCase(String firstname, String lastname);
-
-    public Person findByFirstnameIgnoreCaseOrLastname(String firstname, String lastname);
+    // Query methods
 
     @Query("firstname=James")
     public List<Person> peoplewiththeirFirstNameIsJames();
