@@ -89,6 +89,8 @@ public interface PersonRepository
 
     public List<Person> findByFirstname(String firstname);
 
+    public List<Person> findByLastnameIsNull();
+
     // Underscores are permitted after field names, improving readability slightly
     public List<Person> findByFirstname_AndLastname(String firstname, String lastname);
 

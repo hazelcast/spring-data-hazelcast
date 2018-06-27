@@ -198,6 +198,22 @@ public class QueryIT
         assertThat("1944", matches.get(0).getLastname(), equalTo("Crosby"));
     }
 
+    @Test
+    public void findByLastnameIsNull() {
+        // given
+        Person person = new Person();
+        person.setId("johnId");
+        person.setFirstname("John");
+        this.personRepository.save(person);
+
+        // when
+        List<Person> result = this.personRepository.findByLastnameIsNull();
+
+        // then
+        assertThat(result.size(), equalTo(1));
+        assertThat(result.get(0), equalTo(person));
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void findBy_Firstname_And_Lastname() {
