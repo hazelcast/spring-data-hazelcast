@@ -21,6 +21,7 @@ import org.springframework.data.keyvalue.annotation.KeySpace;
 import test.utils.TestConstants;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * <p>
@@ -48,6 +49,7 @@ public class Person
     private String id;
     private String firstname;
     private String lastname;
+    private boolean isChild = false;
 
     public String getId() {
         return id;
@@ -73,6 +75,14 @@ public class Person
         this.lastname = lastname;
     }
 
+    public boolean isChild() {
+        return isChild;
+    }
+
+    public void setChild(boolean child) {
+        isChild = child;
+    }
+
     // Sort by lastname then firstname
     @Override
     public int compareTo(Person that) {
@@ -81,54 +91,26 @@ public class Person
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((firstname == null) ? 0 : firstname.hashCode());
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((lastname == null) ? 0 : lastname.hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Person person = (Person) o;
+        return isChild == person.isChild && Objects.equals(id, person.id) && Objects.equals(firstname, person.firstname)
+                && Objects.equals(lastname, person.lastname);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Person other = (Person) obj;
-        if (firstname == null) {
-            if (other.firstname != null) {
-                return false;
-            }
-        } else if (!firstname.equals(other.firstname)) {
-            return false;
-        }
-        if (id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!id.equals(other.id)) {
-            return false;
-        }
-        if (lastname == null) {
-            if (other.lastname != null) {
-                return false;
-            }
-        } else if (!lastname.equals(other.lastname)) {
-            return false;
-        }
-        return true;
+    public int hashCode() {
+        return Objects.hash(id, firstname, lastname, isChild);
     }
 
     @Override
     public String toString() {
-        return "Person [id=" + id + ", firstname=" + firstname + ", lastname=" + lastname + "]";
+        return "Person{" + "id='" + id + '\'' + ", firstname='" + firstname + '\'' + ", lastname='" + lastname + '\''
+                + ", isChild=" + isChild + '}';
     }
-
 }
