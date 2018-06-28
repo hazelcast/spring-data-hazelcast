@@ -232,6 +232,26 @@ public class QueryIT
         assertThat(result.get(0), equalTo(person));
     }
 
+    @Test
+    public void findByLastnameRegex() {
+        // given
+        Person person1 = new Person();
+        person1.setId("porterId");
+        person1.setLastname("Porter");
+        this.personRepository.save(person1);
+
+        Person person2 = new Person();
+        person2.setId("portersonId");
+        person2.setLastname("Porterson");
+        this.personRepository.save(person2);
+
+        // when
+        List<Person> result = this.personRepository.findByLastnameRegex(".orter.*");
+
+        // then
+        assertThat(result, containsInAnyOrder(person1, person2));
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void findBy_Firstname_And_Lastname() {
