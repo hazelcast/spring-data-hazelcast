@@ -35,6 +35,7 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -734,5 +735,16 @@ public class QueryIT
         List<Person> matches = this.personRepository.peoplewithFirstAndLastName("James", "Stewart");
         assertThat("1940", matches.size(), equalTo(1));
         assertThat("1940", matches.get(0).getId(), equalTo("1940"));
+    }
+
+    // Null handling methods
+
+    @Test
+    public void getByLastname() {
+        // when
+        Optional<Person> result = this.personRepository.getByLastname("Porter");
+
+        // then
+        assertThat(result.isPresent(), equalTo(false));
     }
 }

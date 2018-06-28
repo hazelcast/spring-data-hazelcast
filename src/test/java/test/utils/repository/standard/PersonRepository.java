@@ -27,6 +27,7 @@ import test.utils.domain.Person;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -162,4 +163,7 @@ public interface PersonRepository
     @Query("firstname=%s and lastname=%s")
     public List<Person> peoplewithFirstAndLastName(String firstName, String lastName);
 
+    // Null handling methods
+
+    public Optional<Person> getByLastname(String lastname);
 }
