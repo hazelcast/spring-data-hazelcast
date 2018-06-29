@@ -104,7 +104,7 @@ public interface PersonRepository
 
     public List<Person> findByFirstnameGreaterThan(String firstname);
 
-    public List<Person> findByFirstnameLike(String firstname);
+    public List<Person> queryByFirstnameLike(String firstname);
 
     public List<Person> findByFirstnameContains(String firstname);
 
@@ -118,7 +118,7 @@ public interface PersonRepository
 
     public List<Person> findByLastnameIgnoreCase(String lastname);
 
-    public List<Person> findFirst3ByOrderByFirstnameAsc();
+    public List<Person> findTop3ByOrderByFirstnameAsc();
 
     public List<Person> findFirst30ByOrderByFirstnameDescLastnameAsc();
 

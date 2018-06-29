@@ -321,8 +321,8 @@ public class QueryIT
 
     @SuppressWarnings("unchecked")
     @Test
-    public void findByFirstnameLike() {
-        List<Person> matches = this.personRepository.findByFirstnameLike("H%y");
+    public void queryByFirstnameLike() {
+        List<Person> matches = this.personRepository.queryByFirstnameLike("H%y");
 
         assertThat("Wallace, 3xWilliam, Victor & Yul", matches.size(), equalTo(2));
         assertThat("Wallace, 3xWilliam, Victor & Yul", matches,
@@ -393,8 +393,8 @@ public class QueryIT
     }
 
     @Test
-    public void findFirst3ByOrderByFirstnameAsc() {
-        List<Person> matches = this.personRepository.findFirst3ByOrderByFirstnameAsc();
+    public void findTop3ByOrderByFirstnameAsc() {
+        List<Person> matches = this.personRepository.findTop3ByOrderByFirstnameAsc();
 
         assertThat("First, 2002, Brody", matches.get(0).getFirstname(), equalTo("Adrien"));
         assertThat("Second, 1992, Pacino", matches.get(1).getFirstname(), equalTo("Al"));
