@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.util.concurrent.ListenableFuture;
 import test.utils.Oscars;
 import test.utils.TestConstants;
 import test.utils.TestDataHelper;
@@ -38,6 +39,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -746,5 +749,62 @@ public class QueryIT
 
         // then
         assertThat(result.isPresent(), equalTo(false));
+    }
+
+    // Async methods
+
+    @Test
+    public void findOneByFirstname()
+            throws Exception {
+        // given
+        String firstname = "Porter";
+        Person person = new Person();
+        person.setId("porterId");
+        person.setFirstname(firstname);
+        this.personRepository.save(person);
+
+        // when
+        Future<Person> result = this.personRepository.findOneByFirstname(firstname);
+
+        // then
+        assertThat(result.get(), equalTo(person));
+    }
+
+    @Test
+    public void findOneByLastname()
+            throws Exception {
+        // given
+        String lastname = "Porter";
+        Person person = new Person();
+        person.setId("porterId");
+        person.setLastname(lastname);
+        this.personRepository.save(person);
+
+        // when
+        CompletableFuture<Person> result = this.personRepository.findOneByLastname(lastname);
+
+        // then
+        assertThat(result.get(), equalTo(person));
+    }
+
+    @Test
+    public void findByLastnameListenableFuture()
+            throws Exception {
+        // given
+        String lastname = "Porter";
+        Person person1 = new Person();
+        person1.setId("porterId");
+        person1.setLastname(lastname);
+        this.personRepository.save(person1);
+        Person person2 = new Person();
+        person2.setId("porterId2");
+        person2.setLastname(lastname);
+        this.personRepository.save(person2);
+
+        // when
+        ListenableFuture<List<Person>> result = this.personRepository.findByLastname(lastname);
+
+        // then
+        assertThat(result.get(), containsInAnyOrder(person1, person2));
     }
 }

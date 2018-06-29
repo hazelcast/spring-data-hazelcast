@@ -23,11 +23,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.hazelcast.repository.HazelcastRepository;
 import org.springframework.data.hazelcast.repository.query.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.util.concurrent.ListenableFuture;
 import test.utils.domain.Person;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 /**
@@ -166,4 +170,15 @@ public interface PersonRepository
     // Null handling methods
 
     public Optional<Person> getByLastname(String lastname);
+
+    // Async methods
+
+    @Async
+    Future<Person> findOneByFirstname(String firstname);
+
+    @Async
+    CompletableFuture<Person> findOneByLastname(String lastname);
+
+    @Async
+    ListenableFuture<List<Person>> findByLastname(String lastname);
 }
