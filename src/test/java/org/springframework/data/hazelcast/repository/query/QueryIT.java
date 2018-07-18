@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.util.concurrent.ListenableFuture;
 import test.utils.Oscars;
 import test.utils.TestConstants;
 import test.utils.TestDataHelper;
@@ -35,8 +36,11 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -67,6 +71,7 @@ import static org.junit.Assert.assertThat;
  * </P>
  *
  * @author Neil Stevenson
+ * @author Rafal Leszko
  */
 @ActiveProfiles(TestConstants.SPRING_TEST_PROFILE_SINGLETON)
 public class QueryIT
@@ -78,6 +83,8 @@ public class QueryIT
     public ExpectedException expectedException = ExpectedException.none();
     @Resource
     private PersonRepository personRepository;
+
+    // Count methods
 
     @Test
     public void countByFirstname() {
@@ -121,13 +128,18 @@ public class QueryIT
     }
 
     @Test
-    public void findByFirstnameIgnoreCaseOrLastname() {
-        Person person = this.personRepository.findByFirstnameIgnoreCaseOrLastname("alec", "");
-        assertThat("1957 ignore case applied to firstname not lastname", person, notNullValue());
-        assertThat("1957 firstname", person.getId(), equalTo("1957"));
-        person = this.personRepository.findByFirstnameIgnoreCaseOrLastname("", "guinness");
-        assertThat("1957 lastname", person, nullValue());
+    public void countByIdAfter() {
+        Long count = this.personRepository.countByIdAfter("2000");
+        assertThat("> 2000 & <= 2015 ", count, equalTo(15L));
     }
+
+    @Test
+    public void countByIdBetween() {
+        Long count = this.personRepository.countByIdBetween("1959", "1962");
+        assertThat("between 1959 and 1962", count, equalTo(4L));
+    }
+
+    // Find methods
 
     @Test
     public void findByFirstnameOrLastnameIgnoreCase() {
@@ -139,6 +151,15 @@ public class QueryIT
     }
 
     @Test
+    public void findByFirstnameIgnoreCaseOrLastname() {
+        Person person = this.personRepository.findByFirstnameIgnoreCaseOrLastname("alec", "");
+        assertThat("1957 ignore case applied to firstname not lastname", person, notNullValue());
+        assertThat("1957 firstname", person.getId(), equalTo("1957"));
+        person = this.personRepository.findByFirstnameIgnoreCaseOrLastname("", "guinness");
+        assertThat("1957 lastname", person, nullValue());
+    }
+
+    @Test
     public void findByFirstnameOrLastnameAllIgnoreCase() {
         Person person = this.personRepository.findByFirstnameOrLastnameAllIgnoreCase("alec", "");
         assertThat("1957 firstname", person, notNullValue());
@@ -146,55 +167,6 @@ public class QueryIT
         person = this.personRepository.findByFirstnameOrLastnameAllIgnoreCase("", "guinness");
         assertThat("1957 lastname", person, notNullValue());
         assertThat("1957 lastname", person.getId(), equalTo("1957"));
-    }
-
-    @Test
-    public void deleteBy() {
-        // given
-        // fully populated map
-
-        // when
-        long deletedPersonsSize = this.personRepository.deleteByLastname("Tracy");
-
-        // then
-        assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(Oscars.bestActors.length - 2));
-        assertThat("Delete for matched name removes from @Repository", this.personRepository.count(),
-                equalTo((long) (Oscars.bestActors.length - 2)));
-        assertThat("Delete for matched name returns correct count", deletedPersonsSize, equalTo(2L));
-        assertThat("1937 deleted", this.personMap.get("1937"), nullValue());
-        assertThat("1938 deleted", this.personMap.get("1938"), nullValue());
-    }
-
-    @Test
-    public void deleteByReturnCollection() {
-        // given
-        // fully populated map
-
-        // when
-        Collection<Person> deletedPersons = this.personRepository.deleteByFirstname("Spencer");
-
-        // then
-        assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(Oscars.bestActors.length - 2));
-        assertThat("Delete for matched name removes from @Repository", this.personRepository.count(),
-                equalTo((long) (Oscars.bestActors.length - 2)));
-        assertThat("Delete for matched name returns correct count", deletedPersons.size(), equalTo(2));
-        assertThat("1937 deleted", this.personMap.get("1937"), nullValue());
-        assertThat("1938 deleted", this.personMap.get("1938"), nullValue());
-    }
-
-    @Test
-    public void deleteByUnmatched() {
-        // given
-        // fully populated map
-
-        // when
-        long deletedPersonsSize = this.personRepository.deleteByLastname("abcdefghijklmnopqrstuvwxyz");
-
-        // then
-        assertThat("Delete for unmatched name does nothing to map", this.personMap.size(), equalTo(Oscars.bestActors.length));
-        assertThat("Delete for unmatched name does nothing to @Repository", this.personRepository.count(),
-                equalTo((long) Oscars.bestActors.length));
-        assertThat("Delete for unmatched name returns null", deletedPersonsSize, equalTo(0L));
     }
 
     // First by ascending == Min
@@ -231,26 +203,57 @@ public class QueryIT
     }
 
     @Test
-    public void queryAnnotation() {
-        List<Person> matches = this.personRepository.peoplewiththeirFirstNameIsJames();
-        assertThat("1940 and 1942", matches.size(), equalTo(2));
-        assertThat("1940 and 1942", matches,
-                containsInAnyOrder(hasProperty("lastname", equalTo("Cagney")), hasProperty("lastname", equalTo("Stewart"))));
+    public void findByLastnameIsNull() {
+        // given
+        Person person = new Person();
+        person.setId("johnId");
+        person.setFirstname("John");
+        this.personRepository.save(person);
 
+        // when
+        List<Person> result = this.personRepository.findByLastnameIsNull();
+
+        // then
+        assertThat(result.size(), equalTo(1));
+        assertThat(result.get(0), equalTo(person));
     }
 
     @Test
-    public void queryAnnotationWithOneParameter() {
-        List<Person> matches = this.personRepository.peoplewiththeirFirstName("Bing");
-        assertThat("1944", matches.size(), equalTo(1));
-        assertThat("1944", matches.get(0).getLastname(), equalTo("Crosby"));
+    public void findByIsChildTrue() {
+        // given
+        Person person = new Person();
+        person.setId("johnId");
+        person.setFirstname("John");
+        person.setLastname("Porter");
+        person.setChild(true);
+        this.personRepository.save(person);
+
+        // when
+        List<Person> result = this.personRepository.findByIsChildTrue();
+
+        // then
+        assertThat(result.size(), equalTo(1));
+        assertThat(result.get(0), equalTo(person));
     }
 
     @Test
-    public void queryAnnotationWithMultipleParameter() {
-        List<Person> matches = this.personRepository.peoplewithFirstAndLastName("James", "Stewart");
-        assertThat("1940", matches.size(), equalTo(1));
-        assertThat("1940", matches.get(0).getId(), equalTo("1940"));
+    public void findByLastnameRegex() {
+        // given
+        Person person1 = new Person();
+        person1.setId("porterId");
+        person1.setLastname("Porter");
+        this.personRepository.save(person1);
+
+        Person person2 = new Person();
+        person2.setId("portersonId");
+        person2.setLastname("Porterson");
+        this.personRepository.save(person2);
+
+        // when
+        List<Person> result = this.personRepository.findByLastnameRegex(".orter.*");
+
+        // then
+        assertThat(result, containsInAnyOrder(person1, person2));
     }
 
     @SuppressWarnings("unchecked")
@@ -321,13 +324,35 @@ public class QueryIT
 
     @SuppressWarnings("unchecked")
     @Test
-    public void findByFirstnameLike() {
-        List<Person> matches = this.personRepository.findByFirstnameLike("H%y");
+    public void queryByFirstnameLike() {
+        List<Person> matches = this.personRepository.queryByFirstnameLike("H%y");
 
         assertThat("Wallace, 3xWilliam, Victor & Yul", matches.size(), equalTo(2));
         assertThat("Wallace, 3xWilliam, Victor & Yul", matches,
                 hasItems(allOf(hasProperty("firstname", equalTo("Humphrey")), hasProperty("lastname", equalTo("Bogart"))),
                         allOf(hasProperty("firstname", equalTo("Henry")), hasProperty("lastname", equalTo("Fonda")))));
+    }
+
+    @Test
+    public void findByFirstnameContains() {
+        List<Person> matches = this.personRepository.findByFirstnameContains("ll");
+
+        assertThat("Wallace, 2xWilliam, Russell", matches.size(), equalTo(4));
+        assertThat("Wallace, 2xWilliam, Russell", matches,
+                hasItems(allOf(hasProperty("firstname", equalTo("Wallace")), hasProperty("lastname", equalTo("Beery"))),
+                        allOf(hasProperty("firstname", equalTo("William")), hasProperty("lastname", equalTo("Holden"))),
+                        allOf(hasProperty("firstname", equalTo("William")), hasProperty("lastname", equalTo("Hurt"))),
+                        allOf(hasProperty("firstname", equalTo("Russell")), hasProperty("lastname", equalTo("Crowe")))));
+    }
+
+    @Test
+    public void findByFirstnameContainsAndLastnameStartsWithAllIgnoreCase() {
+        List<Person> matches = this.personRepository.findByFirstnameContainsAndLastnameStartsWithAllIgnoreCase("En", "tR");
+
+        assertThat("2xSpencer", matches.size(), equalTo(2));
+        assertThat("2xSpencer", matches,
+                hasItems(allOf(hasProperty("firstname", equalTo("Spencer")), hasProperty("lastname", equalTo("Tracy")))));
+
     }
 
     @Test
@@ -362,32 +387,6 @@ public class QueryIT
 
     @SuppressWarnings("unchecked")
     @Test
-    public void findByFirstname_with_sort() {
-        List<Person> matches = this.personRepository.findByFirstname("Jack", null);
-        assertThat("NULL 2 x Nicholson and 1 x Lemmon", matches.size(), equalTo(3));
-        assertThat("NULL sort", matches,
-                containsInAnyOrder(hasProperty("id", equalTo("1973")), hasProperty("id", equalTo("1975")),
-                        hasProperty("id", equalTo("1997"))));
-
-        Sort sort = new Sort(Sort.Direction.DESC, "id");
-        matches = this.personRepository.findByFirstname("Jack", sort);
-
-        assertThat("DESC 2 x Nicholson and 1 x Lemmon", matches.size(), equalTo(3));
-        assertThat("DESC 1st", matches.get(0).getId(), equalTo("1997"));
-        assertThat("DESC 2nd", matches.get(1).getId(), equalTo("1975"));
-        assertThat("DESC 3rd", matches.get(2).getId(), equalTo("1973"));
-
-        sort = new Sort(Sort.Direction.ASC, "id");
-        matches = this.personRepository.findByFirstname("Jack", sort);
-
-        assertThat("ASC 2 x Nicholson and 1 x Lemmon", matches.size(), equalTo(3));
-        assertThat("ASC 1st", matches.get(0).getId(), equalTo("1973"));
-        assertThat("ASC 2nd", matches.get(1).getId(), equalTo("1975"));
-        assertThat("ASC 3rd", matches.get(2).getId(), equalTo("1997"));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
     public void findByLastnameIgnoreCase() {
         List<Person> matches = this.personRepository.findByLastnameIgnoreCase("hAnKs");
 
@@ -397,20 +396,8 @@ public class QueryIT
     }
 
     @Test
-    public void findByLastnameNotNull() {
-        Sort sort = new Sort(Sort.DEFAULT_DIRECTION, "firstname");
-
-        List<Person> matches = this.personRepository.findByLastnameNotNull(sort);
-        int len = matches.size();
-
-        assertThat("Everyone returned", len, equalTo(Oscars.bestActors.length));
-        assertThat("First firstname - Adrien Brody", matches.get(0).getFirstname(), equalTo("Adrien"));
-        assertThat("Last firstname - Yul Brynner", matches.get(len - 1).getFirstname(), equalTo("Yul"));
-    }
-
-    @Test
-    public void findFirst3ByOrderByFirstnameAsc() {
-        List<Person> matches = this.personRepository.findFirst3ByOrderByFirstnameAsc();
+    public void findTop3ByOrderByFirstnameAsc() {
+        List<Person> matches = this.personRepository.findTop3ByOrderByFirstnameAsc();
 
         assertThat("First, 2002, Brody", matches.get(0).getFirstname(), equalTo("Adrien"));
         assertThat("Second, 1992, Pacino", matches.get(1).getFirstname(), equalTo("Al"));
@@ -427,6 +414,32 @@ public class QueryIT
         assertThat("2nd - William Holden", matches.get(1).getId(), equalTo("1953"));
         assertThat("3rd - William Hurt", matches.get(2).getId(), equalTo("1985"));
         assertThat("30th - Nicolas Cage", matches.get(29).getId(), equalTo("1995"));
+    }
+
+    @Test
+    public void findByFirstnameIn() {
+        List<Person> matches = this.personRepository.findByFirstnameIn(Arrays.asList("Jack", "Robert"));
+
+        assertThat("3xJack, 3xRobert", matches.size(), equalTo(6));
+        assertThat("3xJack, 3xRobert", matches,
+                hasItems(allOf(hasProperty("firstname", equalTo("Jack")), hasProperty("lastname", equalTo("Lemmon"))),
+                        allOf(hasProperty("firstname", equalTo("Jack")), hasProperty("lastname", equalTo("Nicholson"))),
+                        allOf(hasProperty("firstname", equalTo("Jack")), hasProperty("lastname", equalTo("Nicholson"))),
+                        allOf(hasProperty("firstname", equalTo("Robert")), hasProperty("lastname", equalTo("Donat"))),
+                        allOf(hasProperty("firstname", equalTo("Robert")), hasProperty("lastname", equalTo("De Niro"))),
+                        allOf(hasProperty("firstname", equalTo("Robert")), hasProperty("lastname", equalTo("Duvall")))));
+
+    }
+
+    @Test
+    public void findByFirstnameEndsWithAndLastnameNotIn() {
+        List<Person> matches = this.personRepository
+                .findByFirstnameEndsWithAndLastnameNotIn("on", Arrays.asList("Heston", "Brando"));
+
+        assertThat("Jon", matches.size(), equalTo(1));
+        assertThat("Jon", matches,
+                hasItems(allOf(hasProperty("firstname", equalTo("Jon")), hasProperty("lastname", equalTo("Voight")))));
+
     }
 
     @Test
@@ -461,38 +474,44 @@ public class QueryIT
         assertThat("Wayne and Whitaker", count.get(), equalTo(2));
     }
 
+    // Find methods with special parameters
+
+    @SuppressWarnings("unchecked")
     @Test
-    public void findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual() {
-        String[] LASTNAMES = {"Bridges", "Dujardin", "Foxx", "Irons", "Nicholson"};
-        Set<String> lastnames = new TreeSet<>(Arrays.asList(LASTNAMES));
+    public void findByFirstnameWithSort() {
+        List<Person> matches = this.personRepository.findByFirstname("Jack", null);
+        assertThat("NULL 2 x Nicholson and 1 x Lemmon", matches.size(), equalTo(3));
+        assertThat("NULL sort", matches,
+                containsInAnyOrder(hasProperty("id", equalTo("1973")), hasProperty("id", equalTo("1975")),
+                        hasProperty("id", equalTo("1997"))));
 
-        Pageable pageRequest = PageRequest.of(PAGE_0, SIZE_1);
-        Slice<Person> pageResponse = this.personRepository
-                .findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual("1990", "I", "K", pageRequest);
-        int slice = 0;
-        while (pageResponse != null) {
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        matches = this.personRepository.findByFirstname("Jack", sort);
 
-            assertThat("Slice " + slice + ", has content", pageResponse.hasContent(), equalTo(true));
+        assertThat("DESC 2 x Nicholson and 1 x Lemmon", matches.size(), equalTo(3));
+        assertThat("DESC 1st", matches.get(0).getId(), equalTo("1997"));
+        assertThat("DESC 2nd", matches.get(1).getId(), equalTo("1975"));
+        assertThat("DESC 3rd", matches.get(2).getId(), equalTo("1973"));
 
-            List<Person> pageMatches = pageResponse.getContent();
+        sort = new Sort(Sort.Direction.ASC, "id");
+        matches = this.personRepository.findByFirstname("Jack", sort);
 
-            assertThat("Slice " + slice + ", contains a person", pageMatches.size(), equalTo(1));
+        assertThat("ASC 2 x Nicholson and 1 x Lemmon", matches.size(), equalTo(3));
+        assertThat("ASC 1st", matches.get(0).getId(), equalTo("1973"));
+        assertThat("ASC 2nd", matches.get(1).getId(), equalTo("1975"));
+        assertThat("ASC 3rd", matches.get(2).getId(), equalTo("1997"));
+    }
 
-            String lastname = pageMatches.get(0).getLastname();
-            assertThat("Slice " + slice + ", lastname " + lastname + " expected", lastnames.contains(lastname), equalTo(true));
-            lastnames.remove(lastname);
+    @Test
+    public void findByLastnameNotNull() {
+        Sort sort = new Sort(Sort.DEFAULT_DIRECTION, "firstname");
 
-            if (pageResponse.hasNext()) {
-                pageRequest = pageResponse.nextPageable();
-                pageResponse = this.personRepository
-                        .findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual("1990", "I", "K", pageRequest);
-            } else {
-                pageResponse = null;
-            }
-            slice++;
-        }
+        List<Person> matches = this.personRepository.findByLastnameNotNull(sort);
+        int len = matches.size();
 
-        assertThat("All lastnames matched", lastnames, hasSize(0));
+        assertThat("Everyone returned", len, equalTo(Oscars.bestActors.length));
+        assertThat("First firstname - Adrien Brody", matches.get(0).getFirstname(), equalTo("Adrien"));
+        assertThat("Last firstname - Yul Brynner", matches.get(len - 1).getFirstname(), equalTo("Yul"));
     }
 
     @Test
@@ -612,62 +631,180 @@ public class QueryIT
     }
 
     @Test
-    public void findByFirstnameContains() {
-        List<Person> matches = this.personRepository.findByFirstnameContains("ll");
+    public void findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual() {
+        String[] LASTNAMES = {"Bridges", "Dujardin", "Foxx", "Irons", "Nicholson"};
+        Set<String> lastnames = new TreeSet<>(Arrays.asList(LASTNAMES));
 
-        assertThat("Wallace, 2xWilliam, Russell", matches.size(), equalTo(4));
-        assertThat("Wallace, 2xWilliam, Russell", matches,
-                hasItems(allOf(hasProperty("firstname", equalTo("Wallace")), hasProperty("lastname", equalTo("Beery"))),
-                        allOf(hasProperty("firstname", equalTo("William")), hasProperty("lastname", equalTo("Holden"))),
-                        allOf(hasProperty("firstname", equalTo("William")), hasProperty("lastname", equalTo("Hurt"))),
-                        allOf(hasProperty("firstname", equalTo("Russell")), hasProperty("lastname", equalTo("Crowe")))));
+        Pageable pageRequest = PageRequest.of(PAGE_0, SIZE_1);
+        Slice<Person> pageResponse = this.personRepository
+                .findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual("1990", "I", "K", pageRequest);
+        int slice = 0;
+        while (pageResponse != null) {
+
+            assertThat("Slice " + slice + ", has content", pageResponse.hasContent(), equalTo(true));
+
+            List<Person> pageMatches = pageResponse.getContent();
+
+            assertThat("Slice " + slice + ", contains a person", pageMatches.size(), equalTo(1));
+
+            String lastname = pageMatches.get(0).getLastname();
+            assertThat("Slice " + slice + ", lastname " + lastname + " expected", lastnames.contains(lastname), equalTo(true));
+            lastnames.remove(lastname);
+
+            if (pageResponse.hasNext()) {
+                pageRequest = pageResponse.nextPageable();
+                pageResponse = this.personRepository
+                        .findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual("1990", "I", "K", pageRequest);
+            } else {
+                pageResponse = null;
+            }
+            slice++;
+        }
+
+        assertThat("All lastnames matched", lastnames, hasSize(0));
+    }
+
+    // Delete methods
+
+    @Test
+    public void deleteByLastname() {
+        // given
+        // fully populated map
+
+        // when
+        long deletedPersonsSize = this.personRepository.deleteByLastname("Tracy");
+
+        // then
+        assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(Oscars.bestActors.length - 2));
+        assertThat("Delete for matched name removes from @Repository", this.personRepository.count(),
+                equalTo((long) (Oscars.bestActors.length - 2)));
+        assertThat("Delete for matched name returns correct count", deletedPersonsSize, equalTo(2L));
+        assertThat("1937 deleted", this.personMap.get("1937"), nullValue());
+        assertThat("1938 deleted", this.personMap.get("1938"), nullValue());
     }
 
     @Test
-    public void findByFirstnameContainsAndLastnameStartsWithAllIgnoreCase() {
-        List<Person> matches = this.personRepository.findByFirstnameContainsAndLastnameStartsWithAllIgnoreCase("En", "tR");
+    public void deleteByLastnameUnmatched() {
+        // given
+        // fully populated map
 
-        assertThat("2xSpencer", matches.size(), equalTo(2));
-        assertThat("2xSpencer", matches,
-                hasItems(allOf(hasProperty("firstname", equalTo("Spencer")), hasProperty("lastname", equalTo("Tracy")))));
+        // when
+        long deletedPersonsSize = this.personRepository.deleteByLastname("abcdefghijklmnopqrstuvwxyz");
+
+        // then
+        assertThat("Delete for unmatched name does nothing to map", this.personMap.size(), equalTo(Oscars.bestActors.length));
+        assertThat("Delete for unmatched name does nothing to @Repository", this.personRepository.count(),
+                equalTo((long) Oscars.bestActors.length));
+        assertThat("Delete for unmatched name returns null", deletedPersonsSize, equalTo(0L));
+    }
+
+    @Test
+    public void deleteByFirstname() {
+        // given
+        // fully populated map
+
+        // when
+        Collection<Person> deletedPersons = this.personRepository.deleteByFirstname("Spencer");
+
+        // then
+        assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(Oscars.bestActors.length - 2));
+        assertThat("Delete for matched name removes from @Repository", this.personRepository.count(),
+                equalTo((long) (Oscars.bestActors.length - 2)));
+        assertThat("Delete for matched name returns correct count", deletedPersons.size(), equalTo(2));
+        assertThat("1937 deleted", this.personMap.get("1937"), nullValue());
+        assertThat("1938 deleted", this.personMap.get("1938"), nullValue());
+    }
+
+    // Query methods
+
+    @Test
+    public void peoplewiththeirFirstNameIsJames() {
+        List<Person> matches = this.personRepository.peoplewiththeirFirstNameIsJames();
+        assertThat("1940 and 1942", matches.size(), equalTo(2));
+        assertThat("1940 and 1942", matches,
+                containsInAnyOrder(hasProperty("lastname", equalTo("Cagney")), hasProperty("lastname", equalTo("Stewart"))));
 
     }
 
     @Test
-    public void countByIdAfter() {
-        Long count = this.personRepository.countByIdAfter("2000");
-        assertThat("> 2000 & <= 2015 ", count, equalTo(15L));
+    public void peoplewiththeirFirstName() {
+        List<Person> matches = this.personRepository.peoplewiththeirFirstName("Bing");
+        assertThat("1944", matches.size(), equalTo(1));
+        assertThat("1944", matches.get(0).getLastname(), equalTo("Crosby"));
     }
 
     @Test
-    public void countByIdBetween() {
-        Long count = this.personRepository.countByIdBetween("1959", "1962");
-        assertThat("between 1959 and 1962", count, equalTo(4L));
+    public void peoplewithFirstAndLastName() {
+        List<Person> matches = this.personRepository.peoplewithFirstAndLastName("James", "Stewart");
+        assertThat("1940", matches.size(), equalTo(1));
+        assertThat("1940", matches.get(0).getId(), equalTo("1940"));
+    }
+
+    // Null handling methods
+
+    @Test
+    public void getByLastname() {
+        // when
+        Optional<Person> result = this.personRepository.getByLastname("Porter");
+
+        // then
+        assertThat(result.isPresent(), equalTo(false));
+    }
+
+    // Async methods
+
+    @Test
+    public void findOneByFirstname()
+            throws Exception {
+        // given
+        String firstname = "Porter";
+        Person person = new Person();
+        person.setId("porterId");
+        person.setFirstname(firstname);
+        this.personRepository.save(person);
+
+        // when
+        Future<Person> result = this.personRepository.findOneByFirstname(firstname);
+
+        // then
+        assertThat(result.get(), equalTo(person));
     }
 
     @Test
-    public void findByFirstnameIn() {
-        List<Person> matches = this.personRepository.findByFirstnameIn(Arrays.asList("Jack", "Robert"));
+    public void findOneByLastname()
+            throws Exception {
+        // given
+        String lastname = "Porter";
+        Person person = new Person();
+        person.setId("porterId");
+        person.setLastname(lastname);
+        this.personRepository.save(person);
 
-        assertThat("3xJack, 3xRobert", matches.size(), equalTo(6));
-        assertThat("3xJack, 3xRobert", matches,
-                hasItems(allOf(hasProperty("firstname", equalTo("Jack")), hasProperty("lastname", equalTo("Lemmon"))),
-                        allOf(hasProperty("firstname", equalTo("Jack")), hasProperty("lastname", equalTo("Nicholson"))),
-                        allOf(hasProperty("firstname", equalTo("Jack")), hasProperty("lastname", equalTo("Nicholson"))),
-                        allOf(hasProperty("firstname", equalTo("Robert")), hasProperty("lastname", equalTo("Donat"))),
-                        allOf(hasProperty("firstname", equalTo("Robert")), hasProperty("lastname", equalTo("De Niro"))),
-                        allOf(hasProperty("firstname", equalTo("Robert")), hasProperty("lastname", equalTo("Duvall")))));
+        // when
+        CompletableFuture<Person> result = this.personRepository.findOneByLastname(lastname);
 
+        // then
+        assertThat(result.get(), equalTo(person));
     }
 
     @Test
-    public void findByFirstnameEndsWithAndLastnameNotIn() {
-        List<Person> matches = this.personRepository
-                .findByFirstnameEndsWithAndLastnameNotIn("on", Arrays.asList("Heston", "Brando"));
+    public void findByLastnameListenableFuture()
+            throws Exception {
+        // given
+        String lastname = "Porter";
+        Person person1 = new Person();
+        person1.setId("porterId");
+        person1.setLastname(lastname);
+        this.personRepository.save(person1);
+        Person person2 = new Person();
+        person2.setId("porterId2");
+        person2.setLastname(lastname);
+        this.personRepository.save(person2);
 
-        assertThat("Jon", matches.size(), equalTo(1));
-        assertThat("Jon", matches,
-                hasItems(allOf(hasProperty("firstname", equalTo("Jon")), hasProperty("lastname", equalTo("Voight")))));
+        // when
+        ListenableFuture<List<Person>> result = this.personRepository.findByLastname(lastname);
 
+        // then
+        assertThat(result.get(), containsInAnyOrder(person1, person2));
     }
 }
