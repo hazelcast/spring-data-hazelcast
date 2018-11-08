@@ -21,8 +21,8 @@ import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
-import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.QueryLookupStrategy;
+import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.util.Assert;
@@ -40,7 +40,7 @@ import java.lang.reflect.Method;
 public class HazelcastQueryLookupStrategy
         implements QueryLookupStrategy {
 
-    private final EvaluationContextProvider evaluationContextProvider;
+    private final QueryMethodEvaluationContextProvider evaluationContextProvider;
     private final KeyValueOperations keyValueOperations;
     private final Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
     private final HazelcastInstance hazelcastInstance;
@@ -60,7 +60,8 @@ public class HazelcastQueryLookupStrategy
      * @param queryCreator              Likely to be {@link HazelcastQueryCreator}
      * @param hazelcastInstance         Instance of Hazelcast
      */
-    public HazelcastQueryLookupStrategy(QueryLookupStrategy.Key key, EvaluationContextProvider evaluationContextProvider,
+    public HazelcastQueryLookupStrategy(QueryLookupStrategy.Key key,
+                                        QueryMethodEvaluationContextProvider evaluationContextProvider,
                                         KeyValueOperations keyValueOperations,
                                         Class<? extends AbstractQueryCreator<?, ?>> queryCreator,
                                         HazelcastInstance hazelcastInstance) {

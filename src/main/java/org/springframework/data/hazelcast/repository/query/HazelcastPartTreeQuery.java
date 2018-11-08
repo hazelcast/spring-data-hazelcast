@@ -23,11 +23,11 @@ import org.springframework.data.keyvalue.core.IterableConverter;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 import org.springframework.data.keyvalue.repository.query.KeyValuePartTreeQuery;
-import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.QueryMethod;
+import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.data.repository.query.parser.Part;
@@ -77,7 +77,7 @@ public class HazelcastPartTreeQuery
      * @param keyValueOperations         Interface to Hazelcast
      * @param queryCreator               Not used
      */
-    public HazelcastPartTreeQuery(QueryMethod queryMethod, EvaluationContextProvider evaluationContextProvider,
+    public HazelcastPartTreeQuery(QueryMethod queryMethod, QueryMethodEvaluationContextProvider evaluationContextProvider,
                                   KeyValueOperations keyValueOperations,
                                   Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
         super(queryMethod, evaluationContextProvider, keyValueOperations, queryCreator);
