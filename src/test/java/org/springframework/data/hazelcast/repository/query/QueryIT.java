@@ -44,6 +44,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -418,7 +419,7 @@ public class QueryIT
 
     @Test
     public void findByFirstnameIn() {
-        List<Person> matches = this.personRepository.findByFirstnameIn(Arrays.asList("Jack", "Robert"));
+        List<Person> matches = this.personRepository.findByFirstnameIn(asList("Jack", "Robert"));
 
         assertThat("3xJack, 3xRobert", matches.size(), equalTo(6));
         assertThat("3xJack, 3xRobert", matches,
@@ -434,7 +435,7 @@ public class QueryIT
     @Test
     public void findByFirstnameEndsWithAndLastnameNotIn() {
         List<Person> matches = this.personRepository
-                .findByFirstnameEndsWithAndLastnameNotIn("on", Arrays.asList("Heston", "Brando"));
+                .findByFirstnameEndsWithAndLastnameNotIn("on", asList("Heston", "Brando"));
 
         assertThat("Jon", matches.size(), equalTo(1));
         assertThat("Jon", matches,
@@ -517,7 +518,7 @@ public class QueryIT
     @Test
     public void findByLastname() {
         String[] YEARS = {"1989", "2007", "2012"};
-        Set<String> years = new TreeSet<>(Arrays.asList(YEARS));
+        Set<String> years = new TreeSet<>(asList(YEARS));
 
         for (int page = 0; page < YEARS.length; page++) {
             Pageable pageRequest = PageRequest.of(page, SIZE_1);
@@ -597,7 +598,7 @@ public class QueryIT
     public void findByIdLike() {
         String PATTERN = "19%0";
         String[] EXPECTED_YEARS = {"1930", "1940", "1950", "1960", "1970", "1980", "1990"};
-        Set<String> expectedYears = new TreeSet<>(Arrays.asList(EXPECTED_YEARS));
+        Set<String> expectedYears = new TreeSet<>(asList(EXPECTED_YEARS));
 
         Pageable pageRequest = PageRequest.of(PAGE_0, SIZE_5);
         Slice<Person> pageResponse = this.personRepository.findByIdLike(PATTERN, pageRequest);
@@ -633,7 +634,7 @@ public class QueryIT
     @Test
     public void findByIdGreaterThanEqualAndFirstnameGreaterThanAndFirstnameLessThanEqual() {
         String[] LASTNAMES = {"Bridges", "Dujardin", "Foxx", "Irons", "Nicholson"};
-        Set<String> lastnames = new TreeSet<>(Arrays.asList(LASTNAMES));
+        Set<String> lastnames = new TreeSet<>(asList(LASTNAMES));
 
         Pageable pageRequest = PageRequest.of(PAGE_0, SIZE_1);
         Slice<Person> pageResponse = this.personRepository
@@ -719,7 +720,7 @@ public class QueryIT
 
     @Test
     public void peoplewiththeirFirstNameIsJames() {
-        List<Person> matches = this.personRepository.peoplewiththeirFirstNameIsJames();
+        List<Person> matches = this.personRepository.peopleWiththeirFirstNameIsJames();
         assertThat("1940 and 1942", matches.size(), equalTo(2));
         assertThat("1940 and 1942", matches,
                 containsInAnyOrder(hasProperty("lastname", equalTo("Cagney")), hasProperty("lastname", equalTo("Stewart"))));
@@ -728,14 +729,28 @@ public class QueryIT
 
     @Test
     public void peoplewiththeirFirstName() {
-        List<Person> matches = this.personRepository.peoplewiththeirFirstName("Bing");
+        List<Person> matches = this.personRepository.peopleWiththeirFirstName("Bing");
         assertThat("1944", matches.size(), equalTo(1));
         assertThat("1944", matches.get(0).getLastname(), equalTo("Crosby"));
     }
 
     @Test
     public void peoplewithFirstAndLastName() {
-        List<Person> matches = this.personRepository.peoplewithFirstAndLastName("James", "Stewart");
+        List<Person> matches = this.personRepository.peopleWithFirstAndLastName("James", "Stewart");
+        assertThat("1940", matches.size(), equalTo(1));
+        assertThat("1940", matches.get(0).getId(), equalTo("1940"));
+    }
+
+    @Test
+    public void peoplewithLastNameLike() {
+        List<Person> matches = this.personRepository.peopleWithLastNameLike("Stewar%");
+        assertThat("1940", matches.size(), equalTo(1));
+        assertThat("1940", matches.get(0).getId(), equalTo("1940"));
+    }
+
+    @Test
+    public void peoplewithLastNameInCollection() {
+        List<Person> matches = this.personRepository.peopleWithLastNameIn(asList("Stewart", "Smith"));
         assertThat("1940", matches.size(), equalTo(1));
         assertThat("1940", matches.get(0).getId(), equalTo("1940"));
     }

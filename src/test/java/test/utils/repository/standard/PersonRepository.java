@@ -159,13 +159,19 @@ public interface PersonRepository
     // Query methods
 
     @Query("firstname=James")
-    public List<Person> peoplewiththeirFirstNameIsJames();
+    public List<Person> peopleWiththeirFirstNameIsJames();
 
     @Query("firstname=%s")
-    public List<Person> peoplewiththeirFirstName(String firstName);
+    public List<Person> peopleWiththeirFirstName(String firstName);
 
     @Query("firstname=%s and lastname=%s")
-    public List<Person> peoplewithFirstAndLastName(String firstName, String lastName);
+    public List<Person> peopleWithFirstAndLastName(String firstName, String lastName);
+
+    @Query("lastname like %s")
+    public List<Person> peopleWithLastNameLike(String lastName);
+
+    @Query("lastname in (%s)")
+    public List<Person> peopleWithLastNameIn(Collection<String> lastNames);
 
     // Null handling methods
 
