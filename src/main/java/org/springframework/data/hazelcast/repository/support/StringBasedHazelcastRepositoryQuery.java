@@ -21,6 +21,9 @@ import com.hazelcast.query.SqlPredicate;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 /**
  * {@link RepositoryQuery} using String based {@link SqlPredicate} to query Hazelcast Cluster.
  */
@@ -40,9 +43,25 @@ public class StringBasedHazelcastRepositoryQuery
     @Override
     public Object execute(Object[] parameters) {
         String queryStringTemplate = queryMethod.getAnnotatedQuery();
-        String queryString = String.format(queryStringTemplate, parameters);
+        String queryString = String.format(queryStringTemplate, formatParameters(parameters));
         SqlPredicate sqlPredicate = new SqlPredicate(queryString);
         return getMap(keySpace).values(sqlPredicate);
+    }
+
+    private Object[] formatParameters(Object[] parameters) {
+        Object[] result = new Object[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            if (parameters[i] instanceof Collection) {
+                result[i] = formatCollection((Collection) parameters[i]);
+            } else {
+                result[i] = parameters[i];
+            }
+        }
+        return result;
+    }
+
+    private static String formatCollection(Collection<?> collection) {
+        return String.format("(%s)", collection.stream().map(Object::toString).collect(Collectors.joining(",")));
     }
 
     private IMap getMap(String keySpace) {
