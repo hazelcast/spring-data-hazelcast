@@ -33,7 +33,6 @@ import test.utils.domain.Person;
 import test.utils.repository.standard.PersonRepository;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -720,7 +719,7 @@ public class QueryIT
 
     @Test
     public void peoplewiththeirFirstNameIsJames() {
-        List<Person> matches = this.personRepository.peopleWiththeirFirstNameIsJames();
+        List<Person> matches = this.personRepository.peopleWithTheirFirstNameIsJames();
         assertThat("1940 and 1942", matches.size(), equalTo(2));
         assertThat("1940 and 1942", matches,
                 containsInAnyOrder(hasProperty("lastname", equalTo("Cagney")), hasProperty("lastname", equalTo("Stewart"))));
@@ -729,7 +728,7 @@ public class QueryIT
 
     @Test
     public void peoplewiththeirFirstName() {
-        List<Person> matches = this.personRepository.peopleWiththeirFirstName("Bing");
+        List<Person> matches = this.personRepository.peopleWithTheirFirstName("Bing");
         assertThat("1944", matches.size(), equalTo(1));
         assertThat("1944", matches.get(0).getLastname(), equalTo("Crosby"));
     }

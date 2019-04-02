@@ -159,10 +159,10 @@ public interface PersonRepository
     // Query methods
 
     @Query("firstname=James")
-    public List<Person> peopleWiththeirFirstNameIsJames();
+    public List<Person> peopleWithTheirFirstNameIsJames();
 
     @Query("firstname=%s")
-    public List<Person> peopleWiththeirFirstName(String firstName);
+    public List<Person> peopleWithTheirFirstName(String firstName);
 
     @Query("firstname=%s and lastname=%s")
     public List<Person> peopleWithFirstAndLastName(String firstName, String lastName);
