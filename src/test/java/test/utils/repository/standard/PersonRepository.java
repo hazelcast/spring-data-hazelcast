@@ -170,7 +170,7 @@ public interface PersonRepository
     @Query("lastname like %s")
     public List<Person> peopleWithLastNameLike(String lastName);
 
-    @Query("lastname in (%s)")
+    @Query("lastname in %s")
     public List<Person> peopleWithLastNameIn(Collection<String> lastNames);
 
     // Null handling methods
