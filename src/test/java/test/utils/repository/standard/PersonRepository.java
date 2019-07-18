@@ -150,6 +150,8 @@ public interface PersonRepository
                                                                                                   String firstname2,
                                                                                                   Pageable pageable);
 
+    public Page<Person> findAllById(@Param("id") String id, Pageable pageable);
+        
     // Delete methods
 
     public long deleteByLastname(String firstname);
