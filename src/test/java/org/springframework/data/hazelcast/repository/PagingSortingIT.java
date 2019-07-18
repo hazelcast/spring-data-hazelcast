@@ -120,6 +120,9 @@ public class PagingSortingIT
         firstPageOf20Content.forEach(person -> ids.add(person.getId()));
 
         assertThat("20 different years", ids.size(), equalTo(20));
+            
+        Page<Person> firstPageOfParamResponse = this.personRepository.findAllById("1933", firstPageOf20Request);
+        assertThat("1 onwards returned for @Param query", firstPageOfParamResponse, notNullValue());
     }
 
     @Test
