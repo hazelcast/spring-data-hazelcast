@@ -326,7 +326,7 @@ public class HazelcastPartTreeQuery
             parameters = new Object[originalParameters.length];
 
             for (int i = 0; i < parameters.length; i++) {
-                int index = rearrangeIndex[i];
+                int index = (i < rearrangeIndex.length) ? rearrangeIndex[i] : i;
                 parameters[i] = originalParameters[index];
             }
         }

@@ -663,6 +663,15 @@ public class QueryIT
 
         assertThat("All lastnames matched", lastnames, hasSize(0));
     }
+    
+    @Test
+    public void findByIdPagedWithParam() {
+    	int PAGE_0 = 0;
+        int SIZE_20 = 20;
+        PageRequest firstPageOf20Request = PageRequest.of(PAGE_0, SIZE_20);
+    	Page<Person> firstPageOfParamResponse = this.personRepository.findAllById("1933", firstPageOf20Request);
+        assertThat("1 onwards returned for @Param query", firstPageOfParamResponse, notNullValue());
+    }
 
     // Delete methods
 
@@ -821,4 +830,5 @@ public class QueryIT
         // then
         assertThat(result.get(), containsInAnyOrder(person1, person2));
     }
+    
 }
