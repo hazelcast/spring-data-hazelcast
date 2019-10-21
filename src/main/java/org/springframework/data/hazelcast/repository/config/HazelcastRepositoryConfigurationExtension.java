@@ -78,7 +78,7 @@ class HazelcastRepositoryConfigurationExtension
         constructorArgumentValuesForHazelcastKeyValueAdapter
                 .addIndexedArgumentValue(0, new RuntimeBeanReference(hazelcastInstanceRef));
         hazelcastKeyValueAdapterDefinition.setConstructorArgumentValues(constructorArgumentValuesForHazelcastKeyValueAdapter);
-        registerIfNotAlreadyRegistered(hazelcastKeyValueAdapterDefinition, registry, HAZELCAST_ADAPTER_BEAN_NAME,
+        registerIfNotAlreadyRegistered(() -> hazelcastKeyValueAdapterDefinition, registry, HAZELCAST_ADAPTER_BEAN_NAME,
                 configurationSource);
 
         super.registerBeansForRoot(registry, configurationSource);
