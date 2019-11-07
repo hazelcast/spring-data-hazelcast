@@ -143,7 +143,7 @@ Hazelcast is available under the Apache 2 License. Please see the Licensing appe
 
 # Copyright
 
-Copyright (c) 2008-2018, Hazelcast, Inc. All Rights Reserved.
+Copyright (c) 2008-2019, Hazelcast, Inc. All Rights Reserved.
 
 Visit http://www.hazelcast.com for more information.
 
