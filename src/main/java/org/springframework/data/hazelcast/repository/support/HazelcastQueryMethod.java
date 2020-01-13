@@ -49,9 +49,10 @@ public class HazelcastQueryMethod
     }
 
     String getKeySpace() {
-        KeySpace keySpace = getEntityInformation().getJavaType().getAnnotation(KeySpace.class);
+        Class<?> clazz = getEntityInformation().getJavaType();
+        KeySpace keySpace = clazz.getAnnotation(KeySpace.class);
         String queryString = (keySpace != null ? (String) AnnotationUtils.getValue(keySpace) : null);
-        return (StringUtils.hasText(queryString) ? queryString : null);
+        return (StringUtils.hasText(queryString) ? queryString : clazz.getName());
 
     }
 
