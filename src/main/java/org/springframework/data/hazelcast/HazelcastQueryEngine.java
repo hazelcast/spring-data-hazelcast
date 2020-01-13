@@ -17,6 +17,7 @@ package org.springframework.data.hazelcast;
 
 import com.hazelcast.query.PagingPredicate;
 import com.hazelcast.query.Predicate;
+import com.hazelcast.query.impl.predicates.PagingPredicateImpl;
 import org.springframework.data.hazelcast.repository.query.HazelcastCriteriaAccessor;
 import org.springframework.data.hazelcast.repository.query.HazelcastSortAccessor;
 import org.springframework.data.keyvalue.core.QueryEngine;
@@ -68,7 +69,7 @@ public class HazelcastQueryEngine
         @SuppressWarnings({"unchecked", "rawtypes"}) Comparator<Entry> sortToUse = ((Comparator<Entry>) (Comparator) sort);
 
         if (rows > 0) {
-            PagingPredicate pp = new PagingPredicate(predicateToUse, sortToUse, rows);
+            PagingPredicate pp = new PagingPredicateImpl(predicateToUse, sortToUse, rows);
             long x = offset / rows;
             while (x > 0) {
                 pp.nextPage();
@@ -78,14 +79,14 @@ public class HazelcastQueryEngine
 
         } else {
             if (sortToUse != null) {
-                predicateToUse = new PagingPredicate(predicateToUse, sortToUse, Integer.MAX_VALUE);
+                predicateToUse = new PagingPredicateImpl(predicateToUse, sortToUse, Integer.MAX_VALUE);
             }
         }
 
         if (predicateToUse == null) {
             return adapter.getMap(keyspace).values();
         } else {
-            return adapter.getMap(keyspace).values(predicateToUse);
+            return adapter.getMap(keyspace).values((Predicate<Object, Object>) predicateToUse);
         }
 
     }
@@ -103,7 +104,7 @@ public class HazelcastQueryEngine
     public long count(final Predicate<?, ?> criteria, final String keyspace) {
         final HazelcastKeyValueAdapter adapter = getAdapter();
         Assert.notNull(adapter, "Adapter must not be 'null'.");
-        return adapter.getMap(keyspace).keySet(criteria).size();
+        return adapter.getMap(keyspace).keySet((Predicate<Object, Object>) criteria).size();
     }
 
 }

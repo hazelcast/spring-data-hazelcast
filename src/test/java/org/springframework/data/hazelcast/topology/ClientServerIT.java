@@ -57,7 +57,7 @@ public class ClientServerIT
                 .and(Predicates.equal("firstname", FIRST_NAME_IS_JOHN), Predicates.equal("lastname", LAST_NAME_IS_WAYNE));
 
         // Force operation to server's content, not remote
-        Set<String> localKeySet = super.server_personMap.localKeySet(predicate);
+        Set<String> localKeySet = super.server_personMap.localKeySet((Predicate<String, Person>) predicate);
 
         assertThat("Entry exists", localKeySet.size(), equalTo(1));
         String key = localKeySet.iterator().next();
