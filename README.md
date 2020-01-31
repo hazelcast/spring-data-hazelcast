@@ -139,7 +139,7 @@ Please, [join the mail group](http://groups.google.com/group/hazelcast) if you a
 
 # License
 
-Hazelcast is available under the Apache 2 License. Please see the Licensing appendix for more information.
+Hazelcast is available under the Hazelcast Community License. Please see the Licensing appendix for more information.
 
 # Copyright
 
