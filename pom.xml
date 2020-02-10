@@ -31,7 +31,7 @@
 
     <properties>
         <dist.key>DATAHC</dist.key>
-        <hazelcast>3.12.3</hazelcast>
+        <hazelcast>3.12.6</hazelcast>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <springdata.keyvalue>2.1.2.RELEASE</springdata.keyvalue>
