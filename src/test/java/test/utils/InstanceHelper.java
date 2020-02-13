@@ -106,7 +106,6 @@ public class InstanceHelper {
 
         clientConfig.setInstanceName(name);
         clientConfig.getNetworkConfig().setAddresses(Arrays.asList(MASTER_SERVER));
-        clientConfig.getNetworkConfig().setConnectionAttemptLimit(1);
 
         HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(clientConfig);
 

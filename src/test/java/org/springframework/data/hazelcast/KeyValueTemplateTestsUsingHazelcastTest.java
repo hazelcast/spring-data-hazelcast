@@ -17,7 +17,7 @@ package org.springframework.data.hazelcast;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.query.Predicate;
-import com.hazelcast.query.PredicateBuilder;
+import com.hazelcast.query.impl.PredicateBuilderImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -67,7 +67,7 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
     private static final SubclassOfAliasedType SUBCLASS_OF_ALIASED = new SubclassOfAliasedType("sub");
 
     private static final KeyValueQuery<Predicate<?, ?>> HAZELCAST_QUERY = new KeyValueQuery<Predicate<?, ?>>(
-            new PredicateBuilder().getEntryObject().get("foo").equal("two"));
+            new PredicateBuilderImpl().getEntryObject().get("foo").equal("two"));
 
     private KeyValueTemplate operations;
 

@@ -15,9 +15,9 @@
  */
 package org.springframework.data.hazelcast.repository.query;
 
-import com.hazelcast.query.PagingPredicate;
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.Predicates;
+import com.hazelcast.query.impl.predicates.PagingPredicateImpl;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
@@ -125,7 +125,7 @@ public class HazelcastQueryCreator
         if (this.limit == 0) {
             keyValueQuery = new KeyValueQuery<Predicate<?, ?>>(criteria);
         } else {
-            keyValueQuery = new KeyValueQuery<Predicate<?, ?>>(new PagingPredicate(criteria, this.limit));
+            keyValueQuery = new KeyValueQuery<Predicate<?, ?>>(new PagingPredicateImpl(criteria, this.limit));
         }
 
         if (sort != null) {

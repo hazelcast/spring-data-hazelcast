@@ -15,8 +15,8 @@
  */
 package org.springframework.data.hazelcast.repository.query;
 
-import com.hazelcast.query.PagingPredicate;
 import com.hazelcast.query.Predicate;
+import com.hazelcast.query.impl.predicates.PagingPredicateImpl;
 import org.springframework.data.keyvalue.core.CriteriaAccessor;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 
@@ -46,8 +46,8 @@ public class HazelcastCriteriaAccessor
             return null;
         }
 
-        if (criteria instanceof PagingPredicate) {
-            PagingPredicate pagingPredicate = (PagingPredicate) criteria;
+        if (criteria instanceof PagingPredicateImpl) {
+            PagingPredicateImpl pagingPredicate = (PagingPredicateImpl) criteria;
             query.limit(pagingPredicate.getPageSize());
             return pagingPredicate.getPredicate();
         }
