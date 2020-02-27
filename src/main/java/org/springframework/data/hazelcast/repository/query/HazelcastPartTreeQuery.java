@@ -38,6 +38,7 @@ import org.springframework.util.Assert;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -107,14 +108,23 @@ public class HazelcastPartTreeQuery
          * include a unique @Id. So DISTINCT as a modifier is irrelevant ; throw exception
          * rather than ignore to alert the user.
          */
-        if (this.isDistinct) {
+        /*if (this.isDistinct) {
             String message = String
                     .format("DISTINCT modifier in '%s' not applicable to Key-Value queries.", queryMethod.getName());
             throw new UnsupportedOperationException(message);
-        }
+        }*/
 
         if (this.isCount) {
-            return this.keyValueOperations.count(query, queryMethod.getEntityInformation().getJavaType());
+        	final Class<?> javaType = queryMethod.getEntityInformation().getJavaType();
+        	if( this.isDistinct ){
+        		Iterable<?> iterable = this.keyValueOperations.find(query, javaType);
+        		final List<?> list = IterableConverter.toList(iterable);
+        		List<?> result = collectDistinct(list);
+        		return result.size();
+        	}
+        	else{
+        		return this.keyValueOperations.count(query, javaType);
+        	}
         }
 
         if (this.isDelete) {
@@ -126,7 +136,7 @@ public class HazelcastPartTreeQuery
         }
 
         if (queryMethod.isCollectionQuery() || queryMethod.isQueryForEntity() || queryMethod.isStreamQuery()) {
-            return this.executeFindQuery(query, queryMethod);
+			return this.executeFindQuery(query, queryMethod, this.isDistinct);
         }
 
         String message = String.format("Query method '%s' not supported.", queryMethod.getName());
@@ -173,7 +183,7 @@ public class HazelcastPartTreeQuery
      * @param queryMethod Holds metadata about the query, is paging etc
      * @return Query result
      */
-    private Object executeFindQuery(final KeyValueQuery<?> query, final QueryMethod queryMethod) {
+    private Object executeFindQuery(final KeyValueQuery<?> query, final QueryMethod queryMethod, final boolean distinct ) {
 
         Iterable<?> resultSet = this.keyValueOperations.find(query, queryMethod.getEntityInformation().getJavaType());
 
@@ -183,10 +193,19 @@ public class HazelcastPartTreeQuery
             return resultSet.iterator().hasNext() ? resultSet.iterator().next() : null;
         }
 
-        if (queryMethod.isStreamQuery()) {
-            return StreamUtils.createStreamFromIterator(resultSet.iterator());
-        }
+		if (queryMethod.isStreamQuery()) {
+			if (distinct) {
+				final List<?> list = IterableConverter.toList(resultSet);
+				List<?> result = collectDistinct(list);
+				return StreamUtils.createStreamFromIterator(result.iterator());
+			}
+			return StreamUtils.createStreamFromIterator(resultSet.iterator());
+		}
 
+		if (distinct) {
+			return StreamUtils.createStreamFromIterator(resultSet.iterator()).distinct().collect(Collectors.toList());
+		}
+		
         return resultSet;
     }
 
@@ -385,5 +404,10 @@ public class HazelcastPartTreeQuery
             }
         }
     }
-
+    
+    private List<?> collectDistinct(final List<?> list) {
+		List<?> distinctItems = list.stream().distinct().collect(Collectors.toList());
+		return distinctItems;
+    }
+    
 }

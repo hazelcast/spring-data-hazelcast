@@ -189,4 +189,15 @@ public interface PersonRepository
 
     @Async
     ListenableFuture<List<Person>> findByLastname(String lastname);
+    
+    //distinct methods
+    public Long countDistinctPersonByFirstname(String firstname);
+    
+    public Long countPersonDistinctByFirstname(String firstname);
+    
+    public List<Person> findPersonDistinctByFirstname(String firstname);
+    
+    public List<Person> findDistinctPersonByFirstname(String firstname);
+    
+	public Stream<Person> streamDistinctPersonByFirstname(String firstname);
 }
