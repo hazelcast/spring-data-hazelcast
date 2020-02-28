@@ -106,11 +106,10 @@ public class HazelcastPartTreeQuery
 
         if (this.isCount) {
             final Class<?> javaType = queryMethod.getEntityInformation().getJavaType();
-            if( this.isDistinct ){
+            if (this.isDistinct) {
                 final Iterable<?> iterable = this.keyValueOperations.find(query, javaType);
                 return  StreamUtils.createStreamFromIterator(iterable.iterator()).distinct().count();
-            }
-            else{
+            } else {
                 return this.keyValueOperations.count(query, javaType);
             }
         }
@@ -171,7 +170,7 @@ public class HazelcastPartTreeQuery
      * @param queryMethod Holds metadata about the query, is paging etc
      * @return Query result
      */
-    private Object executeFindQuery(final KeyValueQuery<?> query, final QueryMethod queryMethod, final boolean distinct ) {
+    private Object executeFindQuery(final KeyValueQuery<?> query, final QueryMethod queryMethod, final boolean distinct) {
 
         Iterable<?> resultSet = this.keyValueOperations.find(query, queryMethod.getEntityInformation().getJavaType());
 
@@ -191,7 +190,7 @@ public class HazelcastPartTreeQuery
         if (distinct) {
             return StreamUtils.createStreamFromIterator(resultSet.iterator()).distinct().collect(Collectors.toList());
         }
-		
+
         return resultSet;
     }
 

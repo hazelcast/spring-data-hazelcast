@@ -834,6 +834,8 @@ public class QueryIT
         this.personMap.put("1001", p);
         this.personMap.put("1002", p);
 
+        final Long persons = this.personRepository.countByFirstname("Sachin");
+        assertThat( persons, equalTo(2L));
         final Long distinctPersons = this.personRepository.countDistinctByFirstname("Sachin");
         assertThat( distinctPersons, equalTo(1L));
         this.personMap.remove("1001");
@@ -850,6 +852,8 @@ public class QueryIT
         this.personMap.put("1001", p);
         this.personMap.put("1002", p);
     	
+        final List<Person> persons = this.personRepository.findByFirstname("Sachin");
+        assertThat( persons.size(), equalTo(2));
         final List<Person> distinctPersons = this.personRepository.findDistinctByFirstname("Sachin");
         assertThat( distinctPersons.size(), equalTo(1));
         this.personMap.remove("1001");
@@ -867,6 +871,19 @@ public class QueryIT
         this.personMap.put("1001", p);
         this.personMap.put("1002", p);
 
+        try (Stream<Person> matches = this.personRepository.streamByFirstname("Sachin")) {
+
+            matches.forEach(match -> {
+
+                assertThat("Tendulkar", match,
+                        is(hasProperty("lastname", equalTo("Tendulkar"))));
+
+                count.incrementAndGet();
+            });
+        }
+        assertThat("Tendulkar", count.get(), equalTo(2));
+        count.set(0);
+        
         try (Stream<Person> matches = this.personRepository.streamDistinctByFirstname("Sachin")) {
 
             matches.forEach(match -> {
@@ -878,7 +895,7 @@ public class QueryIT
             });
         }
 
-        assertThat("Scott or Arliss", count.get(), equalTo(1));
+        assertThat("Tendulkar", count.get(), equalTo(1));
         this.personMap.remove("1001");
         this.personMap.remove("1002");
     }

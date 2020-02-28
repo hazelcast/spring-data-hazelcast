@@ -131,6 +131,8 @@ public interface PersonRepository
     public Stream<Person> findFirst4By();
 
     public Stream<Person> streamByLastnameGreaterThanEqual(String lastname);
+    
+    public Stream<Person> streamByFirstname(String firstname);
 
     // Find methods with special parameters
 
@@ -194,4 +196,5 @@ public interface PersonRepository
     public List<Person> findDistinctByFirstname(String firstname);
 
     public Stream<Person> streamDistinctByFirstname(String firstname);
+    
 }
