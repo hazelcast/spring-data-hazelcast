@@ -105,14 +105,14 @@ public class HazelcastPartTreeQuery
         KeyValueQuery<?> query = prepareQuery(parameters);
 
         if (this.isCount) {
-        	final Class<?> javaType = queryMethod.getEntityInformation().getJavaType();
-        	if( this.isDistinct ){
-        		final Iterable<?> iterable = this.keyValueOperations.find(query, javaType);
-        		return  StreamUtils.createStreamFromIterator(iterable.iterator()).distinct().count();
-        	}
-        	else{
-        		return this.keyValueOperations.count(query, javaType);
-        	}
+            final Class<?> javaType = queryMethod.getEntityInformation().getJavaType();
+            if( this.isDistinct ){
+                final Iterable<?> iterable = this.keyValueOperations.find(query, javaType);
+                return  StreamUtils.createStreamFromIterator(iterable.iterator()).distinct().count();
+            }
+            else{
+                return this.keyValueOperations.count(query, javaType);
+            }
         }
 
         if (this.isDelete) {
@@ -124,7 +124,7 @@ public class HazelcastPartTreeQuery
         }
 
         if (queryMethod.isCollectionQuery() || queryMethod.isQueryForEntity() || queryMethod.isStreamQuery()) {
-			return this.executeFindQuery(query, queryMethod, this.isDistinct);
+            return this.executeFindQuery(query, queryMethod, this.isDistinct);
         }
 
         String message = String.format("Query method '%s' not supported.", queryMethod.getName());
@@ -181,16 +181,16 @@ public class HazelcastPartTreeQuery
             return resultSet.iterator().hasNext() ? resultSet.iterator().next() : null;
         }
 
-		if (queryMethod.isStreamQuery()) {
-			if (distinct) {
-				return StreamUtils.createStreamFromIterator(resultSet.iterator()).distinct();
-			}
-			return StreamUtils.createStreamFromIterator(resultSet.iterator());
-		}
+        if (queryMethod.isStreamQuery()) {
+            if (distinct) {
+                return StreamUtils.createStreamFromIterator(resultSet.iterator()).distinct();
+            }
+            return StreamUtils.createStreamFromIterator(resultSet.iterator());
+        }
 
-		if (distinct) {
-			return StreamUtils.createStreamFromIterator(resultSet.iterator()).distinct().collect(Collectors.toList());
-		}
+        if (distinct) {
+            return StreamUtils.createStreamFromIterator(resultSet.iterator()).distinct().collect(Collectors.toList());
+        }
 		
         return resultSet;
     }

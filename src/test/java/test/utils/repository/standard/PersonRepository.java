@@ -190,8 +190,8 @@ public interface PersonRepository
     
     //distinct methods
     public Long countDistinctByFirstname(String firstname);
-    
+
     public List<Person> findDistinctByFirstname(String firstname);
-    
-	public Stream<Person> streamDistinctByFirstname(String firstname);
+
+    public Stream<Person> streamDistinctByFirstname(String firstname);
 }
