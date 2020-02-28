@@ -68,8 +68,6 @@ public interface PersonRepository
 
     public Long countByIdLessThanEqual(String id);
 
-    public Long countDistinctLastnameByFirstname(String firstname);
-
     public Long countByLastnameAllIgnoreCase(String lastname);
 
     public Long countByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
@@ -191,13 +189,9 @@ public interface PersonRepository
     ListenableFuture<List<Person>> findByLastname(String lastname);
     
     //distinct methods
-    public Long countDistinctPersonByFirstname(String firstname);
+    public Long countDistinctByFirstname(String firstname);
     
-    public Long countPersonDistinctByFirstname(String firstname);
+    public List<Person> findDistinctByFirstname(String firstname);
     
-    public List<Person> findPersonDistinctByFirstname(String firstname);
-    
-    public List<Person> findDistinctPersonByFirstname(String firstname);
-    
-	public Stream<Person> streamDistinctPersonByFirstname(String firstname);
+	public Stream<Person> streamDistinctByFirstname(String firstname);
 }

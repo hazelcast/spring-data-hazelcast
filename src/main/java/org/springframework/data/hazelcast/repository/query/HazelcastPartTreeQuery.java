@@ -104,23 +104,11 @@ public class HazelcastPartTreeQuery
 
         KeyValueQuery<?> query = prepareQuery(parameters);
 
-        /* Queries return domain objects not projections. In Spring Data, domain objects
-         * include a unique @Id. So DISTINCT as a modifier is irrelevant ; throw exception
-         * rather than ignore to alert the user.
-         */
-        /*if (this.isDistinct) {
-            String message = String
-                    .format("DISTINCT modifier in '%s' not applicable to Key-Value queries.", queryMethod.getName());
-            throw new UnsupportedOperationException(message);
-        }*/
-
         if (this.isCount) {
         	final Class<?> javaType = queryMethod.getEntityInformation().getJavaType();
         	if( this.isDistinct ){
-        		Iterable<?> iterable = this.keyValueOperations.find(query, javaType);
-        		final List<?> list = IterableConverter.toList(iterable);
-        		List<?> result = collectDistinct(list);
-        		return result.size();
+        		final Iterable<?> iterable = this.keyValueOperations.find(query, javaType);
+        		return  StreamUtils.createStreamFromIterator(iterable.iterator()).distinct().count();
         	}
         	else{
         		return this.keyValueOperations.count(query, javaType);
@@ -195,9 +183,7 @@ public class HazelcastPartTreeQuery
 
 		if (queryMethod.isStreamQuery()) {
 			if (distinct) {
-				final List<?> list = IterableConverter.toList(resultSet);
-				List<?> result = collectDistinct(list);
-				return StreamUtils.createStreamFromIterator(result.iterator());
+				return StreamUtils.createStreamFromIterator(resultSet.iterator()).distinct();
 			}
 			return StreamUtils.createStreamFromIterator(resultSet.iterator());
 		}
@@ -404,10 +390,4 @@ public class HazelcastPartTreeQuery
             }
         }
     }
-    
-    private List<?> collectDistinct(final List<?> list) {
-		List<?> distinctItems = list.stream().distinct().collect(Collectors.toList());
-		return distinctItems;
-    }
-    
 }

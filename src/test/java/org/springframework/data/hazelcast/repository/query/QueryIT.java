@@ -101,14 +101,6 @@ public class QueryIT
         assertThat("Oscars began in 1928", count, equalTo(13L));
     }
 
-    /*@Test
-    public void countDistinctLastnameByFirstname() {
-        this.expectedException.expect(UnsupportedOperationException.class);
-        this.expectedException.expectMessage(startsWith("DISTINCT"));
-
-        this.personRepository.countDistinctLastnameByFirstname("Daniel");
-    }*/
-
     @Test
     public void countByLastnameAllIgnoreCase() {
         Long count = this.personRepository.countByLastnameAllIgnoreCase("day-LEWIS");
@@ -832,7 +824,7 @@ public class QueryIT
     }
     
     @Test
-    public void countDistinctPersonByFirstname() {
+    public void countDistinctByFirstname() {
     	//adding a duplicate Person with different id
     	Person p = new Person();
     	p.setId("1970");
@@ -840,13 +832,13 @@ public class QueryIT
     	p.setLastname("Scott");
     	this.personMap.put("1001", p);
     	
-        final Long distinctPersons = this.personRepository.countDistinctLastnameByFirstname("George");
+        final Long distinctPersons = this.personRepository.countDistinctByFirstname("George");
         assertThat( distinctPersons, equalTo(2L));
 		this.personMap.remove("1001");
     }
     
     @Test
-    public void countPersonDistinctByFirstname() {
+    public void findDistinctByFirstname() {
     	//adding a duplicate Person with different id
     	Person p = new Person();
     	p.setId("1970");
@@ -854,41 +846,13 @@ public class QueryIT
     	p.setLastname("Scott");
     	this.personMap.put("1001", p);
     	
-        final Long distinctPersons = this.personRepository.countDistinctLastnameByFirstname("George");
-        assertThat( distinctPersons, equalTo(2L));
-		this.personMap.remove("1001");
-    }
-    
-    @Test
-    public void findDistinctPersonByFirstname() {
-    	//adding a duplicate Person with different id
-    	Person p = new Person();
-    	p.setId("1970");
-    	p.setFirstname("George");
-    	p.setLastname("Scott");
-    	this.personMap.put("1001", p);
-    	
-        final List<Person> distinctPersons = this.personRepository.findDistinctPersonByFirstname("George");
-        assertThat( distinctPersons.size(), equalTo(2));
-		this.personMap.remove("1001");
-    }
-    
-    @Test
-    public void findPersonDistinctByFirstname() {
-    	//adding a duplicate Person with different id
-    	Person p = new Person();
-    	p.setId("1970");
-    	p.setFirstname("George");
-    	p.setLastname("Scott");
-    	this.personMap.put("1001", p);
-    	
-        final List<Person> distinctPersons = this.personRepository.findDistinctPersonByFirstname("George");
+        final List<Person> distinctPersons = this.personRepository.findDistinctByFirstname("George");
         assertThat( distinctPersons.size(), equalTo(2));
 		this.personMap.remove("1001");
     }
     
 	@Test
-	public void streamDistinctPersonByFirstname() {
+	public void streamDistinctByFirstname() {
 		AtomicInteger count = new AtomicInteger();
 		//adding a duplicate Person with different id
     	Person p = new Person();
@@ -897,7 +861,7 @@ public class QueryIT
     	p.setLastname("Scott");
     	this.personMap.put("1001", p);
     	
-		try (Stream<Person> matches = this.personRepository.streamDistinctPersonByFirstname("George")) {
+		try (Stream<Person> matches = this.personRepository.streamDistinctByFirstname("George")) {
 
 			matches.forEach(match -> {
 
