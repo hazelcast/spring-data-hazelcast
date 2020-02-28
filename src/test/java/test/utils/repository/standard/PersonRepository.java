@@ -68,8 +68,6 @@ public interface PersonRepository
 
     public Long countByIdLessThanEqual(String id);
 
-    public Long countDistinctLastnameByFirstname(String firstname);
-
     public Long countByLastnameAllIgnoreCase(String lastname);
 
     public Long countByFirstnameOrLastnameAllIgnoreCase(String firstname, String lastname);
@@ -133,6 +131,8 @@ public interface PersonRepository
     public Stream<Person> findFirst4By();
 
     public Stream<Person> streamByLastnameGreaterThanEqual(String lastname);
+    
+    public Stream<Person> streamByFirstname(String firstname);
 
     // Find methods with special parameters
 
@@ -189,4 +189,12 @@ public interface PersonRepository
 
     @Async
     ListenableFuture<List<Person>> findByLastname(String lastname);
+    
+    //distinct methods
+    public Long countDistinctByFirstname(String firstname);
+
+    public List<Person> findDistinctByFirstname(String firstname);
+
+    public Stream<Person> streamDistinctByFirstname(String firstname);
+    
 }

@@ -59,6 +59,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -99,14 +100,6 @@ public class QueryIT
     public void countByIdLessThanEqual() {
         Long count = this.personRepository.countByIdLessThanEqual("1940");
         assertThat("Oscars began in 1928", count, equalTo(13L));
-    }
-
-    @Test
-    public void countDistinctLastnameByFirstname() {
-        this.expectedException.expect(UnsupportedOperationException.class);
-        this.expectedException.expectMessage(startsWith("DISTINCT"));
-
-        this.personRepository.countDistinctLastnameByFirstname("Daniel");
     }
 
     @Test
@@ -831,4 +824,79 @@ public class QueryIT
         assertThat(result.get(), containsInAnyOrder(person1, person2));
     }
     
+    @Test
+    public void countDistinctByFirstname() {
+        //adding same Person twice to create duplicate
+        Person p = new Person();
+        p.setId("2020");
+        p.setFirstname("Sachin");
+        p.setLastname("Tendulkar");
+        this.personMap.put("1001", p);
+        this.personMap.put("1002", p);
+
+        final Long persons = this.personRepository.countByFirstname("Sachin");
+        assertThat( persons, equalTo(2L));
+        final Long distinctPersons = this.personRepository.countDistinctByFirstname("Sachin");
+        assertThat( distinctPersons, equalTo(1L));
+        this.personMap.remove("1001");
+        this.personMap.remove("1002");
+    }
+    
+    @Test
+    public void findDistinctByFirstname() {
+        //adding same Person twice to create duplicate
+        Person p = new Person();
+        p.setId("2020");
+        p.setFirstname("Sachin");
+        p.setLastname("Tendulkar");
+        this.personMap.put("1001", p);
+        this.personMap.put("1002", p);
+    	
+        final List<Person> persons = this.personRepository.findByFirstname("Sachin");
+        assertThat( persons.size(), equalTo(2));
+        final List<Person> distinctPersons = this.personRepository.findDistinctByFirstname("Sachin");
+        assertThat( distinctPersons.size(), equalTo(1));
+        this.personMap.remove("1001");
+        this.personMap.remove("1002");
+    }
+    
+	@Test
+	public void streamDistinctByFirstname() {
+		AtomicInteger count = new AtomicInteger();
+        //adding same Person twice to create duplicate
+        Person p = new Person();
+        p.setId("2020");
+        p.setFirstname("Sachin");
+        p.setLastname("Tendulkar");
+        this.personMap.put("1001", p);
+        this.personMap.put("1002", p);
+
+        try (Stream<Person> matches = this.personRepository.streamByFirstname("Sachin")) {
+
+            matches.forEach(match -> {
+
+                assertThat("Tendulkar", match,
+                        is(hasProperty("lastname", equalTo("Tendulkar"))));
+
+                count.incrementAndGet();
+            });
+        }
+        assertThat("Tendulkar", count.get(), equalTo(2));
+        count.set(0);
+        
+        try (Stream<Person> matches = this.personRepository.streamDistinctByFirstname("Sachin")) {
+
+            matches.forEach(match -> {
+
+                assertThat("Tendulkar", match,
+                        is(hasProperty("lastname", equalTo("Tendulkar"))));
+
+                count.incrementAndGet();
+            });
+        }
+
+        assertThat("Tendulkar", count.get(), equalTo(1));
+        this.personMap.remove("1001");
+        this.personMap.remove("1002");
+    }
 }
