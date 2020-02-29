@@ -63,6 +63,7 @@ public class HazelcastPartTreeQuery
     private boolean isCount;
     private boolean isDelete;
     private boolean isDistinct;
+    private boolean isExists;
 
     private boolean isRearrangeKnown;
     private boolean isRearrangeRequired;
@@ -116,6 +117,11 @@ public class HazelcastPartTreeQuery
 
         if (this.isDelete) {
             return this.executeDeleteQuery(query, queryMethod);
+        }
+
+        if (this.isExists) {
+            final long count = this.keyValueOperations.count(query, queryMethod.getEntityInformation().getJavaType());
+            return count > 0;
         }
 
         if (queryMethod.isPageQuery() || queryMethod.isSliceQuery()) {
@@ -257,10 +263,12 @@ public class HazelcastPartTreeQuery
             this.isCount = tree.isCountProjection();
             this.isDelete = tree.isDelete();
             this.isDistinct = tree.isDistinct();
+            this.isExists = tree.isExistsProjection();
         } else {
             this.isCount = false;
             this.isDelete = false;
             this.isDistinct = false;
+            this.isExists = false;
         }
 
         ParametersParameterAccessor accessor = this.prepareAccessor(parameters, tree);

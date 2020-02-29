@@ -197,4 +197,6 @@ public interface PersonRepository
 
     public Stream<Person> streamDistinctByFirstname(String firstname);
     
+    // exists methods
+    public boolean existsByFirstname(String firstname);
 }

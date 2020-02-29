@@ -899,4 +899,17 @@ public class QueryIT
         this.personMap.remove("1001");
         this.personMap.remove("1002");
     }
+	
+	@Test
+    public void existsByFirstname() {
+		final List<Person> persons = this.personRepository.findByFirstname("Ulhas");
+		assertThat(persons.size(), equalTo(0));
+		boolean exists = this.personRepository.existsByFirstname("Ulhas");
+        assertThat( exists, equalTo(false));
+        
+        final List<Person> personsExists = this.personRepository.findByFirstname("James");
+		assertThat(personsExists.size(), equalTo(2));
+		exists = this.personRepository.existsByFirstname("James");
+        	assertThat( exists, equalTo(true));
+    }
 }
