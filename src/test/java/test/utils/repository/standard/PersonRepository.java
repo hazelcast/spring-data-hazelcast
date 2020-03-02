@@ -199,4 +199,14 @@ public interface PersonRepository
     
     // exists methods
     public boolean existsByFirstname(String firstname);
+    
+    //Empty, IsEmpty methods
+    public List<Person> findByLastnameEmpty();
+
+    public List<Person> findByLastnameIsEmpty();
+
+    //NotEmpty, IsNotEmpty methods
+    public List<Person> findByLastnameNotEmpty();
+    
+    public List<Person> findByLastnameIsNotEmpty();
 }

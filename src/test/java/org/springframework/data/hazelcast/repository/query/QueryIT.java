@@ -951,4 +951,43 @@ public class QueryIT
         exists = this.personRepository.existsByFirstname("Sachin");
         assertThat( exists, equalTo(true));
     }
+	
+	@Test
+    public void findByLastnameEmpty() {
+		final List<Person> persons = this.personRepository.findByLastnameEmpty();
+		assertThat(persons.size(), equalTo(0));
+
+		Person p = new Person();
+        p.setId("2020");
+        p.setFirstname("Virat");
+        p.setLastname("");
+        this.personMap.put("1001", p);
+
+        List<Person> personsWithEmptyLastName = this.personRepository.findByLastnameEmpty();
+		assertThat(personsWithEmptyLastName.size(), equalTo(1));
+		assertThat(personsWithEmptyLastName.get(0), equalTo(p));
+		
+		personsWithEmptyLastName = this.personRepository.findByLastnameIsEmpty();
+		assertThat(personsWithEmptyLastName.size(), equalTo(1));
+		assertThat(personsWithEmptyLastName.get(0), equalTo(p));
+		this.personMap.remove("1001");
+    }
+	
+    @Test
+    public void findByLastnameNotEmpty() {
+        Person p = new Person();
+        p.setId("2020");
+        p.setFirstname("Virat");
+        p.setLastname("");
+        this.personMap.put("1001", p);
+        
+        List<Person> matches = this.personRepository.findByLastnameNotEmpty();
+        int len = matches.size();
+        assertThat("Everyone except Virat returned", len, equalTo(this.personMap.size() - 1 ));
+        
+        matches = this.personRepository.findByLastnameIsNotEmpty();
+        len = matches.size();
+        assertThat("Everyone except Virat returned", len, equalTo(this.personMap.size() - 1));
+        this.personMap.remove("1001");
+    }
 }
