@@ -899,4 +899,56 @@ public class QueryIT
         this.personMap.remove("1001");
         this.personMap.remove("1002");
     }
+	
+	@Test
+    public void existsByFirstname() {
+        final List<Person> persons = this.personRepository.findByFirstname("Ulhas");
+        assertThat(persons.size(), equalTo(0));
+        boolean exists = this.personRepository.existsByFirstname("Ulhas");
+        assertThat( exists, equalTo(false));
+
+        Person p = new Person();
+        p.setId("2020");
+        p.setFirstname("Sachin");
+        p.setLastname("Tendulkar");
+        this.personMap.put("2020", p);
+
+        Person p2 = new Person();
+        p2.setId("2021");
+        p2.setFirstname("Sachin");
+        p2.setLastname("Pilgaonkar");
+        this.personMap.put("2021", p2);
+
+        final List<Person> personsExists = this.personRepository.findByFirstname("Sachin");
+        assertThat(personsExists.size(), equalTo(2));
+        exists = this.personRepository.existsByFirstname("Sachin");
+        assertThat( exists, equalTo(true));
+        this.personMap.remove("2020");
+        this.personMap.remove("2021");
+    }
+	
+	@Test
+    public void findByFirstnameExists() {
+        final List<Person> persons = this.personRepository.findByFirstname("Ulhas");
+        assertThat(persons.size(), equalTo(0));
+        boolean exists = this.personRepository.existsByFirstname("Ulhas");
+        assertThat( exists, equalTo(false));
+
+        Person p = new Person();
+        p.setId("2020");
+        p.setFirstname("Sachin");
+        p.setLastname("Tendulkar");
+        this.personMap.put("2020", p);
+
+        Person p2 = new Person();
+        p2.setId("2021");
+        p2.setFirstname("Sachin");
+        p2.setLastname("Pilgaonkar");
+        this.personMap.put("2021", p2);
+
+        final List<Person> personsExists = this.personRepository.findByFirstname("Sachin");
+        assertThat(personsExists.size(), equalTo(2));
+        exists = this.personRepository.existsByFirstname("Sachin");
+        assertThat( exists, equalTo(true));
+    }
 }
