@@ -176,6 +176,9 @@ public class HazelcastQueryCreator
                 return fromEqualityVariant(type, ignoreCase, property, iterator);
             case REGEX:
                 return Predicates.regex(property, iterator.next().toString());
+            case IS_EMPTY:
+            case IS_NOT_EMPTY:
+                return fromEmptyVariant(type, property);
             /* case EXISTS:
              * case NEAR:
              * case WITHIN:
@@ -316,5 +319,17 @@ public class HazelcastQueryCreator
         Assert.state(isCollection(item), String.format("%s requires collection of values", type));
         Collection<Comparable<?>> itemcol = (Collection<Comparable<?>>) item;
         return itemcol.toArray(new Comparable<?>[0]);
+    }
+
+    private Predicate<?, ?> fromEmptyVariant(Type type, String property) {
+        switch (type) {
+            case IS_EMPTY:
+                return Predicates.equal(property, "");
+            case IS_NOT_EMPTY:
+                return Predicates.notEqual(property, "");
+
+            default:
+                throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
+        }
     }
 }
