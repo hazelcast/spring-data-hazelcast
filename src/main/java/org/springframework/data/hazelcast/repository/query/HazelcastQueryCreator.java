@@ -296,10 +296,7 @@ public class HazelcastQueryCreator
                                 part.getProperty().getType().getName(), part.getProperty().getSegment()));
                 return true;
             case WHEN_POSSIBLE:
-                if (canUpperCase(part.getProperty())) {
-                    return true;
-                }
-                return false;
+                return canUpperCase(part.getProperty());
             case NEVER:
             default:
                 return false;
