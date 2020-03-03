@@ -371,9 +371,7 @@ public class HazelcastPartTreeQuery
         List<String> queryParams = new ArrayList<>();
         List<String> methodParams = new ArrayList<>();
 
-        Iterator<Part> partTreeIterator = partTree.getParts().iterator();
-        while (partTreeIterator.hasNext()) {
-            Part part = partTreeIterator.next();
+        for (Part part : partTree.getParts()) {
             queryParams.add(part.getProperty().getSegment());
         }
 
