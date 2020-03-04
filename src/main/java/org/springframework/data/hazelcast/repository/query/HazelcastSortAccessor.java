@@ -20,7 +20,6 @@ import org.springframework.data.domain.Sort.NullHandling;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.keyvalue.core.SortAccessor;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
-import org.springframework.util.comparator.CompoundComparator;
 
 import java.util.Comparator;
 import java.util.Map.Entry;
@@ -47,13 +46,14 @@ public class HazelcastSortAccessor
      * @param query If not null, will contain one of more {@link Sort.Order} objects.
      * @return A sequence of comparators or {@code null}
      */
+    @Override
     public Comparator<Entry<?, ?>> resolve(KeyValueQuery<?> query) {
 
         if (query == null || query.getSort() == Sort.unsorted()) {
             return null;
         }
 
-        CompoundComparator<Entry<?, ?>> compoundComparator = new CompoundComparator<>();
+        Comparator<Entry<?, ?>> compoundComparator = null;
 
         for (Order order : query.getSort()) {
 
@@ -72,7 +72,11 @@ public class HazelcastSortAccessor
             HazelcastPropertyComparator hazelcastPropertyComparator = new HazelcastPropertyComparator(order.getProperty(),
                     order.isAscending());
 
-            compoundComparator.addComparator(hazelcastPropertyComparator);
+            if (compoundComparator == null) {
+                compoundComparator = hazelcastPropertyComparator;
+            } else {
+                compoundComparator.thenComparing(hazelcastPropertyComparator);
+            }
         }
 
         return compoundComparator;
