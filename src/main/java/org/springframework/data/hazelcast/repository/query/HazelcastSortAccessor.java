@@ -20,7 +20,6 @@ import org.springframework.data.domain.Sort.NullHandling;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.keyvalue.core.SortAccessor;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
-import org.springframework.util.comparator.CompoundComparator;
 
 import java.util.Comparator;
 import java.util.Map.Entry;
@@ -53,7 +52,7 @@ public class HazelcastSortAccessor
             return null;
         }
 
-        CompoundComparator<Entry<?, ?>> compoundComparator = new CompoundComparator<>();
+        Comparator hazelcastPropertyComparator = null;
 
         for (Order order : query.getSort()) {
 
@@ -69,13 +68,16 @@ public class HazelcastSortAccessor
                 throw new UnsupportedOperationException("Null handling not implemented: " + order);
             }
 
-            HazelcastPropertyComparator hazelcastPropertyComparator = new HazelcastPropertyComparator(order.getProperty(),
-                    order.isAscending());
-
-            compoundComparator.addComparator(hazelcastPropertyComparator);
+            if (hazelcastPropertyComparator == null) {
+                hazelcastPropertyComparator = new HazelcastPropertyComparator(order.getProperty(),
+                        order.isAscending());
+            } else {
+                hazelcastPropertyComparator.thenComparing(new HazelcastPropertyComparator(order.getProperty(),
+                        order.isAscending()));
+            }
         }
 
-        return compoundComparator;
+        return hazelcastPropertyComparator;
     }
 
 }
