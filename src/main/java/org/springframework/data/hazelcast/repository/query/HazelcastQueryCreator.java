@@ -123,7 +123,7 @@ public class HazelcastQueryCreator
         KeyValueQuery<Predicate<?, ?>> keyValueQuery;
 
         if (this.limit == 0) {
-            keyValueQuery = new KeyValueQuery<Predicate<?, ?>>(criteria);
+            keyValueQuery = new KeyValueQuery<>(criteria);
         } else {
             keyValueQuery = new KeyValueQuery<Predicate<?, ?>>(new PagingPredicateImpl(criteria, this.limit));
         }

@@ -33,8 +33,8 @@ public class HazelcastPropertyComparator
         implements Comparator<Entry<?, ?>>, Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String attributeName;
-    private int direction;
+    private final String attributeName;
+    private final int direction;
 
     public HazelcastPropertyComparator(String attributeName, boolean ascending) {
         this.attributeName = attributeName;
