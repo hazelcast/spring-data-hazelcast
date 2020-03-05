@@ -34,7 +34,7 @@
         <hazelcast>4.0</hazelcast>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <springdata.keyvalue>2.1.2.RELEASE</springdata.keyvalue>
+        <springdata.keyvalue>2.2.5.RELEASE</springdata.keyvalue>
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
         <maven.javadoc.plugin.version>3.1.1</maven.javadoc.plugin.version>
         <maven.sonar.plugin.version>3.3.0.603</maven.sonar.plugin.version>
@@ -348,7 +348,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>spring-plugins-release</id>
-            <url>http://repo.spring.io/plugins-release</url>
+            <url>https://repo.spring.io/plugins-release</url>
         </pluginRepository>
     </pluginRepositories>
 
