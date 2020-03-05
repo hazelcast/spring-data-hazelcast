@@ -72,14 +72,14 @@ public class SimpleHazelcastRepositoryIT
 
     @Before
     public void setUp_After_Super_SetUp() {
-        PersistentEntityInformation entityInformation = new PersistentEntityInformation(keyValueOperations.getMappingContext().getPersistentEntity(Makeup.class));
+        PersistentEntityInformation<Makeup, String> entityInformation = new PersistentEntityInformation(keyValueOperations.getMappingContext().getPersistentEntity(Makeup.class));
 
         this.theRepository = new SimpleHazelcastRepository<>(entityInformation, keyValueOperations);
     }
 
     @Test
     public void findAll_Sort() {
-        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
 
         Iterable<Makeup> iterable = this.theRepository.findAll(sort);
         assertThat("iterable", iterable, not(nullValue()));
