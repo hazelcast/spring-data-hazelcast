@@ -24,7 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
-import org.springframework.data.repository.core.support.ReflectionEntityInformation;
+import org.springframework.data.repository.core.support.PersistentEntityInformation;
 import org.springframework.test.context.ActiveProfiles;
 import test.utils.Oscars;
 import test.utils.TestConstants;
@@ -71,9 +71,8 @@ public class SimpleHazelcastRepositoryIT
     private KeyValueOperations keyValueOperations;
 
     @Before
-    public void setUp_After_Super_SetUp()
-            throws Exception {
-        ReflectionEntityInformation<Makeup, String> entityInformation = new ReflectionEntityInformation<>(Makeup.class);
+    public void setUp_After_Super_SetUp() {
+        PersistentEntityInformation entityInformation = new PersistentEntityInformation(keyValueOperations.getMappingContext().getPersistentEntity(Makeup.class));
 
         this.theRepository = new SimpleHazelcastRepository<>(entityInformation, keyValueOperations);
     }
