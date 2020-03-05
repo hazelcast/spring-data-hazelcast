@@ -371,9 +371,7 @@ public class HazelcastPartTreeQuery
         List<String> queryParams = new ArrayList<>();
         List<String> methodParams = new ArrayList<>();
 
-        Iterator<Part> partTreeIterator = partTree.getParts().iterator();
-        while (partTreeIterator.hasNext()) {
-            Part part = partTreeIterator.next();
+        for (Part part : partTree.getParts()) {
             queryParams.add(part.getProperty().getSegment());
         }
 
@@ -385,8 +383,8 @@ public class HazelcastPartTreeQuery
 
         this.rearrangeIndex = new int[queryParams.size()];
 
-        String[] paramsExpected = queryParams.toArray(new String[queryParams.size()]);
-        String[] paramsProvided = methodParams.toArray(new String[methodParams.size()]);
+        String[] paramsExpected = queryParams.toArray(new String[0]);
+        String[] paramsProvided = methodParams.toArray(new String[0]);
 
         for (int i = 0; i < this.rearrangeIndex.length; i++) {
             this.rearrangeIndex[i] = i;
