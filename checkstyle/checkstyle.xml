@@ -298,11 +298,6 @@
             <property name="max" value="12"/>
         </module>
         <module name="NPathComplexity">
-            <!-- TODO Agree on the value
-                 Checkstyle 7.7 improved the NPath algorithm further that leads to higher NPath counts.
-                 7.6 passes with max 50, 7.7 needs it to be set to at least 216
-                 the default threshold is 200
-            -->
             <property name="max" value="250"/>
         </module>
 
