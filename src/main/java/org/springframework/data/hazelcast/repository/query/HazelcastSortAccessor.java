@@ -72,7 +72,8 @@ public class HazelcastSortAccessor
                 hazelcastPropertyComparator = new HazelcastPropertyComparator(order.getProperty(),
                         order.isAscending());
             } else {
-                hazelcastPropertyComparator.thenComparing(new HazelcastPropertyComparator(order.getProperty(),
+                hazelcastPropertyComparator = hazelcastPropertyComparator.thenComparing(
+                        new HazelcastPropertyComparator(order.getProperty(),
                         order.isAscending()));
             }
         }
