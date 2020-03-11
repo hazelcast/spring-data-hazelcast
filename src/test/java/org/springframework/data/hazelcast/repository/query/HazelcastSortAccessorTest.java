@@ -10,7 +10,6 @@ import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 import org.springframework.util.ObjectUtils;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -21,7 +20,7 @@ public class HazelcastSortAccessorTest {
     public ExpectedException exceptionRule = ExpectedException.none();
 
     @Test()
-    public void test1()  throws Throwable  {
+    public void test1() {
         exceptionRule.expect(UnsupportedOperationException.class);
         exceptionRule.expectMessage("Null handling not implemented:");
         KeyValueQuery<String> keyValueQuery0 = new KeyValueQuery<String>("^pg~]=P");
@@ -37,7 +36,7 @@ public class HazelcastSortAccessorTest {
     }
 
     @Test
-    public void test2()  throws Throwable  {
+    public void test2() {
         exceptionRule.expect(UnsupportedOperationException.class);
         exceptionRule.expectMessage("Ignore case not implemented");
         HazelcastSortAccessor hazelcastSortAccessor0 = new HazelcastSortAccessor();
@@ -55,7 +54,7 @@ public class HazelcastSortAccessorTest {
     }
 
     @Test
-    public void test3()  throws Throwable  {
+    public void test3() {
         HazelcastSortAccessor hazelcastSortAccessor0 = new HazelcastSortAccessor();
         RevisionSort revisionSort0 = RevisionSort.asc();
         KeyValueQuery<Object> keyValueQuery0 = new KeyValueQuery<Object>((Sort) revisionSort0);
@@ -64,20 +63,7 @@ public class HazelcastSortAccessorTest {
     }
 
     @Test
-    public void test4()  throws Throwable  {
-        exceptionRule.expect(UnsupportedOperationException.class);
-        exceptionRule.expectMessage("Embedded fields not implemented");
-        HazelcastSortAccessor hazelcastSortAccessor0 = new HazelcastSortAccessor();
-        KeyValueQuery<Method> keyValueQuery0 = new KeyValueQuery<Method>();
-        Sort.Direction sort_Direction0 = Sort.Direction.ASC;
-        List<String> list0 = ResourceBundle.Control.FORMAT_PROPERTIES;
-        Sort sort0 = new Sort(sort_Direction0, list0);
-        KeyValueQuery<Method> keyValueQuery1 = keyValueQuery0.orderBy(sort0);
-        hazelcastSortAccessor0.resolve(keyValueQuery1);
-    }
-
-    @Test
-    public void test5()  throws Throwable  {
+    public void test4() {
         HazelcastSortAccessor hazelcastSortAccessor0 = new HazelcastSortAccessor();
         KeyValueQuery<Object> keyValueQuery0 = new KeyValueQuery<Object>();
         Comparator<Map.Entry<?, ?>> comparator0 = (Comparator<Map.Entry<?, ?>>)hazelcastSortAccessor0.resolve(keyValueQuery0);
@@ -85,20 +71,24 @@ public class HazelcastSortAccessorTest {
     }
 
     @Test
-    public void test6()  throws Throwable  {
+    public void test5() {
         HazelcastSortAccessor hazelcastSortAccessor0 = new HazelcastSortAccessor();
         Comparator<Map.Entry<?, ?>> comparator0 = (Comparator<Map.Entry<?, ?>>)hazelcastSortAccessor0.resolve((KeyValueQuery<?>) null);
         assertNull(comparator0);
     }
 
     @Test
-    public void test7()  throws Throwable  {
+    public void test6() {
         HazelcastSortAccessor hazelcastSortAccessor0 = new HazelcastSortAccessor();
         KeyValueQuery<Predicate<String, Foo>> query = new KeyValueQuery<>();
-        List<String> propertyString = new LinkedList<>();
-        propertyString.add("foo");
-        propertyString.add("bar");
-        query.setSort(new Sort(Sort.Direction.DESC, propertyString));
+
+        Sort.Order fooOrder = new Sort.Order(Sort.Direction.DESC,"foo");
+        Sort.Order barOrder = new Sort.Order(Sort.Direction.DESC,"bar");
+        List<Sort.Order> orderList = new LinkedList<>();
+        orderList.add(fooOrder);
+        orderList.add(barOrder);
+        //by(List<Sort.Order> orders)
+        query.setSort(Sort.by(orderList));
         Comparator<Map.Entry<?, ?>> comparator0 = (Comparator<Map.Entry<?, ?>>)hazelcastSortAccessor0.resolve((KeyValueQuery<?>) query);
         assertNotNull(comparator0);
         HazelcastSortAccessorTest.Foo testData1 = new HazelcastSortAccessorTest.Foo("zzz","def");
