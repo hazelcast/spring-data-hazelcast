@@ -72,7 +72,7 @@ public class PagingSortingIT
         assertThat("First page is returned", page.getNumber(), equalTo(0));
         assertThat("First page count matches content", page.getNumberOfElements(), equalTo(content.size()));
         assertThat("First page has all content", new Long(page.getNumberOfElements()), equalTo(page.getTotalElements()));
-        assertThat("First page has no upper limit", page.getSize(), equalTo(0));
+        assertThat("First page has no upper limit", page.getSize(), equalTo(content.size()));
         assertThat("First page has correct content count", page.getNumberOfElements(), equalTo(Oscars.bestActors.length));
         assertThat("First page is only page", page.getTotalPages(), equalTo(1));
     }
@@ -141,8 +141,8 @@ public class PagingSortingIT
 
     @Test
     public void sorting() {
-        Sort sortAscending = new Sort(Sort.Direction.ASC, "firstname");
-        Sort sortDescending = new Sort(Sort.Direction.DESC, "firstname");
+        Sort sortAscending = Sort.by(Sort.Direction.ASC, "firstname");
+        Sort sortDescending = Sort.by(Sort.Direction.DESC, "firstname");
 
         Iterable<Person> iterableAscending = this.personRepository.findAll(sortAscending);
         Iterable<Person> iterableDescending = this.personRepository.findAll(sortDescending);

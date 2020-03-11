@@ -123,7 +123,7 @@ public class HazelcastQueryCreator
         KeyValueQuery<Predicate<?, ?>> keyValueQuery;
 
         if (this.limit == 0) {
-            keyValueQuery = new KeyValueQuery<Predicate<?, ?>>(criteria);
+            keyValueQuery = new KeyValueQuery<>(criteria);
         } else {
             keyValueQuery = new KeyValueQuery<Predicate<?, ?>>(new PagingPredicateImpl(criteria, this.limit));
         }
@@ -296,10 +296,7 @@ public class HazelcastQueryCreator
                                 part.getProperty().getType().getName(), part.getProperty().getSegment()));
                 return true;
             case WHEN_POSSIBLE:
-                if (canUpperCase(part.getProperty())) {
-                    return true;
-                }
-                return false;
+                return canUpperCase(part.getProperty());
             case NEVER:
             default:
                 return false;
