@@ -47,9 +47,8 @@ public class HazelcastSortAccessorTest {
         Sort.Order[] sortOrderArray = new Sort.Order[4];
         Sort.Order sortOrderA = Sort.Order.asc("Cannot resolve nest mates of a latent type description: ");
         sortOrderArray[0] = sortOrderA;
-        sortOrderArray[1] = sortOrderA;
         Sort.Order sortOrderB = sortOrderA.ignoreCase();
-        sortOrderArray[2] = sortOrderB;
+        sortOrderArray[1] = sortOrderB;
         Sort sort = Sort.by(sortOrderArray);
         keyValueQuery.setSort(sort);
 
