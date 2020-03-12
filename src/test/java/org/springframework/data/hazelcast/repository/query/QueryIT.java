@@ -487,7 +487,7 @@ public class QueryIT
                 containsInAnyOrder(hasProperty("id", equalTo("1973")), hasProperty("id", equalTo("1975")),
                         hasProperty("id", equalTo("1997"))));
 
-        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
         matches = this.personRepository.findByFirstname("Jack", sort);
 
         assertThat("DESC 2 x Nicholson and 1 x Lemmon", matches.size(), equalTo(3));
@@ -495,7 +495,7 @@ public class QueryIT
         assertThat("DESC 2nd", matches.get(1).getId(), equalTo("1975"));
         assertThat("DESC 3rd", matches.get(2).getId(), equalTo("1973"));
 
-        sort = new Sort(Sort.Direction.ASC, "id");
+        sort = Sort.by(Sort.Direction.ASC, "id");
         matches = this.personRepository.findByFirstname("Jack", sort);
 
         assertThat("ASC 2 x Nicholson and 1 x Lemmon", matches.size(), equalTo(3));
@@ -506,7 +506,7 @@ public class QueryIT
 
     @Test
     public void findByLastnameNotNull() {
-        Sort sort = new Sort(Sort.DEFAULT_DIRECTION, "firstname");
+        Sort sort = Sort.by(Sort.DEFAULT_DIRECTION, "firstname");
 
         List<Person> matches = this.personRepository.findByLastnameNotNull(sort);
         int len = matches.size();
