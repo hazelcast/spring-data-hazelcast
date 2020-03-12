@@ -23,9 +23,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Point;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import test.utils.domain.City;
 import test.utils.domain.Makeup;
 import test.utils.domain.Movie;
 import test.utils.domain.Person;
@@ -66,6 +69,7 @@ public abstract class TestDataHelper {
     protected IMap<String, Movie> movieMap;
     protected IMap<String, Person> personMap;
     protected IMap<String, Song> songMap;
+    protected IMap<String, City> cityMap;
 
     /* Use Hazelcast directly, minimise reliance on Spring as the object is
      * to test Spring encapsulation of Hazelcast.
@@ -87,6 +91,9 @@ public abstract class TestDataHelper {
 
         this.songMap = this.hazelcastInstance.getMap(TestConstants.SONG_MAP_NAME);
         loadSong(this.songMap);
+        
+        this.cityMap = this.hazelcastInstance.getMap(TestConstants.CITY_MAP_NAME);
+        loadCities(this.cityMap);
 
         checkMapsNotEmpty("setUp");
 
@@ -156,6 +163,19 @@ public abstract class TestDataHelper {
             song.setTitle(Oscars.bestSongs[i][1].toString());
 
             songMap.put(song.getId(), song);
+        }
+    }
+
+    private void loadCities(IMap<String, City> cityMap) {
+        for (int i = 0; i < Oscars.newYorkCities.length; i++) {
+            City city = new City();
+
+            city.setId(Integer.toString((int) Oscars.newYorkCities[i][2]));
+            city.setName(Oscars.newYorkCities[i][0].toString());
+            final String[] latLng = Oscars.newYorkCities[i][1].toString().split(",");
+			city.setLocation(new Point(Double.parseDouble(latLng[0]), Double.parseDouble(latLng[1])));
+
+            cityMap.put(city.getId(), city);
         }
     }
 
