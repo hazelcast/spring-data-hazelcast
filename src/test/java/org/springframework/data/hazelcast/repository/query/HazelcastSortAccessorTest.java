@@ -1,9 +1,7 @@
 package org.springframework.data.hazelcast.repository.query;
 
 import com.hazelcast.query.Predicate;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.history.RevisionSort;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
@@ -16,94 +14,125 @@ import static org.junit.Assert.*;
 
 public class HazelcastSortAccessorTest {
 
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
-
     @Test()
-    public void test1() {
-        exceptionRule.expect(UnsupportedOperationException.class);
-        exceptionRule.expectMessage("Null handling not implemented:");
-        KeyValueQuery<String> keyValueQuery0 = new KeyValueQuery<String>("^pg~]=P");
-        Sort.Order[] sort_OrderArray0 = new Sort.Order[7];
-        Sort.Order sort_Order0 = Sort.Order.asc("^pg~]=P");
-        sort_OrderArray0[0] = sort_Order0;
-        Sort.Order sort_Order1 = sort_Order0.nullsLast();
-        sort_OrderArray0[1] = sort_Order1;
-        Sort sort0 = Sort.by(sort_OrderArray0);
-        keyValueQuery0.setSort(sort0);
-        HazelcastSortAccessor hazelcastSortAccessor0 = new HazelcastSortAccessor();
-        hazelcastSortAccessor0.resolve(keyValueQuery0);
+    public void testResolvingNonNativeNullHandlingOrderIsUnsupported() {
+        // given
+        KeyValueQuery<String> keyValueQuery = new KeyValueQuery<String>("^pg~]=P");
+        Sort.Order[] sortOrderArray = new Sort.Order[7];
+        Sort.Order sortOrderA = Sort.Order.asc("^pg~]=P");
+        sortOrderArray[0] = sortOrderA;
+        Sort.Order sortOrderB = sortOrderA.nullsLast();
+        sortOrderArray[1] = sortOrderB;
+        Sort sort = Sort.by(sortOrderArray);
+        keyValueQuery.setSort(sort);
+
+        HazelcastSortAccessor hazelcastSortAccessor = new HazelcastSortAccessor();
+        // when
+        try {
+            hazelcastSortAccessor.resolve(keyValueQuery);
+            // then
+            // expecting exception - should jump to catch block, skipping the line below:
+            fail("Should have thrown UnsupportedOperationException");
+        } catch (UnsupportedOperationException e) {
+            // expected exception, so no failure
+        }
     }
 
     @Test
-    public void test2() {
-        exceptionRule.expect(UnsupportedOperationException.class);
-        exceptionRule.expectMessage("Ignore case not implemented");
-        HazelcastSortAccessor hazelcastSortAccessor0 = new HazelcastSortAccessor();
-        RevisionSort revisionSort0 = RevisionSort.asc();
-        KeyValueQuery<Object> keyValueQuery0 = new KeyValueQuery<Object>((Sort) revisionSort0);
-        Sort.Order[] sort_OrderArray0 = new Sort.Order[4];
-        Sort.Order sort_Order0 = Sort.Order.asc("Cannot resolve nest mates of a latent type description: ");
-        sort_OrderArray0[0] = sort_Order0;
-        sort_OrderArray0[1] = sort_Order0;
-        Sort.Order sort_Order1 = sort_Order0.ignoreCase();
-        sort_OrderArray0[2] = sort_Order1;
-        Sort sort0 = Sort.by(sort_OrderArray0);
-        keyValueQuery0.setSort(sort0);
-        hazelcastSortAccessor0.resolve(keyValueQuery0);
+    public void testResolvingIgnoreCaseOrderIsUnsupported() {
+        // given
+        HazelcastSortAccessor hazelcastSortAccessor = new HazelcastSortAccessor();
+        RevisionSort revisionSort = RevisionSort.asc();
+        KeyValueQuery<Object> keyValueQuery = new KeyValueQuery<Object>((Sort) revisionSort);
+        Sort.Order[] sortOrderArray = new Sort.Order[4];
+        Sort.Order sortOrderA = Sort.Order.asc("Cannot resolve nest mates of a latent type description: ");
+        sortOrderArray[0] = sortOrderA;
+        sortOrderArray[1] = sortOrderA;
+        Sort.Order sortOrderB = sortOrderA.ignoreCase();
+        sortOrderArray[2] = sortOrderB;
+        Sort sort = Sort.by(sortOrderArray);
+        keyValueQuery.setSort(sort);
+
+        //when
+        try {
+            hazelcastSortAccessor.resolve(keyValueQuery);
+            // then
+            // expecting exception - should jump to catch block, skipping the line below:
+            fail("Should have thrown UnsupportedOperationException");
+        }
+        catch (UnsupportedOperationException e){
+            // expected exception, so no failure
+        }
     }
 
     @Test
-    public void test3() {
-        HazelcastSortAccessor hazelcastSortAccessor0 = new HazelcastSortAccessor();
-        RevisionSort revisionSort0 = RevisionSort.asc();
-        KeyValueQuery<Object> keyValueQuery0 = new KeyValueQuery<Object>((Sort) revisionSort0);
-        Comparator<Map.Entry<?, ?>> comparator0 = (Comparator<Map.Entry<?, ?>>)hazelcastSortAccessor0.resolve(keyValueQuery0);
-        assertNotNull(comparator0);
+    public void testResolvingNonEmptyKeyValueQueryReturnsNonNullComparator() {
+        //given
+        RevisionSort revisionSort = RevisionSort.asc();
+        KeyValueQuery<Object> keyValueQuery = new KeyValueQuery<Object>((Sort) revisionSort);
+
+        //when
+        HazelcastSortAccessor hazelcastSortAccessor = new HazelcastSortAccessor();
+        Comparator<Map.Entry<?, ?>> comparator = (Comparator<Map.Entry<?, ?>>) hazelcastSortAccessor.resolve(keyValueQuery);
+
+        //then
+        assertNotNull(comparator);
     }
 
     @Test
-    public void test4() {
-        HazelcastSortAccessor hazelcastSortAccessor0 = new HazelcastSortAccessor();
-        KeyValueQuery<Object> keyValueQuery0 = new KeyValueQuery<Object>();
-        Comparator<Map.Entry<?, ?>> comparator0 = (Comparator<Map.Entry<?, ?>>)hazelcastSortAccessor0.resolve(keyValueQuery0);
-        assertNull(comparator0);
+    public void testResolvingEmptyKeyValueQueryReturnsNullComparator() {
+        //given
+        KeyValueQuery<Object> keyValueQuery = new KeyValueQuery<Object>();
+
+        //when
+        HazelcastSortAccessor hazelcastSortAccessor = new HazelcastSortAccessor();
+        Comparator<Map.Entry<?, ?>> comparator = (Comparator<Map.Entry<?, ?>>) hazelcastSortAccessor.resolve(keyValueQuery);
+
+        //then
+        assertNull(comparator);
     }
 
     @Test
-    public void test5() {
-        HazelcastSortAccessor hazelcastSortAccessor0 = new HazelcastSortAccessor();
-        Comparator<Map.Entry<?, ?>> comparator0 = (Comparator<Map.Entry<?, ?>>)hazelcastSortAccessor0.resolve((KeyValueQuery<?>) null);
-        assertNull(comparator0);
+    public void testResolvingNullKeyValueQueryReturnsNullComparator() {
+        //given //when
+        HazelcastSortAccessor hazelcastSortAccessor = new HazelcastSortAccessor();
+        Comparator<Map.Entry<?, ?>> comparator = (Comparator<Map.Entry<?, ?>>) hazelcastSortAccessor.resolve((KeyValueQuery<?>) null);
+        //then
+        assertNull(comparator);
     }
 
     @Test
-    public void test6() {
-        HazelcastSortAccessor hazelcastSortAccessor0 = new HazelcastSortAccessor();
+    public void testResolvingMultipleSortOrdersReturnsCompositeComparator() {
+        //given
         KeyValueQuery<Predicate<String, Foo>> query = new KeyValueQuery<>();
+        Sort.Order fooOrder = new Sort.Order(Sort.Direction.DESC, "foo");
+        Sort.Order barOrder = new Sort.Order(Sort.Direction.DESC, "bar");
 
-        Sort.Order fooOrder = new Sort.Order(Sort.Direction.DESC,"foo");
-        Sort.Order barOrder = new Sort.Order(Sort.Direction.DESC,"bar");
         List<Sort.Order> orderList = new LinkedList<>();
         orderList.add(fooOrder);
         orderList.add(barOrder);
-        //by(List<Sort.Order> orders)
         query.setSort(Sort.by(orderList));
-        Comparator<Map.Entry<?, ?>> comparator0 = (Comparator<Map.Entry<?, ?>>)hazelcastSortAccessor0.resolve((KeyValueQuery<?>) query);
-        assertNotNull(comparator0);
-        HazelcastSortAccessorTest.Foo testData1 = new HazelcastSortAccessorTest.Foo("zzz","def");
-        HazelcastSortAccessorTest.Foo testData2 = new HazelcastSortAccessorTest.Foo("aaa","aaa");
+
+        HazelcastSortAccessorTest.Foo testData1 = new HazelcastSortAccessorTest.Foo("zzz", "def");
+        HazelcastSortAccessorTest.Foo testData2 = new HazelcastSortAccessorTest.Foo("aaa", "aaa");
         Map.Entry<String, HazelcastSortAccessorTest.Foo> entry1 = entryOf("testData1", testData1);
         Map.Entry<String, HazelcastSortAccessorTest.Foo> entry2 = entryOf("testData2", testData2);
-        assertTrue(comparator0.compare(entry1, entry2) < 0);
-        assertTrue(comparator0.compare(entry2, entry1) > 0);
 
-        HazelcastSortAccessorTest.Foo testData3 = new HazelcastSortAccessorTest.Foo("aaa","aaa");
-        HazelcastSortAccessorTest.Foo testData4 = new HazelcastSortAccessorTest.Foo("aaa","def");
+        HazelcastSortAccessorTest.Foo testData3 = new HazelcastSortAccessorTest.Foo("aaa", "aaa");
+        HazelcastSortAccessorTest.Foo testData4 = new HazelcastSortAccessorTest.Foo("aaa", "def");
         Map.Entry<String, HazelcastSortAccessorTest.Foo> entry3 = entryOf("testData3", testData3);
         Map.Entry<String, HazelcastSortAccessorTest.Foo> entry4 = entryOf("testData4", testData4);
-        assertFalse(comparator0.compare(entry3, entry4) == 0);
-        assertTrue((comparator0.compare(entry3, entry4) > 0));
+
+        //when
+        HazelcastSortAccessor hazelcastSortAccessor = new HazelcastSortAccessor();
+        Comparator<Map.Entry<?, ?>> comparator = (Comparator<Map.Entry<?, ?>>) hazelcastSortAccessor.resolve((KeyValueQuery<?>) query);
+
+        //then
+        assertNotNull(comparator);
+        assertTrue(comparator.compare(entry1, entry2) < 0);
+        assertTrue(comparator.compare(entry2, entry1) > 0);
+        assertFalse(comparator.compare(entry3, entry4) == 0);
+        assertTrue((comparator.compare(entry3, entry4) > 0));
     }
 
     private static <K, V> Map.Entry<K, V> entryOf(K key, V value) {
@@ -123,7 +152,7 @@ public class HazelcastSortAccessorTest {
 
         @Override
         public int hashCode() {
-            return ObjectUtils.nullSafeHashCode(new Object[] {this.foo,this.bar});
+            return ObjectUtils.nullSafeHashCode(new Object[]{this.foo, this.bar});
         }
 
         @Override
@@ -138,7 +167,7 @@ public class HazelcastSortAccessorTest {
                 return false;
             }
             HazelcastSortAccessorTest.Foo other = (HazelcastSortAccessorTest.Foo) obj;
-            return ObjectUtils.nullSafeEquals(this.foo, other.foo) && ObjectUtils.nullSafeEquals(this.bar,other.bar);
+            return ObjectUtils.nullSafeEquals(this.foo, other.foo) && ObjectUtils.nullSafeEquals(this.bar, other.bar);
         }
 
     }
