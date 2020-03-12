@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2018, Hazelcast, Inc. All Rights Reserved.
+ * Copyright (c) 2008-2020, Hazelcast, Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,13 +63,13 @@ public class GeoPredicate<K, V>
     }
 
     private boolean compareDistance(Point point) {
-        double calculatedDistance = calcuateDistance(point.getX(), point.getY(), this.queryPoint.getX(),
+        double calculatedDistance = calculateDistance(point.getX(), point.getY(), this.queryPoint.getX(),
                 this.queryPoint.getY(), this.distance.getMetric());
         final boolean withinRange = calculatedDistance < this.distance.getValue();
         return withinRange;
     }
 
-    private double calcuateDistance(double lat1, double lng1, double lat2, double lng2, Metric metric) {
+    private double calculateDistance(double lat1, double lng1, double lat2, double lng2, Metric metric) {
         if ((lat1 == lat2) && (lng1 == lng2)) {
             return 0;
         } else {
