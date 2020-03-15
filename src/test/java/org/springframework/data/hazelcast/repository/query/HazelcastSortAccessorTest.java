@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 
 public class HazelcastSortAccessorTest {
 
-    @Test()
+    @Test(expected = UnsupportedOperationException.class)
     public void testResolvingNonNativeNullHandlingOrderIsUnsupported() {
         // given
         KeyValueQuery<String> keyValueQuery = new KeyValueQuery<String>("^pg~]=P");
@@ -28,17 +28,12 @@ public class HazelcastSortAccessorTest {
 
         HazelcastSortAccessor hazelcastSortAccessor = new HazelcastSortAccessor();
         // when
-        try {
-            hazelcastSortAccessor.resolve(keyValueQuery);
-            // then
-            // expecting exception - should jump to catch block, skipping the line below:
-            fail("Should have thrown UnsupportedOperationException");
-        } catch (UnsupportedOperationException e) {
-            // expected exception, so no failure
-        }
+        hazelcastSortAccessor.resolve(keyValueQuery);
+        // Then expect UnsupportedOperationException
+        fail("Should have thrown UnsupportedOperationException");
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void testResolvingIgnoreCaseOrderIsUnsupported() {
         // given
         HazelcastSortAccessor hazelcastSortAccessor = new HazelcastSortAccessor();
@@ -52,16 +47,10 @@ public class HazelcastSortAccessorTest {
         Sort sort = Sort.by(sortOrderArray);
         keyValueQuery.setSort(sort);
 
-        //when
-        try {
-            hazelcastSortAccessor.resolve(keyValueQuery);
-            // then
-            // expecting exception - should jump to catch block, skipping the line below:
-            fail("Should have thrown UnsupportedOperationException");
-        }
-        catch (UnsupportedOperationException e){
-            // expected exception, so no failure
-        }
+        // when
+        hazelcastSortAccessor.resolve(keyValueQuery);
+        // Then expect UnsupportedOperationException
+        fail("Should have thrown UnsupportedOperationException");
     }
 
     @Test
