@@ -30,7 +30,6 @@ public class HazelcastSortAccessorTest {
         // when
         hazelcastSortAccessor.resolve(keyValueQuery);
         // Then expect UnsupportedOperationException
-        fail("Should have thrown UnsupportedOperationException");
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -50,7 +49,6 @@ public class HazelcastSortAccessorTest {
         // when
         hazelcastSortAccessor.resolve(keyValueQuery);
         // Then expect UnsupportedOperationException
-        fail("Should have thrown UnsupportedOperationException");
     }
 
     @Test
