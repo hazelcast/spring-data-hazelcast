@@ -98,7 +98,7 @@ public abstract class TestDataHelper {
                 equalTo(TestConstants.OSCAR_MAP_NAMES.length));
     }
 
-    private void checkMapsEmpty(String phase) {
+    protected void checkMapsEmpty(String phase) {
         for (String mapName : TestConstants.OSCAR_MAP_NAMES) {
             IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
             assertThat(phase + "(): No test data left behind by previous tests in '" + iMap.getName() + "'", iMap.size(),

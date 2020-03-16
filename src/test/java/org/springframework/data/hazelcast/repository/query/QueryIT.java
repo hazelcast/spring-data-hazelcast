@@ -86,10 +86,45 @@ public class QueryIT
     private PersonRepository personRepository;
 
     // Count methods
+    @Override
+    public void setUp() {
+        System.out.println("setUp()");
+        assertThat("Correct Hazelcast instance", this.hazelcastInstance.getName(), equalTo(TestConstants.CLIENT_INSTANCE_NAME));
+
+        this.makeupMap = this.hazelcastInstance.getMap(TestConstants.MAKEUP_MAP_NAME);
+
+        this.movieMap = this.hazelcastInstance.getMap(TestConstants.MOVIE_MAP_NAME);
+
+        this.personMap = this.hazelcastInstance.getMap(TestConstants.PERSON_MAP_NAME);
+
+        this.songMap = this.hazelcastInstance.getMap(TestConstants.SONG_MAP_NAME);
+
+        checkMapsEmpty("setUp");
+    }
 
     @Test
     public void countByFirstname() {
+        Person jamesStewart = new Person();
+        jamesStewart.setId("1940");
+        jamesStewart.setFirstname("James");
+        jamesStewart.setLastname("Stewart");
+        this.personMap.put(jamesStewart.getId(), jamesStewart);
+
+        Person jamesCagney = new Person();
+        jamesCagney.setId("1942");
+        jamesCagney.setFirstname("James");
+        jamesCagney.setLastname("Cagney");
+        this.personMap.put(jamesCagney.getId(), jamesCagney);
+
+        Person bingCrosby = new Person();
+        bingCrosby.setId("1944");
+        bingCrosby.setFirstname("Bing");
+        bingCrosby.setLastname("Crosby");
+        this.personMap.put(bingCrosby.getId(), bingCrosby);
+
+
         Long count = this.personRepository.countByFirstname("James");
+
         assertThat("1940 and 1942", count, equalTo(2L));
 
         count = this.personRepository.countByFirstname("Bing");
