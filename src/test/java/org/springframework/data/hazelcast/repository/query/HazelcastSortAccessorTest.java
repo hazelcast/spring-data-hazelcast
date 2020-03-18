@@ -17,14 +17,10 @@ public class HazelcastSortAccessorTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testResolvingNonNativeNullHandlingOrderIsUnsupported() {
         // given
-        KeyValueQuery<String> keyValueQuery = new KeyValueQuery<String>("^pg~]=P");
-        Sort.Order[] sortOrderArray = new Sort.Order[7];
-        Sort.Order sortOrderA = Sort.Order.asc("^pg~]=P");
-        sortOrderArray[0] = sortOrderA;
-        Sort.Order sortOrderB = sortOrderA.nullsLast();
-        sortOrderArray[1] = sortOrderB;
-        Sort sort = Sort.by(sortOrderArray);
-        keyValueQuery.setSort(sort);
+        KeyValueQuery<String> keyValueQuery = new KeyValueQuery<>("^pg~]=P");
+        Sort.Order sortOrder1 = Sort.Order.asc("^pg~]=P");
+        Sort.Order sortOrder2 = sortOrder1.nullsLast();
+        keyValueQuery.setSort(Sort.by(sortOrder1, sortOrder2));
 
         HazelcastSortAccessor hazelcastSortAccessor = new HazelcastSortAccessor();
         // when
@@ -36,15 +32,10 @@ public class HazelcastSortAccessorTest {
     public void testResolvingIgnoreCaseOrderIsUnsupported() {
         // given
         HazelcastSortAccessor hazelcastSortAccessor = new HazelcastSortAccessor();
-        RevisionSort revisionSort = RevisionSort.asc();
-        KeyValueQuery<Object> keyValueQuery = new KeyValueQuery<Object>((Sort) revisionSort);
-        Sort.Order[] sortOrderArray = new Sort.Order[4];
+        KeyValueQuery<Object> keyValueQuery = new KeyValueQuery<>(RevisionSort.asc());
         Sort.Order sortOrderA = Sort.Order.asc("Cannot resolve nest mates of a latent type description: ");
-        sortOrderArray[0] = sortOrderA;
         Sort.Order sortOrderB = sortOrderA.ignoreCase();
-        sortOrderArray[1] = sortOrderB;
-        Sort sort = Sort.by(sortOrderArray);
-        keyValueQuery.setSort(sort);
+        keyValueQuery.setSort(Sort.by(sortOrderA, sortOrderB));
 
         // when
         hazelcastSortAccessor.resolve(keyValueQuery);
@@ -54,12 +45,11 @@ public class HazelcastSortAccessorTest {
     @Test
     public void testResolvingNonEmptyKeyValueQueryReturnsNonNullComparator() {
         //given
-        RevisionSort revisionSort = RevisionSort.asc();
-        KeyValueQuery<Object> keyValueQuery = new KeyValueQuery<Object>((Sort) revisionSort);
+        KeyValueQuery<Object> keyValueQuery = new KeyValueQuery<>(RevisionSort.asc());
 
         //when
         HazelcastSortAccessor hazelcastSortAccessor = new HazelcastSortAccessor();
-        Comparator<Map.Entry<?, ?>> comparator = (Comparator<Map.Entry<?, ?>>) hazelcastSortAccessor.resolve(keyValueQuery);
+        Comparator<Map.Entry<?, ?>> comparator = hazelcastSortAccessor.resolve(keyValueQuery);
 
         //then
         assertNotNull(comparator);
@@ -68,11 +58,11 @@ public class HazelcastSortAccessorTest {
     @Test
     public void testResolvingEmptyKeyValueQueryReturnsNullComparator() {
         //given
-        KeyValueQuery<Object> keyValueQuery = new KeyValueQuery<Object>();
+        KeyValueQuery<Object> keyValueQuery = new KeyValueQuery<>();
 
         //when
         HazelcastSortAccessor hazelcastSortAccessor = new HazelcastSortAccessor();
-        Comparator<Map.Entry<?, ?>> comparator = (Comparator<Map.Entry<?, ?>>) hazelcastSortAccessor.resolve(keyValueQuery);
+        Comparator<Map.Entry<?, ?>> comparator = hazelcastSortAccessor.resolve(keyValueQuery);
 
         //then
         assertNull(comparator);
@@ -82,7 +72,7 @@ public class HazelcastSortAccessorTest {
     public void testResolvingNullKeyValueQueryReturnsNullComparator() {
         //given //when
         HazelcastSortAccessor hazelcastSortAccessor = new HazelcastSortAccessor();
-        Comparator<Map.Entry<?, ?>> comparator = (Comparator<Map.Entry<?, ?>>) hazelcastSortAccessor.resolve((KeyValueQuery<?>) null);
+        Comparator<Map.Entry<?, ?>> comparator = hazelcastSortAccessor.resolve(null);
         //then
         assertNull(comparator);
     }
@@ -94,10 +84,7 @@ public class HazelcastSortAccessorTest {
         Sort.Order fooOrder = new Sort.Order(Sort.Direction.DESC, "foo");
         Sort.Order barOrder = new Sort.Order(Sort.Direction.DESC, "bar");
 
-        List<Sort.Order> orderList = new LinkedList<>();
-        orderList.add(fooOrder);
-        orderList.add(barOrder);
-        query.setSort(Sort.by(orderList));
+        query.setSort(Sort.by(fooOrder, barOrder));
 
         HazelcastSortAccessorTest.Foo testData1 = new HazelcastSortAccessorTest.Foo("zzz", "def");
         HazelcastSortAccessorTest.Foo testData2 = new HazelcastSortAccessorTest.Foo("aaa", "aaa");
