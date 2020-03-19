@@ -1020,12 +1020,12 @@ public class QueryIT
         matches = this.cityRepository.findByLocationNear(solapur, new Distance(250, Metrics.KILOMETERS));
         len = matches.size();
         assertThat("Pune should return", len, equalTo(1));
-        assertThat("Pune should return", matches.get(0), hasProperty("name", equalTo("Pune")));
+        assertThat("Pune should return", matches.get(0), equalTo(pune));
         
         matches = this.cityRepository.findByLocationNear(solapur, new Distance(350, Metrics.KILOMETERS));
         len = matches.size();
         assertThat("Pune and Mumbai should return", len, equalTo(2));
-        assertThat("Pune and Mumbai should return", matches, containsInAnyOrder(hasProperty("name", equalTo("Pune")), hasProperty("name", equalTo("Mumbai"))));
+        assertThat("Pune and Mumbai should return", matches, containsInAnyOrder(pune, mumbai));
         
         this.cityMap.remove(mumbai.getId());
         this.cityMap.remove(pune.getId());
@@ -1079,12 +1079,12 @@ public class QueryIT
         matches = this.cityRepository.findByLocationNear(solapur, 250);
         len = matches.size();
         assertThat("Pune should return", len, equalTo(1));
-        assertThat("Pune should return", matches.get(0), hasProperty("name", equalTo("Pune")));
+        assertThat("Pune should return", matches.get(0), equalTo(pune));
         
         matches = this.cityRepository.findByLocationNear(solapur, 350 );
         len = matches.size();
         assertThat("Pune and Mumbai should return", len, equalTo(2));
-        assertThat("Pune and Mumbai should return", matches, containsInAnyOrder(hasProperty("name", equalTo("Pune")), hasProperty("name", equalTo("Mumbai"))));
+        assertThat("Pune and Mumbai should return", matches, containsInAnyOrder(pune, mumbai));
         
         this.cityMap.remove(mumbai.getId());
         this.cityMap.remove(pune.getId());
@@ -1107,19 +1107,19 @@ public class QueryIT
         this.cityMap.put(pune.getId(), pune);
         this.cityMap.put(bangalore.getId(), bangalore);
         
-		List<City> matches = this.cityRepository.findByLocationWithin(circle100);
+        List<City> matches = this.cityRepository.findByLocationWithin(circle100);
         int len = matches.size();
         assertThat("Nothing should returned", len, equalTo(0));
         
         matches = this.cityRepository.findByLocationWithin(circle250);
         len = matches.size();
         assertThat("Pune should return", len, equalTo(1));
-        assertThat("Pune should return", matches.get(0), hasProperty("name", equalTo("Pune")));
+        assertThat("Pune should return", matches.get(0), equalTo(pune));
         
         matches = this.cityRepository.findByLocationWithin(circle350);
         len = matches.size();
         assertThat("Pune and Mumbai should return", len, equalTo(2));
-        assertThat("Pune and Mumbai should return", matches, containsInAnyOrder(hasProperty("name", equalTo("Pune")), hasProperty("name", equalTo("Mumbai"))));
+        assertThat("Pune and Mumbai should return", matches, containsInAnyOrder(pune, mumbai));
         
         this.cityMap.remove(mumbai.getId());
         this.cityMap.remove(pune.getId());
@@ -1139,7 +1139,7 @@ public class QueryIT
         this.cityMap.put(mumbai.getId(), mumbai);
         this.cityMap.put(pune.getId(), pune);
         this.cityMap.put(bangalore.getId(), bangalore);
-        final String[] cities = new String[]{"Bangalore","Mumbai", "Pune"};
+        final City[] cities = new City[]{bangalore,mumbai, pune};
 
         for(int i=0; i<3; i++){
             final Pageable pageRequest1 = PageRequest.of(i, SIZE_1);
@@ -1147,7 +1147,7 @@ public class QueryIT
             assertThat("Page " + i + ", has content", firstPage.hasContent(), equalTo(true));
             List<City> firstPageList = firstPage.getContent();
             assertThat("Page " + i + ", one of three citys", firstPageList.size(), equalTo(1));
-            assertThat("Page " + i + ", one of three citys", firstPageList.get(0).getName(), equalTo(cities[i]));
+            assertThat("Page " + i + ", one of three citys", firstPageList.get(0), equalTo(cities[i]));
         }
 
         this.cityMap.remove(mumbai.getId());

@@ -40,8 +40,6 @@ public interface CityRepository
     
     public List<City> findByLocationNear(Point point, Object distance);
     
-    public List<City> findByLocationNear(Shape shape);
-    
     public List<City> findByLocationWithin(Circle circle);
     
     public Page<City> findByLocationNear(Point point, Distance distance, Pageable pageable);

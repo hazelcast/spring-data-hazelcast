@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2020, Hazelcast, Inc. All Rights Reserved.
+ * Copyright (c) 2008-2018, Hazelcast, Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,10 @@ import org.springframework.data.geo.Point;
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.impl.Extractable;
 /**
- * Geo Predicate
+ * Geo Predicate - Used to calculate near and within queries
+ * <li>Finds all the Points within the given distance range from source Point.
+ * <li>Finds all the Points within given Circle.  
+ * 
  * @param <K> key of map entry
  * @param <V> value of map entry
  * @author Ulhas R Manekar
@@ -35,9 +38,9 @@ import com.hazelcast.query.impl.Extractable;
 public class GeoPredicate<K, V>
         implements Predicate<K, V> {
 
-    private static final long serialVersionUID = 2873594766714576764L;
+    private static final long serialVersionUID = 1L;
     private static final double MILES_TO_KM = 1.609344;
-    private static final double MILES_TO_NUTRAL = 0.8684;
+    private static final double MILES_TO_NEUTRAL = 0.8684;
     private static final double MINUTES_IN_DEGREE = 60;
     private static final double STATUTE_MILES_IN_NAUTICAL_MILE = 1.1515;
 
@@ -45,6 +48,17 @@ public class GeoPredicate<K, V>
     final Point queryPoint;
     final Distance distance;
 
+    /**
+     * Constructor accepts the name of the attribute which is of type Point.
+     * Constructs a new geo predicate on the given point
+     *
+     * @param attribute    the name of the attribute in a object within Map which is of type Point.
+     * 
+     * @param point        the source point from where the distance is calculated.
+     * 
+     * @param distance     the Distance object with value and unit of distance.
+     * 
+     */
     public GeoPredicate(String attribute, Point point, Distance distance) {
         this.attributeName = canonicalizeAttribute(attribute);
         this.queryPoint = point;
@@ -82,7 +96,7 @@ public class GeoPredicate<K, V>
             if (Metrics.KILOMETERS.equals(metric)) {
                 dist = dist * MILES_TO_KM;
             } else if (Metrics.NEUTRAL.equals(metric)) {
-                dist = dist * MILES_TO_NUTRAL;
+                dist = dist * MILES_TO_NEUTRAL;
             }
             return (dist);
         }
