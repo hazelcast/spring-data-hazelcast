@@ -119,7 +119,7 @@ EndingWith
 Like
 NotLike
 Regex
-distinct
+Distinct
 IsEmpty
 ExistsBy
 IsWithin

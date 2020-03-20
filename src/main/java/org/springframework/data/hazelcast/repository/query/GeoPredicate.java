@@ -38,7 +38,6 @@ import com.hazelcast.query.impl.Extractable;
 public class GeoPredicate<K, V>
         implements Predicate<K, V> {
 
-    private static final long serialVersionUID = 1L;
     private static final double KM_TO_MILES = 0.621371;
     private static final double KM_TO_NEUTRAL = 0.539957;
     private static final double R = 6372.8;
@@ -74,8 +73,7 @@ public class GeoPredicate<K, V>
     private boolean compareDistance(Point point) {
         double calculatedDistance = calculateDistance(point.getX(), point.getY(), this.queryPoint.getX(),
                 this.queryPoint.getY(), this.distance.getMetric());
-        final boolean withinRange = calculatedDistance < this.distance.getValue();
-        return withinRange;
+        return calculatedDistance < this.distance.getValue();
     }
 
     /**
@@ -95,11 +93,11 @@ public class GeoPredicate<K, V>
         } else {
             double dLat = Math.toRadians(lat2 - lat1);
             double dLon = Math.toRadians(lng2 - lng1);
-            lat1 = Math.toRadians(lat1);
-            lat2 = Math.toRadians(lat2);
+            double lat1Radians = Math.toRadians(lat1);
+            double lat2Radians = Math.toRadians(lat2);
 
             double a = Math.pow(Math.sin(dLat / 2), 2)
-                + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
+                + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1Radians) * Math.cos(lat2Radians);
             double c = 2 * Math.asin(Math.sqrt(a));
             double dist = R * c;
 
