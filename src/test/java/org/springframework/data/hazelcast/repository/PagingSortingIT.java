@@ -71,8 +71,8 @@ public class PagingSortingIT
 
         assertThat("First page is returned", page.getNumber(), equalTo(0));
         assertThat("First page count matches content", page.getNumberOfElements(), equalTo(content.size()));
-        assertThat("First page has all content", new Long(page.getNumberOfElements()), equalTo(page.getTotalElements()));
-        assertThat("First page has no upper limit", page.getSize(), equalTo(content.size()));
+        assertThat("First page has all content", (long) page.getNumberOfElements(), equalTo(page.getTotalElements()));
+        assertThat("First page has no upper limit", page.getSize(), equalTo(0));
         assertThat("First page has correct content count", page.getNumberOfElements(), equalTo(TestData.bestActors.length));
         assertThat("First page is only page", page.getTotalPages(), equalTo(1));
     }
