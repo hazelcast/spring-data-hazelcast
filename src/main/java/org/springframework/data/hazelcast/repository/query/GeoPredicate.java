@@ -50,13 +50,9 @@ public class GeoPredicate<K, V>
     /**
      * Constructor accepts the name of the attribute which is of type Point.
      * Constructs a new geo predicate on the given point
-     *
      * @param attribute    the name of the attribute in a object within Map which is of type Point.
-     *
      * @param point        the source point from where the distance is calculated.
-     *
      * @param distance     the Distance object with value and unit of distance.
-     *
      */
     public GeoPredicate(String attribute, Point point, Distance distance) {
         this.attributeName = canonicalizeAttribute(attribute);
