@@ -121,58 +121,58 @@ public abstract class TestDataHelper {
     }
 
     private void loadMakeup(IMap<String, Makeup> akeupMap) {
-        for (int i = 0; i < Oscars.bestMakeUp.length; i++) {
+        for (int i = 0; i < TestData.bestMakeUp.length; i++) {
             Makeup makeup = new Makeup();
 
-            makeup.setId(Integer.toString((int) Oscars.bestMakeUp[i][0]));
-            makeup.setFilmTitle(Oscars.bestMakeUp[i][1].toString());
-            makeup.setArtistOrArtists(Oscars.bestMakeUp[i][2].toString());
+            makeup.setId(Integer.toString((int) TestData.bestMakeUp[i][0]));
+            makeup.setFilmTitle(TestData.bestMakeUp[i][1].toString());
+            makeup.setArtistOrArtists(TestData.bestMakeUp[i][2].toString());
 
             makeupMap.put(makeup.getId(), makeup);
         }
     }
 
     private void loadMovie(IMap<String, Movie> movieMap) {
-        for (int i = 0; i < Oscars.bestPictures.length; i++) {
+        for (int i = 0; i < TestData.bestPictures.length; i++) {
             Movie movie = new Movie();
 
-            movie.setId(Integer.toString((int) Oscars.bestPictures[i][0]));
-            movie.setTitle(Oscars.bestPictures[i][1].toString());
+            movie.setId(Integer.toString((int) TestData.bestPictures[i][0]));
+            movie.setTitle(TestData.bestPictures[i][1].toString());
 
             movieMap.put(movie.getId(), movie);
         }
     }
 
     private void loadPerson(IMap<String, Person> personMap) {
-        for (int i = 0; i < Oscars.bestActors.length; i++) {
+        for (int i = 0; i < TestData.bestActors.length; i++) {
             Person person = new Person();
 
-            person.setId(Integer.toString((int) Oscars.bestActors[i][0]));
-            person.setFirstname(Oscars.bestActors[i][1].toString());
-            person.setLastname(Oscars.bestActors[i][2].toString());
+            person.setId(Integer.toString((int) TestData.bestActors[i][0]));
+            person.setFirstname(TestData.bestActors[i][1].toString());
+            person.setLastname(TestData.bestActors[i][2].toString());
 
             personMap.put(person.getId(), person);
         }
     }
 
     private void loadSong(IMap<String, Song> songMap) {
-        for (int i = 0; i < Oscars.bestSongs.length; i++) {
+        for (int i = 0; i < TestData.bestSongs.length; i++) {
             Song song = new Song();
 
-            song.setId(Integer.toString((int) Oscars.bestSongs[i][0]));
-            song.setTitle(Oscars.bestSongs[i][1].toString());
+            song.setId(Integer.toString((int) TestData.bestSongs[i][0]));
+            song.setTitle(TestData.bestSongs[i][1].toString());
 
             songMap.put(song.getId(), song);
         }
     }
 
     private void loadCities(IMap<String, City> cityMap) {
-        for (int i = 0; i < Oscars.newYorkCities.length; i++) {
+        for (int i = 0; i < TestData.newYorkCities.length; i++) {
             City city = new City();
 
-            city.setId(Integer.toString((int) Oscars.newYorkCities[i][2]));
-            city.setName(Oscars.newYorkCities[i][0].toString());
-            final String[] latLng = Oscars.newYorkCities[i][1].toString().split(",");
+            city.setId(Integer.toString((int) TestData.newYorkCities[i][2]));
+            city.setName(TestData.newYorkCities[i][0].toString());
+            final String[] latLng = TestData.newYorkCities[i][1].toString().split(",");
 			city.setLocation(new Point(Double.parseDouble(latLng[0]), Double.parseDouble(latLng[1])));
 
             cityMap.put(city.getId(), city);

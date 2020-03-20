@@ -30,7 +30,7 @@ import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.util.concurrent.ListenableFuture;
-import test.utils.Oscars;
+import test.utils.TestData;
 import test.utils.TestConstants;
 import test.utils.TestDataHelper;
 import test.utils.domain.City;
@@ -511,7 +511,7 @@ public class QueryIT
         List<Person> matches = this.personRepository.findByLastnameNotNull(sort);
         int len = matches.size();
 
-        assertThat("Everyone returned", len, equalTo(Oscars.bestActors.length));
+        assertThat("Everyone returned", len, equalTo(TestData.bestActors.length));
         assertThat("First firstname - Adrien Brody", matches.get(0).getFirstname(), equalTo("Adrien"));
         assertThat("Last firstname - Yul Brynner", matches.get(len - 1).getFirstname(), equalTo("Yul"));
     }
@@ -541,7 +541,7 @@ public class QueryIT
 
     @Test
     public void findByOrderByLastnameDesc() {
-        int expectedNumberOfPages = Oscars.bestActors.length / SIZE_5 + 1;
+        int expectedNumberOfPages = TestData.bestActors.length / SIZE_5 + 1;
         int pagesRetrieved = 0;
         String previousLastname = null;
 
@@ -571,7 +571,7 @@ public class QueryIT
                         lessThanOrEqualTo(SIZE_5));
             }
             assertThat("Page " + pagesRetrieved + ", total item count", pageResponse.getTotalElements(),
-                    equalTo((long) Oscars.bestActors.length));
+                    equalTo((long) TestData.bestActors.length));
 
             for (Person person : pageContent) {
                 if (previousLastname != null) {
@@ -686,9 +686,9 @@ public class QueryIT
         long deletedPersonsSize = this.personRepository.deleteByLastname("Tracy");
 
         // then
-        assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(Oscars.bestActors.length - 2));
+        assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(TestData.bestActors.length - 2));
         assertThat("Delete for matched name removes from @Repository", this.personRepository.count(),
-                equalTo((long) (Oscars.bestActors.length - 2)));
+                equalTo((long) (TestData.bestActors.length - 2)));
         assertThat("Delete for matched name returns correct count", deletedPersonsSize, equalTo(2L));
         assertThat("1937 deleted", this.personMap.get("1937"), nullValue());
         assertThat("1938 deleted", this.personMap.get("1938"), nullValue());
@@ -703,9 +703,9 @@ public class QueryIT
         long deletedPersonsSize = this.personRepository.deleteByLastname("abcdefghijklmnopqrstuvwxyz");
 
         // then
-        assertThat("Delete for unmatched name does nothing to map", this.personMap.size(), equalTo(Oscars.bestActors.length));
+        assertThat("Delete for unmatched name does nothing to map", this.personMap.size(), equalTo(TestData.bestActors.length));
         assertThat("Delete for unmatched name does nothing to @Repository", this.personRepository.count(),
-                equalTo((long) Oscars.bestActors.length));
+                equalTo((long) TestData.bestActors.length));
         assertThat("Delete for unmatched name returns null", deletedPersonsSize, equalTo(0L));
     }
 
@@ -718,9 +718,9 @@ public class QueryIT
         Collection<Person> deletedPersons = this.personRepository.deleteByFirstname("Spencer");
 
         // then
-        assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(Oscars.bestActors.length - 2));
+        assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(TestData.bestActors.length - 2));
         assertThat("Delete for matched name removes from @Repository", this.personRepository.count(),
-                equalTo((long) (Oscars.bestActors.length - 2)));
+                equalTo((long) (TestData.bestActors.length - 2)));
         assertThat("Delete for matched name returns correct count", deletedPersons.size(), equalTo(2));
         assertThat("1937 deleted", this.personMap.get("1937"), nullValue());
         assertThat("1938 deleted", this.personMap.get("1938"), nullValue());
