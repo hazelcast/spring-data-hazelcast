@@ -24,12 +24,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.util.concurrent.ListenableFuture;
-import test.utils.Oscars;
+import test.utils.TestData;
 import test.utils.TestConstants;
 import test.utils.TestDataHelper;
+import test.utils.domain.City;
 import test.utils.domain.Person;
+import test.utils.repository.standard.CityRepository;
 import test.utils.repository.standard.PersonRepository;
 
 import javax.annotation.Resource;
@@ -84,6 +90,9 @@ public class QueryIT
     public ExpectedException expectedException = ExpectedException.none();
     @Resource
     private PersonRepository personRepository;
+    
+    @Resource
+    private CityRepository cityRepository;
 
     // Count methods
 
@@ -502,7 +511,7 @@ public class QueryIT
         List<Person> matches = this.personRepository.findByLastnameNotNull(sort);
         int len = matches.size();
 
-        assertThat("Everyone returned", len, equalTo(Oscars.bestActors.length));
+        assertThat("Everyone returned", len, equalTo(TestData.bestActors.length));
         assertThat("First firstname - Adrien Brody", matches.get(0).getFirstname(), equalTo("Adrien"));
         assertThat("Last firstname - Yul Brynner", matches.get(len - 1).getFirstname(), equalTo("Yul"));
     }
@@ -532,7 +541,7 @@ public class QueryIT
 
     @Test
     public void findByOrderByLastnameDesc() {
-        int expectedNumberOfPages = Oscars.bestActors.length / SIZE_5 + 1;
+        int expectedNumberOfPages = TestData.bestActors.length / SIZE_5 + 1;
         int pagesRetrieved = 0;
         String previousLastname = null;
 
@@ -562,7 +571,7 @@ public class QueryIT
                         lessThanOrEqualTo(SIZE_5));
             }
             assertThat("Page " + pagesRetrieved + ", total item count", pageResponse.getTotalElements(),
-                    equalTo((long) Oscars.bestActors.length));
+                    equalTo((long) TestData.bestActors.length));
 
             for (Person person : pageContent) {
                 if (previousLastname != null) {
@@ -677,9 +686,9 @@ public class QueryIT
         long deletedPersonsSize = this.personRepository.deleteByLastname("Tracy");
 
         // then
-        assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(Oscars.bestActors.length - 2));
+        assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(TestData.bestActors.length - 2));
         assertThat("Delete for matched name removes from @Repository", this.personRepository.count(),
-                equalTo((long) (Oscars.bestActors.length - 2)));
+                equalTo((long) (TestData.bestActors.length - 2)));
         assertThat("Delete for matched name returns correct count", deletedPersonsSize, equalTo(2L));
         assertThat("1937 deleted", this.personMap.get("1937"), nullValue());
         assertThat("1938 deleted", this.personMap.get("1938"), nullValue());
@@ -694,9 +703,9 @@ public class QueryIT
         long deletedPersonsSize = this.personRepository.deleteByLastname("abcdefghijklmnopqrstuvwxyz");
 
         // then
-        assertThat("Delete for unmatched name does nothing to map", this.personMap.size(), equalTo(Oscars.bestActors.length));
+        assertThat("Delete for unmatched name does nothing to map", this.personMap.size(), equalTo(TestData.bestActors.length));
         assertThat("Delete for unmatched name does nothing to @Repository", this.personRepository.count(),
-                equalTo((long) Oscars.bestActors.length));
+                equalTo((long) TestData.bestActors.length));
         assertThat("Delete for unmatched name returns null", deletedPersonsSize, equalTo(0L));
     }
 
@@ -709,9 +718,9 @@ public class QueryIT
         Collection<Person> deletedPersons = this.personRepository.deleteByFirstname("Spencer");
 
         // then
-        assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(Oscars.bestActors.length - 2));
+        assertThat("Delete for matched name removes from map", this.personMap.size(), equalTo(TestData.bestActors.length - 2));
         assertThat("Delete for matched name removes from @Repository", this.personRepository.count(),
-                equalTo((long) (Oscars.bestActors.length - 2)));
+                equalTo((long) (TestData.bestActors.length - 2)));
         assertThat("Delete for matched name returns correct count", deletedPersons.size(), equalTo(2));
         assertThat("1937 deleted", this.personMap.get("1937"), nullValue());
         assertThat("1938 deleted", this.personMap.get("1938"), nullValue());
@@ -989,5 +998,160 @@ public class QueryIT
         len = matches.size();
         assertThat("Everyone except Virat returned", len, equalTo(this.personMap.size() - 1));
         this.personMap.remove("1001");
+    }
+    
+    @Test
+    public void findByLocationNearWithDistance() {
+        
+        final City mumbai = new City("1001", "Mumbai", new Point(19.0990358,72.9612976));
+        final City pune = new City("1002", "Pune", new Point(18.5247663,73.792756));
+        final City bangalore = new City("1003", "Bangalore", new Point(12.9542944,77.4905127));
+
+        Point solapur = new Point(17.661548,75.8835121);
+        
+        this.cityMap.put(mumbai.getId(), mumbai);
+        this.cityMap.put(pune.getId(), pune);
+        this.cityMap.put(bangalore.getId(), bangalore);
+        
+        List<City> matches = this.cityRepository.findByLocationNear(solapur, new Distance(100, Metrics.KILOMETERS));
+        int len = matches.size();
+        assertThat("Nothing should returned", len, equalTo(0));
+        
+        matches = this.cityRepository.findByLocationNear(solapur, new Distance(250, Metrics.KILOMETERS));
+        len = matches.size();
+        assertThat("Pune should return", len, equalTo(1));
+        assertThat("Pune should return", matches.get(0), equalTo(pune));
+        
+        matches = this.cityRepository.findByLocationNear(solapur, new Distance(350, Metrics.KILOMETERS));
+        len = matches.size();
+        assertThat("Pune and Mumbai should return", len, equalTo(2));
+        assertThat("Pune and Mumbai should return", matches, containsInAnyOrder(pune, mumbai));
+        
+        this.cityMap.remove(mumbai.getId());
+        this.cityMap.remove(pune.getId());
+        this.cityMap.remove(bangalore.getId());
+    }
+    
+    @Test
+    public void countByLocationNear() {
+        
+        final City mumbai = new City("1001", "Mumbai", new Point(19.0990358,72.9612976));
+        final City pune = new City("1002", "Pune", new Point(18.5247663,73.792756));
+        final City bangalore = new City("1003", "Bangalore", new Point(12.9542944,77.4905127));
+
+        Point solapur = new Point(17.661548,75.8835121);
+        
+        this.cityMap.put(mumbai.getId(), mumbai);
+        this.cityMap.put(pune.getId(), pune);
+        this.cityMap.put(bangalore.getId(), bangalore);
+        
+        Long cities = this.cityRepository.countByLocationNear(solapur, new Distance(100, Metrics.KILOMETERS));
+        assertThat("Nothing should returned", cities, equalTo(0L));
+        
+        cities = this.cityRepository.countByLocationNear(solapur, new Distance(250, Metrics.KILOMETERS));
+        assertThat("Pune should return", cities, equalTo(1L));
+        
+        cities = this.cityRepository.countByLocationNear(solapur, new Distance(350, Metrics.KILOMETERS));
+        assertThat("Pune and Mumbai should return", cities, equalTo(2L));
+        
+        this.cityMap.remove(mumbai.getId());
+        this.cityMap.remove(pune.getId());
+        this.cityMap.remove(bangalore.getId());
+    }
+    
+    @Test
+    public void findByLocationNearWithNumber() {
+        
+        final City mumbai = new City("1001", "Mumbai", new Point(19.0990358,72.9612976));
+        final City pune = new City("1002", "Pune", new Point(18.5247663,73.792756));
+        final City bangalore = new City("1003", "Bangalore", new Point(12.9542944,77.4905127));
+
+        Point solapur = new Point(17.661548,75.8835121);
+        
+        this.cityMap.put(mumbai.getId(), mumbai);
+        this.cityMap.put(pune.getId(), pune);
+        this.cityMap.put(bangalore.getId(), bangalore);
+        
+		List<City> matches = this.cityRepository.findByLocationNear(solapur, 100);
+        int len = matches.size();
+        assertThat("Nothing should returned", len, equalTo(0));
+        
+        matches = this.cityRepository.findByLocationNear(solapur, 250);
+        len = matches.size();
+        assertThat("Pune should return", len, equalTo(1));
+        assertThat("Pune should return", matches.get(0), equalTo(pune));
+        
+        matches = this.cityRepository.findByLocationNear(solapur, 350 );
+        len = matches.size();
+        assertThat("Pune and Mumbai should return", len, equalTo(2));
+        assertThat("Pune and Mumbai should return", matches, containsInAnyOrder(pune, mumbai));
+        
+        this.cityMap.remove(mumbai.getId());
+        this.cityMap.remove(pune.getId());
+        this.cityMap.remove(bangalore.getId());
+    }
+    
+    @Test
+    public void findByLocationNearWithShape() {
+        
+        final City mumbai = new City("1001", "Mumbai", new Point(19.0990358,72.9612976));
+        final City pune = new City("1002", "Pune", new Point(18.5247663,73.792756));
+        final City bangalore = new City("1003", "Bangalore", new Point(12.9542944,77.4905127));
+
+        final Point solapur = new Point(17.661548,75.8835121);
+		final Circle circle100 = new Circle(solapur, new Distance(100, Metrics.KILOMETERS));
+		final Circle circle250 = new Circle(solapur, new Distance(250, Metrics.KILOMETERS));
+		final Circle circle350 = new Circle(solapur, new Distance(350, Metrics.KILOMETERS));
+        
+        this.cityMap.put(mumbai.getId(), mumbai);
+        this.cityMap.put(pune.getId(), pune);
+        this.cityMap.put(bangalore.getId(), bangalore);
+        
+        List<City> matches = this.cityRepository.findByLocationWithin(circle100);
+        int len = matches.size();
+        assertThat("Nothing should returned", len, equalTo(0));
+        
+        matches = this.cityRepository.findByLocationWithin(circle250);
+        len = matches.size();
+        assertThat("Pune should return", len, equalTo(1));
+        assertThat("Pune should return", matches.get(0), equalTo(pune));
+        
+        matches = this.cityRepository.findByLocationWithin(circle350);
+        len = matches.size();
+        assertThat("Pune and Mumbai should return", len, equalTo(2));
+        assertThat("Pune and Mumbai should return", matches, containsInAnyOrder(pune, mumbai));
+        
+        this.cityMap.remove(mumbai.getId());
+        this.cityMap.remove(pune.getId());
+        this.cityMap.remove(bangalore.getId());
+    }
+    
+    @Test
+    public void findByLocationNearPageable() {
+        
+        final City mumbai = new City("1001", "Mumbai", new Point(19.0990358,72.9612976));
+        final City pune = new City("1002", "Pune", new Point(18.5247663,73.792756));
+        final City bangalore = new City("1003", "Bangalore", new Point(12.9542944,77.4905127));
+
+        final Point solapur = new Point(17.661548,75.8835121);
+        final Distance distance1000 = new Distance(1000, Metrics.KILOMETERS);
+        
+        this.cityMap.put(mumbai.getId(), mumbai);
+        this.cityMap.put(pune.getId(), pune);
+        this.cityMap.put(bangalore.getId(), bangalore);
+        final City[] cities = new City[]{bangalore,mumbai, pune};
+
+        for(int i=0; i<3; i++){
+            final Pageable pageRequest1 = PageRequest.of(i, SIZE_1);
+            final Page<City> firstPage = this.cityRepository.findByLocationNear(solapur, distance1000, pageRequest1);
+            assertThat("Page " + i + ", has content", firstPage.hasContent(), equalTo(true));
+            List<City> firstPageList = firstPage.getContent();
+            assertThat("Page " + i + ", one of three citys", firstPageList.size(), equalTo(1));
+            assertThat("Page " + i + ", one of three citys", firstPageList.get(0), equalTo(cities[i]));
+        }
+
+        this.cityMap.remove(mumbai.getId());
+        this.cityMap.remove(pune.getId());
+        this.cityMap.remove(bangalore.getId());
     }
 }

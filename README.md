@@ -119,6 +119,11 @@ EndingWith
 Like
 NotLike
 Regex
+Distinct
+IsEmpty
+ExistsBy
+IsWithin
+IsNear
 ```
 
 # Community

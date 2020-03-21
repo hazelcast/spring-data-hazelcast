@@ -23,7 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.test.context.ActiveProfiles;
-import test.utils.Oscars;
+import test.utils.TestData;
 import test.utils.TestConstants;
 import test.utils.TestDataHelper;
 import test.utils.domain.Person;
@@ -73,7 +73,7 @@ public class PagingSortingIT
         assertThat("First page count matches content", page.getNumberOfElements(), equalTo(content.size()));
         assertThat("First page has all content", (long) page.getNumberOfElements(), equalTo(page.getTotalElements()));
         assertThat("First page has no upper limit", page.getSize(), equalTo(0));
-        assertThat("First page has correct content count", page.getNumberOfElements(), equalTo(Oscars.bestActors.length));
+        assertThat("First page has correct content count", page.getNumberOfElements(), equalTo(TestData.bestActors.length));
         assertThat("First page is only page", page.getTotalPages(), equalTo(1));
     }
 
@@ -136,7 +136,7 @@ public class PagingSortingIT
             iterator.next();
         }
 
-        assertThat("Correct number, order undefined", count, equalTo(Oscars.bestActors.length));
+        assertThat("Correct number, order undefined", count, equalTo(TestData.bestActors.length));
     }
 
     @Test
@@ -162,7 +162,7 @@ public class PagingSortingIT
             count++;
             previousFirstname = person.getFirstname();
         }
-        assertThat("Everything found ascending", count, equalTo(Oscars.bestActors.length));
+        assertThat("Everything found ascending", count, equalTo(TestData.bestActors.length));
 
         assertThat("1956 winner, last firstname ascending", previousFirstname, equalTo("Yul"));
 
