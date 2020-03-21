@@ -123,7 +123,7 @@ public interface PersonRepository
 
     public List<Person> findTop3ByOrderByFirstnameAsc();
 
-    public List<Person> findFirst30ByOrderByFirstnameDescLastnameAsc();
+    public List<Person> findFirst3ByOrderByFirstnameDescLastnameAsc();
 
     public List<Person> findByFirstnameIn(Collection<String> firstnames);
 
