@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.hazelcast.repository.config.EnableHazelcastRepositories;
+import org.springframework.data.hazelcast.repository.support.HazelcastRepositoryFactoryBean;
 import test.utils.repository.custom.MyTitleRepositoryFactoryBean;
 
 import javax.annotation.PreDestroy;
@@ -56,6 +57,7 @@ public class InstanceHelper {
     private static final String CLUSTER_HOST = "127.0.0.1";
     private static final int CLUSTER_PORT = 5701;
     private static final String MASTER_SERVER = CLUSTER_HOST + ":" + CLUSTER_PORT;
+
     @Resource(name = TestConstants.CLIENT_INSTANCE_NAME)
     private HazelcastInstance hazelcastInstance;
 
@@ -106,6 +108,7 @@ public class InstanceHelper {
 
         clientConfig.setInstanceName(name);
         clientConfig.getNetworkConfig().setAddresses(Arrays.asList(MASTER_SERVER));
+        clientConfig.getNetworkConfig().setConnectionAttemptLimit(1);
 
         HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(clientConfig);
 

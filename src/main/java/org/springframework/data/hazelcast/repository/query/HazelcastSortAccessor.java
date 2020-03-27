@@ -36,7 +36,7 @@ import java.util.Map.Entry;
  * @author Neil Stevenson
  */
 public class HazelcastSortAccessor
-        implements SortAccessor<Comparator<Entry<?, ?>>> {
+  implements SortAccessor<Comparator<Entry<?, ?>>> {
 
     /**
      * <p>
@@ -44,6 +44,7 @@ public class HazelcastSortAccessor
      * </P>
      *
      * @param query If not null, will contain one of more {@link Sort.Order} objects.
+     *
      * @return A sequence of comparators or {@code null}
      */
     public Comparator<Entry<?, ?>> resolve(KeyValueQuery<?> query) {
@@ -70,15 +71,14 @@ public class HazelcastSortAccessor
 
             if (hazelcastPropertyComparator == null) {
                 hazelcastPropertyComparator = new HazelcastPropertyComparator(order.getProperty(),
-                        order.isAscending());
+                  order.isAscending());
             } else {
                 hazelcastPropertyComparator = hazelcastPropertyComparator.thenComparing(
-                        new HazelcastPropertyComparator(order.getProperty(),
-                        order.isAscending()));
+                  new HazelcastPropertyComparator(order.getProperty(),
+                    order.isAscending()));
             }
         }
 
         return hazelcastPropertyComparator;
     }
-
 }

@@ -16,8 +16,8 @@
 package org.springframework.data.hazelcast.repository.support;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.map.IMap;
-import com.hazelcast.query.impl.predicates.SqlPredicate;
+import com.hazelcast.core.IMap;
+import com.hazelcast.query.SqlPredicate;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 

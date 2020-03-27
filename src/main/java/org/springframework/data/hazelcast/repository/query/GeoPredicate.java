@@ -15,8 +15,6 @@
  */
 package org.springframework.data.hazelcast.repository.query;
 
-import static com.hazelcast.query.impl.IndexUtils.canonicalizeAttribute;
-
 import java.util.Map;
 
 import org.springframework.data.geo.Distance;
@@ -26,6 +24,9 @@ import org.springframework.data.geo.Point;
 
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.impl.Extractable;
+
+import static com.hazelcast.query.impl.predicates.PredicateUtils.canonicalizeAttribute;
+
 /**
  * Geo Predicate - Used to calculate near and within queries
  * <li>Finds all the Points within the given distance range from source Point.

@@ -17,7 +17,6 @@ package org.springframework.data.hazelcast;
 
 import com.hazelcast.query.PagingPredicate;
 import com.hazelcast.query.Predicate;
-import com.hazelcast.query.impl.predicates.PagingPredicateImpl;
 import org.springframework.data.hazelcast.repository.query.HazelcastCriteriaAccessor;
 import org.springframework.data.hazelcast.repository.query.HazelcastSortAccessor;
 import org.springframework.data.keyvalue.core.QueryEngine;
@@ -69,7 +68,7 @@ public class HazelcastQueryEngine
         @SuppressWarnings({"unchecked", "rawtypes"}) Comparator<Entry> sortToUse = ((Comparator<Entry>) (Comparator) sort);
 
         if (rows > 0) {
-            PagingPredicate pp = new PagingPredicateImpl(predicateToUse, sortToUse, rows);
+            PagingPredicate pp = new PagingPredicate(predicateToUse, sortToUse, rows);
             long x = offset / rows;
             while (x > 0) {
                 pp.nextPage();
@@ -79,7 +78,7 @@ public class HazelcastQueryEngine
 
         } else {
             if (sortToUse != null) {
-                predicateToUse = new PagingPredicateImpl(predicateToUse, sortToUse, Integer.MAX_VALUE);
+                predicateToUse = new PagingPredicate(predicateToUse, sortToUse, Integer.MAX_VALUE);
             }
         }
 
