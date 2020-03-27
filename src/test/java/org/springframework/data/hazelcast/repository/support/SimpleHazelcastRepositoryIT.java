@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.repository.core.support.PersistentEntityInformation;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import test.utils.TestData;
 import test.utils.TestConstants;
