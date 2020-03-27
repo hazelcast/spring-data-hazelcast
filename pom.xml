@@ -141,6 +141,9 @@
                         <include>**/Test*.java</include>
                         <include>**/*Test.java</include>
                         <include>**/*TestCase.java</include>
+                        <include>**/IT*.java</include>
+                        <include>**/*IT.java</include>
+                        <include>**/*ITCase.java</include>
                     </includes>
                 </configuration>
                 <executions>
@@ -305,7 +308,6 @@
                             </includes>
                         </configuration>
                         <executions>
-
                             <execution>
                                 <id>default-integration-test</id>
                                 <goals>

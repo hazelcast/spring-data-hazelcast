@@ -17,9 +17,11 @@
 package test.utils;
 
 import com.hazelcast.core.DistributedObject;
+import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,4 +202,8 @@ public abstract class TestDataHelper {
 
     }
 
+    @AfterClass
+    public static void close() {
+        Hazelcast.shutdownAll();
+    }
 }
