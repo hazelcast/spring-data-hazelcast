@@ -15,6 +15,8 @@
  */
 package org.springframework.data.hazelcast.repository.support;
 
+import com.hazelcast.core.Hazelcast;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.data.hazelcast.HazelcastUtils;
@@ -37,5 +39,10 @@ public class HazelcastEntityInformationTest {
     public void throwsMappingExceptionWhenNoIdPropertyPresent() {
         PersistentEntity<?, ?> persistentEntity = operations.getMappingContext().getPersistentEntity(NoIdEntity.class);
         new HazelcastEntityInformation<>(persistentEntity);
+    }
+
+    @AfterClass
+    public static void close() {
+        Hazelcast.shutdownAll();
     }
 }
