@@ -106,6 +106,8 @@ public class QueryIT
 
         this.songMap = this.hazelcastInstance.getMap(TestConstants.SONG_MAP_NAME);
 
+        this.cityMap = this.hazelcastInstance.getMap(TestConstants.CITY_MAP_NAME);
+
         checkMapsEmpty("setUp");
     }
 
