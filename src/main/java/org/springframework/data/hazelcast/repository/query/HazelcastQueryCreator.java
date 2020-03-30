@@ -20,6 +20,10 @@ import com.hazelcast.query.Predicates;
 import com.hazelcast.query.impl.predicates.PagingPredicateImpl;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 import org.springframework.data.mapping.PropertyPath;
 import org.springframework.data.repository.query.ParameterAccessor;
@@ -179,10 +183,11 @@ public class HazelcastQueryCreator
             case IS_EMPTY:
             case IS_NOT_EMPTY:
                 return fromEmptyVariant(type, property);
-            /* case EXISTS:
-             * case NEAR:
-             * case WITHIN:
-             */
+            /* case EXISTS:*/
+            case NEAR:
+            case WITHIN:
+                return fromGeoVariant(type, property, iterator);
+
             default:
                 throw new InvalidDataAccessApiUsageException(String.format("Unsupported type '%s'", type));
         }
@@ -324,6 +329,45 @@ public class HazelcastQueryCreator
                 return Predicates.equal(property, "");
             case IS_NOT_EMPTY:
                 return Predicates.notEqual(property, "");
+
+            default:
+                throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
+        }
+    }
+
+    private Predicate<?, ?> fromGeoVariant(Type type, String property, Iterator<Comparable<?>> iterator) {
+        final Object item = iterator.next();
+        Point point;
+        Distance distance;
+        if (item instanceof Point) {
+            point = (Point) item;
+            if (!iterator.hasNext()) {
+                throw new InvalidDataAccessApiUsageException(
+                        "Expected to find distance value for geo query. Are you missing a parameter?");
+            }
+
+            Object distObject = iterator.next();
+            if (distObject instanceof Distance) {
+                distance = (Distance) distObject;
+            } else if (distObject instanceof Number) {
+                distance = new Distance(((Number) distObject).doubleValue(), Metrics.KILOMETERS);
+            } else {
+                throw new InvalidDataAccessApiUsageException(String
+                        .format("Expected to find Distance or Numeric value for geo query but was %s.",
+                                distObject.getClass()));
+            }
+        } else if (item instanceof Circle) {
+            point = ((Circle) item).getCenter();
+            distance = ((Circle) item).getRadius();
+        } else {
+            throw new InvalidDataAccessApiUsageException(
+                    String.format("Expected to find a Circle or Point/Distance for geo query but was %s.", item.getClass()));
+        }
+
+        switch (type) {
+            case WITHIN:
+            case NEAR:
+                return new GeoPredicate<>(property, point, distance);
 
             default:
                 throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));

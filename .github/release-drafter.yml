@@ -1,0 +1,19 @@
+name-template: $NEXT_PATCH_VERSION
+tag-template: $NEXT_PATCH_VERSION
+template: |
+  This document includes the new features, enhancements, and fixed issues for Hazelcast Spring Data release.
+
+  ## New Features
+  None.
+
+  ## Enhancements
+  None.
+
+  ## Fixes
+  None.
+
+  ## Known Issues
+  None.
+
+  # All changes (to be sorted properly)
+  $CHANGES

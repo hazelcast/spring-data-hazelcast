@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.springframework.data.build</groupId>
         <artifactId>spring-data-parent</artifactId>
-        <version>2.2.0.RELEASE</version>
+        <version>2.2.6.RELEASE</version>
     </parent>
 
     <properties>
@@ -34,9 +34,9 @@
         <hazelcast>4.0</hazelcast>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <springdata.keyvalue>2.2.5.RELEASE</springdata.keyvalue>
+        <springdata.keyvalue>2.2.6.RELEASE</springdata.keyvalue>
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
-        <maven.javadoc.plugin.version>3.1.1</maven.javadoc.plugin.version>
+        <maven.javadoc.plugin.version>3.2.0</maven.javadoc.plugin.version>
         <maven.sonar.plugin.version>3.3.0.603</maven.sonar.plugin.version>
         <maven.jacoco.plugin.version>0.8.5</maven.jacoco.plugin.version>
     </properties>
@@ -141,6 +141,9 @@
                         <include>**/Test*.java</include>
                         <include>**/*Test.java</include>
                         <include>**/*TestCase.java</include>
+                        <include>**/IT*.java</include>
+                        <include>**/*IT.java</include>
+                        <include>**/*ITCase.java</include>
                     </includes>
                 </configuration>
                 <executions>
@@ -305,7 +308,6 @@
                             </includes>
                         </configuration>
                         <executions>
-
                             <execution>
                                 <id>default-integration-test</id>
                                 <goals>

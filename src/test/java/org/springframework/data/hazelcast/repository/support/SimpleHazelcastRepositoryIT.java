@@ -26,7 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.repository.core.support.PersistentEntityInformation;
 import org.springframework.test.context.ActiveProfiles;
-import test.utils.Oscars;
+import test.utils.TestData;
 import test.utils.TestConstants;
 import test.utils.TestDataHelper;
 import test.utils.domain.Makeup;
@@ -100,13 +100,13 @@ public class SimpleHazelcastRepositoryIT
             previous = current;
         }
 
-        assertThat(count, equalTo(Oscars.bestMakeUp.length));
+        assertThat(count, equalTo(TestData.bestMakeUp.length));
     }
 
     @Test
     public void findAll_Pageable() {
         Set<String> yearsExpected = new TreeSet<>();
-        for (Object[] datum : Oscars.bestMakeUp) {
+        for (Object[] datum : TestData.bestMakeUp) {
             yearsExpected.add(datum[0].toString());
         }
 
@@ -140,7 +140,7 @@ public class SimpleHazelcastRepositoryIT
     @Test
     public void count() {
         long count = this.theRepository.count();
-        assertThat(count, equalTo((long) Oscars.bestMakeUp.length));
+        assertThat(count, equalTo((long) TestData.bestMakeUp.length));
     }
 
     @Test
@@ -193,7 +193,7 @@ public class SimpleHazelcastRepositoryIT
 
     @Test
     public void deleteAll() {
-        assertThat("Before", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length));
+        assertThat("Before", this.makeupMap.size(), equalTo(TestData.bestMakeUp.length));
 
         this.theRepository.deleteAll();
 
@@ -210,7 +210,7 @@ public class SimpleHazelcastRepositoryIT
     public void findAll() {
 
         Set<Makeup> expected = new TreeSet<>();
-        for (Object[] datum : Oscars.bestMakeUp) {
+        for (Object[] datum : TestData.bestMakeUp) {
             Makeup makeup = new Makeup();
             makeup.setId(datum[0].toString());
             makeup.setFilmTitle(datum[1].toString());
@@ -278,13 +278,13 @@ public class SimpleHazelcastRepositoryIT
         citizenKane.setFilmTitle("Citizen Kane");
         citizenKane.setArtistOrArtists("Maurice Seiderman");
 
-        assertThat("Before", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length));
+        assertThat("Before", this.makeupMap.size(), equalTo(TestData.bestMakeUp.length));
 
         Makeup saved = this.theRepository.save(citizenKane);
 
         assertThat("Saved entry", saved, not(nullValue()));
 
-        assertThat("After", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length + 1));
+        assertThat("After", this.makeupMap.size(), equalTo(TestData.bestMakeUp.length + 1));
     }
 
     @Test
@@ -299,7 +299,7 @@ public class SimpleHazelcastRepositoryIT
         citizenKane.setFilmTitle("Citizen Kane");
         citizenKane.setArtistOrArtists("Maurice Seiderman");
 
-        assertThat("Before", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length));
+        assertThat("Before", this.makeupMap.size(), equalTo(TestData.bestMakeUp.length));
 
         List<Makeup> list = new ArrayList<>();
         list.add(citizenKane);
@@ -316,7 +316,7 @@ public class SimpleHazelcastRepositoryIT
         }
         assertThat("Correct number saved", count, equalTo(list.size()));
 
-        assertThat("After", this.makeupMap.size(), equalTo(Oscars.bestMakeUp.length + list.size()));
+        assertThat("After", this.makeupMap.size(), equalTo(TestData.bestMakeUp.length + list.size()));
     }
 
 }

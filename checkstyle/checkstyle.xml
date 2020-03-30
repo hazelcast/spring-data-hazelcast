@@ -249,7 +249,7 @@
         </module>
         <module name="InnerAssignment"/>
         <module name="ReturnCount">
-            <property name="max" value="8"/>
+            <property name="max" value="9"/>
             <property name="maxForVoid" value="8"/>
         </module>
         <module name="NestedIfDepth">
