@@ -51,8 +51,7 @@ public class HazelcastPropertyComparator
 
     private static MethodHandle resolveExtractValueHazelcast403() {
         try {
-            return MethodHandles.lookup()
-              .findStatic(ReflectionHelper.class,
+            return MethodHandles.lookup().findStatic(ReflectionHelper.class,
                 "extractValue", MethodType.methodType(Object.class, Object.class, String.class));
         } catch (Throwable ex) {
             return null;
