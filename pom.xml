@@ -93,27 +93,6 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.4.2.jenkins-1</version>
-                <executions>
-                    <execution>
-                        <id>enforce-rules</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <rules>
-                        <requireJavaVersion>
-                            <version>[1.8,1.9)</version>
-                        </requireJavaVersion>
-                    </rules>
-                </configuration>
-            </plugin>
-
             <!--  Run unit "*Test.java" and integration tests "*IT.java" from same module  -->
             <!-- so can remain single module maven project. Not necessarily ideal.         -->
             <!--  Also, force default inclusions for Failsafe and Surefire as common parent -->
