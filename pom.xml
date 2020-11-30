@@ -34,7 +34,7 @@
         <hazelcast>4.0.2</hazelcast>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <springdata.keyvalue>2.3.3.RELEASE</springdata.keyvalue>
+        <springdata.keyvalue>2.4.1</springdata.keyvalue>
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
         <maven.javadoc.plugin.version>3.2.0</maven.javadoc.plugin.version>
         <maven.sonar.plugin.version>3.3.0.603</maven.sonar.plugin.version>
