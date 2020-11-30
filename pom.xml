@@ -38,7 +38,7 @@
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
         <maven.javadoc.plugin.version>3.2.0</maven.javadoc.plugin.version>
         <maven.sonar.plugin.version>3.3.0.603</maven.sonar.plugin.version>
-        <maven.jacoco.plugin.version>0.8.5</maven.jacoco.plugin.version>
+        <maven.jacoco.plugin.version>0.8.6</maven.jacoco.plugin.version>
     </properties>
 
     <dependencies>
