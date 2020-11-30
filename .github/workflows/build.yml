@@ -10,8 +10,9 @@ jobs:
     strategy:
       matrix:
         java: [ '8' ]
+        hazelcast: [ '4.0.3', '4.1' ]
         architecture: [ 'x64' ]
-    name: Build with JDK ${{ matrix.java }} on ${{ matrix.architecture }}
+    name: Build with JDK ${{ matrix.java }} and Hazelcast ${{ matrix.hazelcast }}
     steps:
       - uses: actions/checkout@v1
       - name: Setup JDK
@@ -27,5 +28,5 @@ jobs:
           restore-keys: ${{ runner.os }}-maven-
 
       - name: Build with Maven
-        run: mvn package
+        run: mvn -Dhazelcast.version=${{ matrix.hazelcast }} package
 

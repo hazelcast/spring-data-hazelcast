@@ -18,6 +18,7 @@ package org.springframework.data.hazelcast.repository.query;
 import com.hazelcast.query.impl.getters.ReflectionHelper;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.Map.Entry;
 
@@ -54,8 +55,21 @@ public class HazelcastPropertyComparator
     public int compare(Entry<?, ?> o1, Entry<?, ?> o2) {
 
         try {
-            Object o1Field = ReflectionHelper.extractValue(o1.getValue(), this.attributeName);
-            Object o2Field = ReflectionHelper.extractValue(o2.getValue(), this.attributeName);
+
+            Object o1Field;
+            Object o2Field;
+
+            try {
+                // Hazelcast 4.1
+                Method extractValueMethod = ReflectionHelper.class.getDeclaredMethod("extractValue", Object.class, String.class, boolean.class);
+                o1Field = extractValueMethod.invoke(null, o1.getValue(), this.attributeName, true);
+                o2Field = extractValueMethod.invoke(null, o2.getValue(), this.attributeName, true);
+            } catch (Throwable e) {
+                // Hazelcast 4.0.3
+                Method extractValueMethod = ReflectionHelper.class.getDeclaredMethod("extractValue", Object.class, String.class);
+                o1Field = extractValueMethod.invoke(null, o1.getValue(), this.attributeName);
+                o2Field = extractValueMethod.invoke(null, o2.getValue(), this.attributeName);
+            }
 
             if (o1Field == o2Field) {
                 return 0;
@@ -70,11 +84,13 @@ public class HazelcastPropertyComparator
                 return this.direction * ((Comparable) o1Field).compareTo(o2Field);
             }
 
-        } catch (Exception ignore) {
+        } catch (Exception ex) {
+            if (ex instanceof NoSuchMethodException) {
+                throw new RuntimeException(ex);
+            }
             return 0;
         }
 
         return 0;
     }
-
 }

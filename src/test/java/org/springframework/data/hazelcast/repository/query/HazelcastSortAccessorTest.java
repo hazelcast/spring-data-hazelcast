@@ -98,7 +98,7 @@ public class HazelcastSortAccessorTest {
 
         //when
         HazelcastSortAccessor hazelcastSortAccessor = new HazelcastSortAccessor();
-        Comparator<Map.Entry<?, ?>> comparator = (Comparator<Map.Entry<?, ?>>) hazelcastSortAccessor.resolve((KeyValueQuery<?>) query);
+        Comparator<Map.Entry<?, ?>> comparator = hazelcastSortAccessor.resolve(query);
 
         //then
         assertNotNull(comparator);
