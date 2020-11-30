@@ -114,9 +114,6 @@ public class HazelcastPropertyComparator
             }
 
         } catch (Exception ex) {
-            if (ex instanceof NoSuchMethodException) {
-                throw new RuntimeException(ex);
-            }
             return 0;
         }
 
