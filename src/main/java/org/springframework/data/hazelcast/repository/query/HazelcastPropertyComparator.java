@@ -18,6 +18,9 @@ package org.springframework.data.hazelcast.repository.query;
 import com.hazelcast.query.impl.getters.ReflectionHelper;
 
 import java.io.Serializable;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.Comparator;
 import java.util.Map.Entry;
 
@@ -32,6 +35,28 @@ import java.util.Map.Entry;
 public class HazelcastPropertyComparator
         implements Comparator<Entry<?, ?>>, Serializable {
     private static final long serialVersionUID = 1L;
+
+    private static final MethodHandle EXTRACT_VALUE_HAZELCAST_41 = resolveExtractValueHazelcast41();
+    private static final MethodHandle EXTRACT_VALUE_HAZELCAST_403 = resolveExtractValueHazelcast403();
+
+
+    private static MethodHandle resolveExtractValueHazelcast41() {
+        try {
+            return MethodHandles.lookup().findStatic(ReflectionHelper.class,
+              "extractValue", MethodType.methodType(Object.class, Object.class, String.class, boolean.class));
+        } catch (Throwable ex) {
+            return null;
+        }
+    }
+
+    private static MethodHandle resolveExtractValueHazelcast403() {
+        try {
+            return MethodHandles.lookup().findStatic(ReflectionHelper.class,
+                "extractValue", MethodType.methodType(Object.class, Object.class, String.class));
+        } catch (Throwable ex) {
+            return null;
+        }
+    }
 
     private final String attributeName;
     private final int direction;
@@ -54,8 +79,25 @@ public class HazelcastPropertyComparator
     public int compare(Entry<?, ?> o1, Entry<?, ?> o2) {
 
         try {
-            Object o1Field = ReflectionHelper.extractValue(o1.getValue(), this.attributeName);
-            Object o2Field = ReflectionHelper.extractValue(o2.getValue(), this.attributeName);
+
+            Object o1Field;
+            Object o2Field;
+
+            if (EXTRACT_VALUE_HAZELCAST_41 == null && EXTRACT_VALUE_HAZELCAST_403 == null) {
+                throw new IllegalStateException("Could not resolve a ReflectionHelper.extractValue method. Using a non-supported Hazelcast version");
+            }
+
+            try {
+                if (EXTRACT_VALUE_HAZELCAST_403 != null) {
+                    o1Field = EXTRACT_VALUE_HAZELCAST_403.invoke(o1.getValue(), this.attributeName);
+                    o2Field = EXTRACT_VALUE_HAZELCAST_403.invoke(o2.getValue(), this.attributeName);
+                } else {
+                    o1Field = EXTRACT_VALUE_HAZELCAST_41.invoke(o1.getValue(), this.attributeName, true);
+                    o2Field = EXTRACT_VALUE_HAZELCAST_41.invoke(o2.getValue(), this.attributeName, true);
+                }
+            } catch (Throwable throwable) {
+                throw new IllegalStateException("Could not resolve a ReflectionHelper.extractValue method. Using a non-supported Hazelcast version", throwable);
+            }
 
             if (o1Field == o2Field) {
                 return 0;
@@ -70,11 +112,10 @@ public class HazelcastPropertyComparator
                 return this.direction * ((Comparable) o1Field).compareTo(o2Field);
             }
 
-        } catch (Exception ignore) {
+        } catch (Exception ex) {
             return 0;
         }
 
         return 0;
     }
-
 }
