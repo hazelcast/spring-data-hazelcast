@@ -34,7 +34,7 @@
         <java-module-name>spring.data.hazelcast</java-module-name>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hazelcast.version>4.0.3</hazelcast.version>
+        <hazelcast.version>4.1</hazelcast.version>
         <springdata.keyvalue.version>2.4.1</springdata.keyvalue.version>
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
         <maven.javadoc.plugin.version>3.2.0</maven.javadoc.plugin.version>
@@ -348,13 +348,6 @@
             </build>
         </profile>
     </profiles>
-
-    <repositories>
-        <repository>
-            <id>spring-libs-release</id>
-            <url>https://repo.spring.io/libs-release</url>
-        </repository>
-    </repositories>
 
     <pluginRepositories>
         <pluginRepository>
