@@ -2,7 +2,7 @@ Spring Data Hazelcast
 =======================
 Welcome to Spring Data Hazelcast project!
 
-The primary goal of the [Spring Data](http://projects.spring.io/spring-data/) project is to make it easier to build Spring-powered applications that use new data access technologies. This module provides integration with [Hazelcast](http://hazelcast.com).
+The primary goal of the [Spring Data](http://projects.spring.io/spring-data/) is to make it easier to build Spring-powered applications that use new data access technologies. This module provides integration with [Hazelcast](http://hazelcast.com).
 
 # Examples
 
@@ -125,30 +125,4 @@ ExistsBy
 IsWithin
 IsNear
 ```
-
-# Community
-
-## Chat with developers
-
-[![Gitter](https://badges.gitter.im/hazelcast/spring-data-hazelcast.svg)](https://gitter.im/hazelcast/hazelcast)
-
-## Stack Overflow 
-
-[![Stack Overflow](http://cdn.sstatic.net/Sites/stackoverflow/company/img/logos/so/so-icon.png?v=c78bd457575a)](http://stackoverflow.com/questions/tagged/hazelcast)
-
-Submit your question with `hazelcast` and `spring-data-hazelcast` tags.
-
-## Mail Group
-
-Please, [join the mail group](http://groups.google.com/group/hazelcast) if you are interested in using or developing Hazelcast.
-
-# License
-
-Hazelcast is available under the Apache 2 License. Please see the Licensing appendix for more information.
-
-# Copyright
-
-Copyright (c) 2008-2020, Hazelcast, Inc. All Rights Reserved.
-
-Visit http://www.hazelcast.com for more information.
 
