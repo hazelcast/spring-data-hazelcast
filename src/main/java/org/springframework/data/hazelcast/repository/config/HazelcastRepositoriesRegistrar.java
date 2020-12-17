@@ -15,21 +15,21 @@
  */
 package org.springframework.data.hazelcast.repository.config;
 
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.data.repository.config.RepositoryBeanDefinitionRegistrarSupport;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
 import java.lang.annotation.Annotation;
 
 /**
- * Special {@link KeyValueRepositoriesRegistrar} to point the infrastructure to inspect
+ * Special {@link ImportBeanDefinitionRegistrar} to point the infrastructure to inspect
  * {@link EnableHazelcastRepositories}.
  *
  * @author Oliver Gierke
  * @author Neil Stevenson
  * @author Rafal Leszko
  */
-class HazelcastRepositoriesRegistrar
-        extends RepositoryBeanDefinitionRegistrarSupport {
+class HazelcastRepositoriesRegistrar extends RepositoryBeanDefinitionRegistrarSupport {
 
     /*
      * (non-Javadoc)
