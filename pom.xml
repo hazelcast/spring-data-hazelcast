@@ -173,7 +173,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-checkstyle-plugin</artifactId>
-                        <version>3.1.1</version>
+                        <version>3.1.2</version>
                         <configuration>
                             <!--  Checkstyle file copied from https://github.com/hazelcast/hazelcast/tree/master/checkstyle -->
                             <failOnViolation>true</failOnViolation>
