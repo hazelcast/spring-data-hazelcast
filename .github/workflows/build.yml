@@ -14,7 +14,7 @@ jobs:
         architecture: [ 'x64' ]
     name: Build with JDK ${{ matrix.java }} and Hazelcast ${{ matrix.hazelcast }}
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3.4.0
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
