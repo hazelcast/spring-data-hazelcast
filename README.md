@@ -78,21 +78,21 @@ public class AppTest {
 
 ```java
 @Query("firstname=James")
-public List<Person> peoplewiththeirFirstNameIsJames();
+public List<Person> peopleWithTheirFirstNameIsJames();
 ```
 
 ### Query with one variable
 
 ```java
 @Query("firstname=%s")
-public List<Person> peoplewiththeirFirstName(String firstName);
+public List<Person> peopleWithTheirFirstName(String firstName);
 ```
 
 ### Query with multiple variable values
 
 ```java
 @Query("firstname=%s and lastname=%s")
-public List<Person> peoplewithFirstAndLastName(String firstName,String lastName);
+public List<Person> peopleWithFirstAndLastName(String firstName,String lastName);
 ```
 
 ## Supported Query Keywords
