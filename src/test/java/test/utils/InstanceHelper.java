@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.hazelcast.repository.config.EnableHazelcastRepositories;
+import org.springframework.data.hazelcast.repository.support.HazelcastRepositoryFactoryBean;
 import test.utils.repository.custom.MyTitleRepositoryFactoryBean;
 
 import javax.annotation.PreDestroy;
