@@ -18,6 +18,7 @@ package org.springframework.data.hazelcast.repository.query;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.NullHandling;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.hazelcast.repository.support.WithComparatorSort;
 import org.springframework.data.keyvalue.core.SortAccessor;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 
@@ -48,13 +49,17 @@ public class HazelcastSortAccessor
      */
     public Comparator<Entry<?, ?>> resolve(KeyValueQuery<?> query) {
 
-        if (query == null || query.getSort() == Sort.unsorted()) {
+        final Sort sort;
+        if (query == null || (sort = query.getSort()) == Sort.unsorted()) {
             return null;
         }
 
+        if (sort instanceof WithComparatorSort) {
+            return ((WithComparatorSort) sort).getComparator();
+        }
         Comparator hazelcastPropertyComparator = null;
 
-        for (Order order : query.getSort()) {
+        for (Order order : sort) {
 
             if (order.getProperty().indexOf('.') > -1) {
                 throw new UnsupportedOperationException("Embedded fields not implemented: " + order);
