@@ -34,7 +34,7 @@
         <java-module-name>spring.data.hazelcast</java-module-name>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hazelcast.version>5.3.2</hazelcast.version>
+        <hazelcast.version>5.3.5</hazelcast.version>
         <springdata.keyvalue.version>2.5.6</springdata.keyvalue.version>
         <maven.gpg.plugin.version>3.0.1</maven.gpg.plugin.version>
         <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
