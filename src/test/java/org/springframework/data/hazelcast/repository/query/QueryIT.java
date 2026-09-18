@@ -29,7 +29,6 @@ import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.util.concurrent.ListenableFuture;
 import test.utils.TestConstants;
 import test.utils.TestDataHelper;
 import test.utils.domain.City;
@@ -37,7 +36,7 @@ import test.utils.domain.Person;
 import test.utils.repository.standard.CityRepository;
 import test.utils.repository.standard.PersonRepository;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -1521,7 +1520,7 @@ public class QueryIT
     }
 
     @Test
-    public void findByLastnameListenableFuture()
+    public void findByLastnameCompletableFuture()
             throws Exception {
         // given
         String lastname = "Porter";
@@ -1535,7 +1534,7 @@ public class QueryIT
         this.personRepository.save(person2);
 
         // when
-        ListenableFuture<List<Person>> result = this.personRepository.findByLastname(lastname);
+        CompletableFuture<List<Person>> result = this.personRepository.findByLastname(lastname);
 
         // then
         assertThat(result.get(), containsInAnyOrder(person1, person2));

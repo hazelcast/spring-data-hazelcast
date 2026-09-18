@@ -29,6 +29,17 @@ dependencies {
 }
 ```
 
+# Requirements
+
+| Spring Data Hazelcast | Spring Boot | Spring Data | Hazelcast | Java |
+|-----------------------|-------------|-------------|-----------|------|
+| 2.4.x                 | 3.x         | 2021.x      | 4.x - 5.x | 11+  |
+| 4.1.x                 | 4.x         | 2026.0.x    | 5.5 - 5.6 | 17+  |
+
+Spring Data Commons relocated `PropertyPath` to `org.springframework.data.core` in the release
+train shipped with Spring Boot 4, so a single artifact cannot serve both baselines. Applications
+staying on Spring Boot 3.x must stay on the 2.4.x line.
+
 # Usage
 
 ## Spring Configuration

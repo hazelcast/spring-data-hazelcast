@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '8' ]
-        hazelcast: [ '4.0.3', '4.1' ]
+        java: [ '17', '21' ]
+        hazelcast: [ '5.5.0', '5.6.0' ]
         architecture: [ 'x64' ]
     name: Build with JDK ${{ matrix.java }} and Hazelcast ${{ matrix.hazelcast }}
     steps:

@@ -21,7 +21,7 @@ import org.springframework.data.keyvalue.repository.KeyValueRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import test.utils.domain.Person;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 /**
  * <p>

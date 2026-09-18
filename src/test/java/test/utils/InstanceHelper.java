@@ -30,8 +30,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.hazelcast.repository.config.EnableHazelcastRepositories;
 import test.utils.repository.custom.MyTitleRepositoryFactoryBean;
 
-import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
+import jakarta.annotation.PreDestroy;
+import jakarta.annotation.Resource;
 import java.util.Arrays;
 import java.util.Set;
 

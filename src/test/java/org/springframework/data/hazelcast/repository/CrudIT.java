@@ -27,7 +27,7 @@ import test.utils.TestConstants;
 import test.utils.TestDataHelper;
 import test.utils.domain.Person;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

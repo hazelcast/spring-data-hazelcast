@@ -26,7 +26,7 @@ import test.utils.repository.custom.MovieRepository;
 import test.utils.repository.custom.MyTitleRepositoryFactoryBean;
 import test.utils.repository.custom.SongRepository;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.Iterator;
 import java.util.List;
 

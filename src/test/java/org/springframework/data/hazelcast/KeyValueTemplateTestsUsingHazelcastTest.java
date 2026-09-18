@@ -221,7 +221,7 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
         assertThat(operations.delete("1", Foo.class), is(FOO_ONE));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void deleteThrowsExceptionWhenIdCannotBeExctracted() {
         operations.delete(FOO_ONE);
     }
