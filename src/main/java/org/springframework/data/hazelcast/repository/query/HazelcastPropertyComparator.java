@@ -15,12 +15,10 @@
  */
 package org.springframework.data.hazelcast.repository.query;
 
-import com.hazelcast.query.impl.getters.ReflectionHelper;
-
+import java.io.Serial;
 import java.io.Serializable;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.Map.Entry;
 
@@ -29,37 +27,28 @@ import java.util.Map.Entry;
  * Implement a limited form of custom comparison between entries. The fields used for the comparison and the
  * ascending/descending can be specified at run time.
  * </P>
+ * <p>
+ * The attribute is read with plain reflection rather than through Hazelcast's {@code ReflectionHelper}, whose
+ * {@code extractValue} method is internal API and has changed shape in 4.1 and again in 5.7. Only a single
+ * property name has to be resolved here, because {@link HazelcastSortAccessor} rejects nested paths before a
+ * comparator is ever built.
+ * </P>
  *
  * @author Neil Stevenson
  */
 public class HazelcastPropertyComparator
         implements Comparator<Entry<?, ?>>, Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
-
-    private static final MethodHandle EXTRACT_VALUE_HAZELCAST_41 = resolveExtractValueHazelcast41();
-    private static final MethodHandle EXTRACT_VALUE_HAZELCAST_403 = resolveExtractValueHazelcast403();
-
-
-    private static MethodHandle resolveExtractValueHazelcast41() {
-        try {
-            return MethodHandles.lookup().findStatic(ReflectionHelper.class,
-              "extractValue", MethodType.methodType(Object.class, Object.class, String.class, boolean.class));
-        } catch (Throwable ex) {
-            return null;
-        }
-    }
-
-    private static MethodHandle resolveExtractValueHazelcast403() {
-        try {
-            return MethodHandles.lookup().findStatic(ReflectionHelper.class,
-                "extractValue", MethodType.methodType(Object.class, Object.class, String.class));
-        } catch (Throwable ex) {
-            return null;
-        }
-    }
 
     private final String attributeName;
     private final int direction;
+
+    /* Resolving the accessor is comparatively expensive and a comparator is invoked once per comparison,
+     * so remember the last one. Not serialized, as it is rebuilt on the member that does the sorting.
+     */
+    private transient Class<?> accessorType;
+    private transient Object accessor;
 
     public HazelcastPropertyComparator(String attributeName, boolean ascending) {
         this.attributeName = attributeName;
@@ -68,7 +57,7 @@ public class HazelcastPropertyComparator
 
     /**
      * <p>
-     * Use Hazelcast's {@code ReflectionHelper} to extract a field in an entry, and use this is in the comparison.
+     * Extract the named attribute from each entry, and use this in the comparison.
      * </P>
      *
      * @param o1 An entry in a map
@@ -80,24 +69,8 @@ public class HazelcastPropertyComparator
 
         try {
 
-            Object o1Field;
-            Object o2Field;
-
-            if (EXTRACT_VALUE_HAZELCAST_41 == null && EXTRACT_VALUE_HAZELCAST_403 == null) {
-                throw new IllegalStateException("Could not resolve a ReflectionHelper.extractValue method. Using a non-supported Hazelcast version");
-            }
-
-            try {
-                if (EXTRACT_VALUE_HAZELCAST_403 != null) {
-                    o1Field = EXTRACT_VALUE_HAZELCAST_403.invoke(o1.getValue(), this.attributeName);
-                    o2Field = EXTRACT_VALUE_HAZELCAST_403.invoke(o2.getValue(), this.attributeName);
-                } else {
-                    o1Field = EXTRACT_VALUE_HAZELCAST_41.invoke(o1.getValue(), this.attributeName, true);
-                    o2Field = EXTRACT_VALUE_HAZELCAST_41.invoke(o2.getValue(), this.attributeName, true);
-                }
-            } catch (Throwable throwable) {
-                throw new IllegalStateException("Could not resolve a ReflectionHelper.extractValue method. Using a non-supported Hazelcast version", throwable);
-            }
+            Object o1Field = this.extractValue(o1.getValue());
+            Object o2Field = this.extractValue(o2.getValue());
 
             if (o1Field == o2Field) {
                 return 0;
@@ -117,5 +90,63 @@ public class HazelcastPropertyComparator
         }
 
         return 0;
+    }
+
+    /**
+     * <p>
+     * Read {@link #attributeName} from the given object, preferring a getter over direct field access, in the
+     * same order of preference that Hazelcast itself applies.
+     * </P>
+     *
+     * @param target The value side of a map entry, possibly null
+     * @return The attribute value, possibly null
+     * @throws ReflectiveOperationException If the attribute cannot be found or read
+     */
+    private Object extractValue(Object target)
+            throws ReflectiveOperationException {
+
+        if (target == null) {
+            return null;
+        }
+
+        Object accessorToUse = this.resolveAccessor(target.getClass());
+
+        if (accessorToUse instanceof Method) {
+            return ((Method) accessorToUse).invoke(target);
+        }
+        return ((Field) accessorToUse).get(target);
+    }
+
+    private Object resolveAccessor(Class<?> targetType)
+            throws ReflectiveOperationException {
+
+        if (targetType.equals(this.accessorType) && this.accessor != null) {
+            return this.accessor;
+        }
+
+        String suffix = Character.toUpperCase(this.attributeName.charAt(0)) + this.attributeName.substring(1);
+
+        for (Class<?> klass = targetType; klass != null; klass = klass.getSuperclass()) {
+            for (String getter : new String[]{"get" + suffix, "is" + suffix}) {
+                try {
+                    Method method = klass.getDeclaredMethod(getter);
+                    method.setAccessible(true);
+                    return this.rememberAccessor(targetType, method);
+                } catch (NoSuchMethodException ignore) {}
+            }
+            try {
+                Field field = klass.getDeclaredField(this.attributeName);
+                field.setAccessible(true);
+                return this.rememberAccessor(targetType, field);
+            } catch (NoSuchFieldException ignore) {}
+        }
+
+        throw new NoSuchFieldException(String.format("No attribute '%s' on '%s'", this.attributeName, targetType));
+    }
+
+    private Object rememberAccessor(Class<?> targetType, Object accessorToUse) {
+        this.accessorType = targetType;
+        this.accessor = accessorToUse;
+        return accessorToUse;
     }
 }
