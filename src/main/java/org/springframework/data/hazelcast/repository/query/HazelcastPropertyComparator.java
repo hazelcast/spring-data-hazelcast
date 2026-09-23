@@ -44,7 +44,8 @@ public class HazelcastPropertyComparator
     private final String attributeName;
     private final int direction;
 
-    /* Resolving the accessor is comparatively expensive and a comparator is invoked once per comparison,
+    /**
+     * Resolving the accessor is comparatively expensive and a comparator is invoked once per comparison,
      * so remember the last one. Not serialized, as it is rebuilt on the member that does the sorting.
      */
     private transient Class<?> accessorType;
@@ -93,10 +94,8 @@ public class HazelcastPropertyComparator
     }
 
     /**
-     * <p>
      * Read {@link #attributeName} from the given object, preferring a getter over direct field access, in the
      * same order of preference that Hazelcast itself applies.
-     * </P>
      *
      * @param target The value side of a map entry, possibly null
      * @return The attribute value, possibly null
@@ -111,8 +110,8 @@ public class HazelcastPropertyComparator
 
         Object accessorToUse = this.resolveAccessor(target.getClass());
 
-        if (accessorToUse instanceof Method) {
-            return ((Method) accessorToUse).invoke(target);
+        if (accessorToUse instanceof Method method) {
+            return method.invoke(target);
         }
         return ((Field) accessorToUse).get(target);
     }
@@ -125,9 +124,10 @@ public class HazelcastPropertyComparator
         }
 
         String suffix = Character.toUpperCase(this.attributeName.charAt(0)) + this.attributeName.substring(1);
+        String[] getters = new String[]{"get" + suffix, "is" + suffix};
 
         for (Class<?> klass = targetType; klass != null; klass = klass.getSuperclass()) {
-            for (String getter : new String[]{"get" + suffix, "is" + suffix}) {
+            for (String getter : getters) {
                 try {
                     Method method = klass.getDeclaredMethod(getter);
                     method.setAccessible(true);
