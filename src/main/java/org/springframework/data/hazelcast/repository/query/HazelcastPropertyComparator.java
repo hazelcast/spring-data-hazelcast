@@ -16,6 +16,8 @@
 package org.springframework.data.hazelcast.repository.query;
 
 import java.io.Serial;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -123,17 +125,16 @@ public class HazelcastPropertyComparator
             return this.accessor;
         }
 
-        String suffix = Character.toUpperCase(this.attributeName.charAt(0)) + this.attributeName.substring(1);
-        String[] getters = new String[]{"get" + suffix, "is" + suffix};
+        try {
+            PropertyDescriptor propertyDescriptor = new PropertyDescriptor(this.attributeName, targetType);
+            Method method = propertyDescriptor.getReadMethod();
+            if (method != null) {
+                method.setAccessible(true);
+                return this.rememberAccessor(targetType, method);
+            }
+        } catch (IntrospectionException ignore) {}
 
         for (Class<?> klass = targetType; klass != null; klass = klass.getSuperclass()) {
-            for (String getter : getters) {
-                try {
-                    Method method = klass.getDeclaredMethod(getter);
-                    method.setAccessible(true);
-                    return this.rememberAccessor(targetType, method);
-                } catch (NoSuchMethodException ignore) {}
-            }
             try {
                 Field field = klass.getDeclaredField(this.attributeName);
                 field.setAccessible(true);
