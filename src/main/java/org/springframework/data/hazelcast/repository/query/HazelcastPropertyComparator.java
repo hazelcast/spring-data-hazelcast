@@ -15,6 +15,8 @@
  */
 package org.springframework.data.hazelcast.repository.query;
 
+import org.jspecify.annotations.Nullable;
+
 import java.io.Serial;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -103,7 +105,8 @@ public class HazelcastPropertyComparator
      * @return The attribute value, possibly null
      * @throws ReflectiveOperationException If the attribute cannot be found or read
      */
-    private Object extractValue(Object target)
+    @Nullable
+    private Object extractValue(@Nullable Object target)
             throws ReflectiveOperationException {
 
         if (target == null) {
@@ -118,6 +121,13 @@ public class HazelcastPropertyComparator
         return ((Field) accessorToUse).get(target);
     }
 
+    /**
+     * The check and the cache write are deliberately not atomic. Two threads racing on the same type may both
+     * resolve it, which is accepted rather than overlooked, because the work is idempotent and cheap while
+     * making it atomic would add locking to a method called once per comparison. The race is safe because
+     * {@link ResolvedAccessor} is immutable and published by a single volatile write, so a reader never sees a
+     * type from one resolution beside a member from another.
+     */
     private Object resolveAccessor(Class<?> targetType)
             throws ReflectiveOperationException {
 
