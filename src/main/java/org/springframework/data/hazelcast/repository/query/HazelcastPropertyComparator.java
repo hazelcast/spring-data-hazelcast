@@ -17,6 +17,7 @@ package org.springframework.data.hazelcast.repository.query;
 
 import java.io.Serial;
 import java.beans.IntrospectionException;
+import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -30,10 +31,10 @@ import java.util.Map.Entry;
  * ascending/descending can be specified at run time.
  * </P>
  * <p>
- * The attribute is read with plain reflection rather than through Hazelcast's {@code ReflectionHelper}, whose
- * {@code extractValue} method is internal API and has changed shape in 4.1 and again in 5.7. Only a single
- * property name has to be resolved here, because {@link HazelcastSortAccessor} rejects nested paths before a
- * comparator is ever built.
+ * The attribute is read with JavaBeans introspection and reflection rather than through Hazelcast's
+ * {@code ReflectionHelper}, whose {@code extractValue} method is internal API and has changed shape in 4.1
+ * and again in 5.7. Only a single property name has to be resolved here, because {@link HazelcastSortAccessor}
+ * rejects nested paths before a comparator is ever built.
  * </P>
  *
  * @author Neil Stevenson
@@ -48,10 +49,10 @@ public class HazelcastPropertyComparator
 
     /**
      * Resolving the accessor is comparatively expensive and a comparator is invoked once per comparison,
-     * so remember the last one. Not serialized, as it is rebuilt on the member that does the sorting.
+     * so remember the last one in a thread-safe cache. Not serialized, as it is rebuilt on the member
+     * that does the sorting.
      */
-    private transient Class<?> accessorType;
-    private transient Object accessor;
+    private transient volatile ResolvedAccessor resolvedAccessor;
 
     public HazelcastPropertyComparator(String attributeName, boolean ascending) {
         this.attributeName = attributeName;
@@ -59,9 +60,7 @@ public class HazelcastPropertyComparator
     }
 
     /**
-     * <p>
      * Extract the named attribute from each entry, and use this in the comparison.
-     * </P>
      *
      * @param o1 An entry in a map
      * @param o2 Another entry in the map
@@ -85,7 +84,8 @@ public class HazelcastPropertyComparator
                 return -1 * this.direction;
             }
             if (o1Field instanceof Comparable && o2Field instanceof Comparable) {
-                return this.direction * ((Comparable) o1Field).compareTo(o2Field);
+                // Avoid overflow when reversing the comparison.
+                return this.direction * Integer.signum(((Comparable) o1Field).compareTo(o2Field));
             }
 
         } catch (Exception ex) {
@@ -96,8 +96,8 @@ public class HazelcastPropertyComparator
     }
 
     /**
-     * Read {@link #attributeName} from the given object, preferring a getter over direct field access, in the
-     * same order of preference that Hazelcast itself applies.
+     * Read {@link #attributeName} from the given object, preferring a JavaBeans read method over direct
+     * field access.
      *
      * @param target The value side of a map entry, possibly null
      * @return The attribute value, possibly null
@@ -121,18 +121,16 @@ public class HazelcastPropertyComparator
     private Object resolveAccessor(Class<?> targetType)
             throws ReflectiveOperationException {
 
-        if (targetType.equals(this.accessorType) && this.accessor != null) {
-            return this.accessor;
+        ResolvedAccessor current = this.resolvedAccessor;
+        if (current != null && targetType.equals(current.type)) {
+            return current.member;
         }
 
-        try {
-            PropertyDescriptor propertyDescriptor = new PropertyDescriptor(this.attributeName, targetType);
-            Method method = propertyDescriptor.getReadMethod();
-            if (method != null) {
-                method.setAccessible(true);
-                return this.rememberAccessor(targetType, method);
-            }
-        } catch (IntrospectionException ignore) {}
+        Method readMethod = this.findReadMethod(targetType);
+        if (readMethod != null) {
+            readMethod.setAccessible(true);
+            return this.rememberAccessor(targetType, readMethod);
+        }
 
         for (Class<?> klass = targetType; klass != null; klass = klass.getSuperclass()) {
             try {
@@ -145,9 +143,39 @@ public class HazelcastPropertyComparator
         throw new NoSuchFieldException(String.format("No attribute '%s' on '%s'", this.attributeName, targetType));
     }
 
+    /**
+     * Finds the getter for {@link #attributeName}, including read-only and computed properties.
+     * Uses {@link Introspector}, which honours custom {@code BeanInfo}.
+     *
+     * @param targetType The type to introspect
+     * @return The getter, or {@literal null} if none is found
+     */
+    private Method findReadMethod(Class<?> targetType) {
+        try {
+            for (PropertyDescriptor descriptor : Introspector.getBeanInfo(targetType).getPropertyDescriptors()) {
+                if (this.attributeName.equals(descriptor.getName())) {
+                    return descriptor.getReadMethod();
+                }
+            }
+        } catch (IntrospectionException ignore) {}
+        return null;
+    }
+
     private Object rememberAccessor(Class<?> targetType, Object accessorToUse) {
-        this.accessorType = targetType;
-        this.accessor = accessorToUse;
+        this.resolvedAccessor = new ResolvedAccessor(targetType, accessorToUse);
         return accessorToUse;
+    }
+
+    /**
+     * A resolved accessor together with the type it was resolved against.
+     */
+    private static final class ResolvedAccessor {
+        private final Class<?> type;
+        private final Object member;
+
+        ResolvedAccessor(Class<?> type, Object member) {
+            this.type = type;
+            this.member = member;
+        }
     }
 }
