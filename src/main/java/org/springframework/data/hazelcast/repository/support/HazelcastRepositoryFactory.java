@@ -22,7 +22,7 @@ import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFa
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.query.QueryLookupStrategy;
-import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider;
+import org.springframework.data.repository.query.ValueExpressionDelegate;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.util.Assert;
 
@@ -79,8 +79,8 @@ public class HazelcastRepositoryFactory
      */
     @Override
     protected Optional<QueryLookupStrategy> getQueryLookupStrategy(QueryLookupStrategy.Key key,
-                                                            QueryMethodEvaluationContextProvider evaluationContextProvider) {
-        return Optional.of(new HazelcastQueryLookupStrategy(key, evaluationContextProvider, keyValueOperations, queryCreator,
+                                                            ValueExpressionDelegate valueExpressionDelegate) {
+        return Optional.of(new HazelcastQueryLookupStrategy(key, valueExpressionDelegate, keyValueOperations, queryCreator,
                 hazelcastInstance));
     }
 

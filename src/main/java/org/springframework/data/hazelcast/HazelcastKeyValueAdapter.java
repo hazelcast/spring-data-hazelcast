@@ -70,7 +70,7 @@ public class HazelcastKeyValueAdapter
     }
 
     @Override
-    public Iterable<?> getAllOf(String keyspace) {
+    public Iterable<Object> getAllOf(String keyspace) {
         return getMap(keyspace).values();
     }
 

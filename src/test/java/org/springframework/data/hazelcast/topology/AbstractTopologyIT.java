@@ -26,7 +26,7 @@ import test.utils.TestDataHelper;
 import test.utils.domain.Person;
 import test.utils.repository.standard.PersonRepository;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
