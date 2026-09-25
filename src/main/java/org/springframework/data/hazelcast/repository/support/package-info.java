@@ -15,12 +15,12 @@
  */
 /**
  * <p>
- * {@link HazelcastPartTreeQuery} is a required modification to that provided by Spring-Data-Keyvalue (class
- * {@link KeyValuePartTreeQuery}) to implement queries correctly for Hazelcast.
+ * {@link org.springframework.data.hazelcast.repository.query.HazelcastPartTreeQuery} is a required modification to that provided by Spring-Data-Keyvalue (class
+ * {@link org.springframework.data.keyvalue.repository.query.KeyValuePartTreeQuery}) to implement queries correctly for Hazelcast.
  * </P>
  * <p>
- * As this is embedded, need to provide {@link HazelcastRepositoryFactoryBean} to create
- * {@link HazelcastRepositoryFactory} which provide a {@link HazelcastQueryLookupStrategy}. There largely extend their
+ * As this is embedded, need to provide {@link org.springframework.data.hazelcast.repository.support.HazelcastRepositoryFactoryBean} to create
+ * {@link org.springframework.data.hazelcast.repository.support.HazelcastRepositoryFactoryBean} which provide a {@link org.springframework.data.hazelcast.repository.support.HazelcastQueryLookupStrategy}. There largely extend their
  * Spring-Data-KeyValue counterparts, copying where necessary, and overriding where possible.
  * </P>
  */

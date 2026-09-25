@@ -16,6 +16,7 @@
 
 package org.springframework.data.hazelcast.repository;
 
+import jakarta.annotation.Resource;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -27,19 +28,18 @@ import test.utils.TestConstants;
 import test.utils.TestDataHelper;
 import test.utils.domain.Person;
 
-import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -82,6 +82,7 @@ public class CrudIT
         suggestedWinner2000.setLastname("Hanks");
     }
 
+    @Override
     @Before
     public void setUp() {
         super.setUp();

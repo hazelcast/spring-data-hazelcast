@@ -32,9 +32,10 @@ public class HazelcastCriteriaAccessor
         implements CriteriaAccessor<Predicate<?, ?>> {
 
     /**
-     * @param A query in Spring form
+     * @param query A query in Spring form
      * @return The same in Hazelcast form
      */
+    @Override
     public Predicate<?, ?> resolve(KeyValueQuery<?> query) {
 
         if (query == null) {

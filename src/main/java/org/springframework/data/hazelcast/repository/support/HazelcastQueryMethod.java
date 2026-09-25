@@ -34,7 +34,7 @@ public class HazelcastQueryMethod
     private final Method method;
 
     public HazelcastQueryMethod(Method method, RepositoryMetadata metadata, ProjectionFactory factory) {
-        super(method, metadata, factory);
+        super(method, metadata, factory, null);
         this.method = method;
     }
 

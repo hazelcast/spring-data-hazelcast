@@ -17,7 +17,9 @@ package org.springframework.data.hazelcast.repository.support;
 
 import com.hazelcast.core.HazelcastInstance;
 import org.springframework.data.hazelcast.repository.query.HazelcastPartTreeQuery;
+import org.springframework.data.hazelcast.repository.query.HazelcastQueryCreator;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
+import org.springframework.data.keyvalue.repository.query.KeyValuePartTreeQuery;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -50,7 +52,7 @@ public class HazelcastQueryLookupStrategy
      * Required constructor, capturing arguments for use in {@link #resolveQuery}.
      * </P>
      * <p>
-     * Assertions copied from {@link KayValueRepositoryFactory.KeyValueQUeryLookupStrategy} which this class essentially
+     * Assertions copied from {@link org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory.KeyValueQueryLookupStrategy} which this class essentially
      * duplicates.
      * </P>
      *
@@ -82,12 +84,13 @@ public class HazelcastQueryLookupStrategy
      * Use {@link HazelcastPartTreeQuery} for resolving queries against Hazelcast repositories.
      * </P>
      *
-     * @param Method,             the query method
-     * @param RepositoryMetadata, not used
-     * @param ProjectionFactory,  not used
-     * @param NamedQueries,       not used
+     * @param method              the query method
+     * @param metadata            not used
+     * @param projectionFactory   not used
+     * @param namedQueries        not used
      * @return A mechanism for querying Hazelcast repositories
      */
+    @Override
     public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, ProjectionFactory projectionFactory,
                                         NamedQueries namedQueries) {
 

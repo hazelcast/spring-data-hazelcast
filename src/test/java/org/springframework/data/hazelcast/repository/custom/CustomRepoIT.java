@@ -16,6 +16,7 @@
 
 package org.springframework.data.hazelcast.repository.custom;
 
+import jakarta.annotation.Resource;
 import org.junit.Test;
 import org.springframework.test.context.ActiveProfiles;
 import test.utils.TestConstants;
@@ -23,13 +24,14 @@ import test.utils.TestDataHelper;
 import test.utils.domain.Movie;
 import test.utils.domain.Song;
 import test.utils.repository.custom.MovieRepository;
+import test.utils.repository.custom.MyTitleRepository;
 import test.utils.repository.custom.MyTitleRepositoryFactoryBean;
 import test.utils.repository.custom.SongRepository;
 
-import jakarta.annotation.Resource;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -38,7 +40,6 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * <p>

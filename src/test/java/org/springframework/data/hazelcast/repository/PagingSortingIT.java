@@ -16,6 +16,7 @@
 
 package org.springframework.data.hazelcast.repository;
 
+import jakarta.annotation.Resource;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,23 +24,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.test.context.ActiveProfiles;
-import test.utils.TestData;
 import test.utils.TestConstants;
+import test.utils.TestData;
 import test.utils.TestDataHelper;
 import test.utils.domain.Person;
 
-import jakarta.annotation.Resource;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * <p>

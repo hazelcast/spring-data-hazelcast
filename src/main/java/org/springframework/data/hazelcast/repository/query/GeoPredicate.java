@@ -85,9 +85,8 @@ public class GeoPredicate<K, V>
      * @param lat2 - Latitude of second point.
      * @param lng2 - Longitude of second point.
      * @param metric - metric to specify where its KILOMETERS, MILES or NEUTRAL
-     * @return
      */
-    private double calculateDistance(double lat1, double lng1, double lat2, double lng2, Metric metric) {
+    private static double calculateDistance(double lat1, double lng1, double lat2, double lng2, Metric metric) {
         if ((lat1 == lat2) && (lng1 == lng2)) {
             return 0;
         } else {
