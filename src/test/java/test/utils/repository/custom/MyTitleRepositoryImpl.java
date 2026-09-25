@@ -45,9 +45,10 @@ public class MyTitleRepositoryImpl<T extends Serializable, ID extends Serializab
      * Count the words in a particular title.
      * </P>
      *
-     * @param Key to lookup
+     * @param year to lookup
      * @return Tokens in string, -1 if not found
      */
+    @Override
     public int wordsInTitle(String year) {
         @SuppressWarnings("unchecked") MyTitle myTitle = (MyTitle) super.findById((ID) year).orElse(null);
 

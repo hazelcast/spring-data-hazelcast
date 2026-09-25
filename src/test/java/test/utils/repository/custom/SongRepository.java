@@ -16,6 +16,7 @@
 
 package test.utils.repository.custom;
 
+import test.utils.domain.MyTitle;
 import test.utils.domain.Song;
 
 import java.util.List;

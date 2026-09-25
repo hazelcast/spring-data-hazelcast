@@ -27,8 +27,8 @@ import java.io.Serializable;
  * </P>
  *
  * @author Neil Stevenson
- * @see {@link Movie}
- * @see {@link Song}
+ * @see Movie
+ * @see Song
  */
 public abstract class MyTitle
         implements Comparable<MyTitle>, Serializable {

@@ -48,11 +48,11 @@ public class StringBasedHazelcastRepositoryQuery
         return getMap(keySpace).values(sqlPredicate);
     }
 
-    private Object[] formatParameters(Object[] parameters) {
+    private static Object[] formatParameters(Object[] parameters) {
         Object[] result = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
-            if (parameters[i] instanceof Collection) {
-                result[i] = formatCollection((Collection) parameters[i]);
+            if (parameters[i] instanceof Collection c) {
+                result[i] = formatCollection(c);
             } else {
                 result[i] = parameters[i];
             }
@@ -64,7 +64,7 @@ public class StringBasedHazelcastRepositoryQuery
         return String.format("(%s)", collection.stream().map(Object::toString).collect(Collectors.joining(",")));
     }
 
-    private IMap getMap(String keySpace) {
+    private IMap<?, ?> getMap(String keySpace) {
         return hazelcastInstance.getMap(keySpace);
     }
 

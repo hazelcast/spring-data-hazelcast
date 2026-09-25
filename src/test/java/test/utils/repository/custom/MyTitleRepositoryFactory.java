@@ -55,12 +55,14 @@ public class MyTitleRepositoryFactory
      * @see org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory#getTargetRepository(org
      * .springframework.data.repository.core.RepositoryInformation)
      */
+    @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected Object getTargetRepository(RepositoryInformation repositoryInformation) {
         EntityInformation<?, Serializable> entityInformation = getEntityInformation(repositoryInformation.getDomainType());
         return new MyTitleRepositoryImpl(entityInformation, this.keyValueOperations);
     }
 
+    @Override
     protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
         return MyTitleRepository.class;
     }
