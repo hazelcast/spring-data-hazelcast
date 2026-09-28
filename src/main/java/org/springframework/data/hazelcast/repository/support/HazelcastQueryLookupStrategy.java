@@ -28,6 +28,7 @@ import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.ValueExpressionDelegate;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.util.Assert;
+import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory;
 
 import java.lang.reflect.Method;
 
@@ -52,7 +53,7 @@ public class HazelcastQueryLookupStrategy
      * Required constructor, capturing arguments for use in {@link #resolveQuery}.
      * </P>
      * <p>
-     * Assertions copied from {@link org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory.KeyValueQueryLookupStrategy} which this class essentially
+     * Assertions copied from {@link KeyValueRepositoryFactory.KeyValueQueryLookupStrategy} which this class essentially
      * duplicates.
      * </P>
      *
