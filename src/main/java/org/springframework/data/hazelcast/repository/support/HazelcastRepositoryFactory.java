@@ -16,6 +16,8 @@
 package org.springframework.data.hazelcast.repository.support;
 
 import com.hazelcast.core.HazelcastInstance;
+import org.springframework.data.hazelcast.repository.HazelcastRepository;
+import org.springframework.data.hazelcast.repository.query.HazelcastPartTreeQuery;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.repository.query.SpelQueryCreator;
 import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory;

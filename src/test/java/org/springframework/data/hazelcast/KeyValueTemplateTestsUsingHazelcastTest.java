@@ -40,6 +40,7 @@ import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.hasSize;
@@ -47,7 +48,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for {@link KeyValueTemplate} using a {@link HazelcastKeyValueAdapter}.
@@ -79,8 +79,7 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
     }
 
     @Before
-    public void setUp()
-            throws InstantiationException, IllegalAccessException {
+    public void setUp() {
         this.operations = new KeyValueTemplate(HazelcastUtils.preconfiguredHazelcastKeyValueAdapter());
     }
 
@@ -282,6 +281,7 @@ public class KeyValueTemplateTestsUsingHazelcastTest {
             return ObjectUtils.nullSafeEquals(this.foo, other.foo);
         }
 
+        @Override
         public int compareTo(Foo that) {
             if (this.foo == null || that == null || that.getFoo() == null) {
                 throw new NullPointerException();

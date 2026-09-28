@@ -16,9 +16,8 @@
 
 package org.springframework.data.hazelcast.repository.query;
 
-import org.junit.Rule;
+import jakarta.annotation.Resource;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,7 +35,6 @@ import test.utils.domain.Person;
 import test.utils.repository.standard.CityRepository;
 import test.utils.repository.standard.PersonRepository;
 
-import jakarta.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -57,13 +56,12 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 /**
  * <p>
@@ -84,8 +82,6 @@ public class QueryIT
     private static final int SIZE_1 = 1;
     private static final int SIZE_3 = 3;
     private static final int SIZE_5 = 5;
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
     @Resource
     private PersonRepository personRepository;
 

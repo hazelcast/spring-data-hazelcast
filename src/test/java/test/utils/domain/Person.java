@@ -17,6 +17,7 @@
 package test.utils.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.hazelcast.repository.config.EnableHazelcastRepositoriesIT;
 import org.springframework.data.keyvalue.annotation.KeySpace;
 import test.utils.TestConstants;
 

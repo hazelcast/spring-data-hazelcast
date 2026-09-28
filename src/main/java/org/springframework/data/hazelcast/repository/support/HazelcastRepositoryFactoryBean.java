@@ -17,7 +17,10 @@ package org.springframework.data.hazelcast.repository.support;
 
 import com.hazelcast.core.HazelcastInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.hazelcast.repository.HazelcastRepository;
+import org.springframework.data.hazelcast.repository.query.HazelcastPartTreeQuery;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
+import org.springframework.data.keyvalue.repository.KeyValueRepository;
 import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory;
 import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean;
 import org.springframework.data.repository.Repository;
@@ -77,9 +80,9 @@ public class HazelcastRepositoryFactoryBean<T extends Repository<S, ID>, S, ID e
      * More details are in {@link HazelcastRepositoryFactory}.
      * </P>
      *
-     * @param KeyValueOperations
-     * @param Query                Creator
-     * @param RepositoryQueryType, not used
+     * @param operations
+     * @param queryCreator
+     * @param repositoryQueryType not used
      * @return A {@link HazelcastRepositoryFactory} that creates {@link HazelcastRepository} instances.
      */
     @Override

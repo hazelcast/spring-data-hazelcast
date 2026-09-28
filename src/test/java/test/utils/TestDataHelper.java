@@ -38,11 +38,11 @@ import test.utils.domain.Song;
 
 import java.util.Collection;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.isIn;
-import static org.junit.Assert.assertThat;
 
 /**
  * <p>
@@ -122,7 +122,7 @@ public abstract class TestDataHelper {
         }
     }
 
-    private void loadMakeup(IMap<String, Makeup> akeupMap) {
+    private static void loadMakeup(IMap<String, Makeup> makeupMap) {
         for (int i = 0; i < TestData.bestMakeUp.length; i++) {
             Makeup makeup = new Makeup();
 
@@ -134,7 +134,7 @@ public abstract class TestDataHelper {
         }
     }
 
-    private void loadMovie(IMap<String, Movie> movieMap) {
+    private static void loadMovie(IMap<String, Movie> movieMap) {
         for (int i = 0; i < TestData.bestPictures.length; i++) {
             Movie movie = new Movie();
 
@@ -145,7 +145,7 @@ public abstract class TestDataHelper {
         }
     }
 
-    private void loadPerson(IMap<String, Person> personMap) {
+    private static void loadPerson(IMap<String, Person> personMap) {
         for (int i = 0; i < TestData.bestActors.length; i++) {
             Person person = new Person();
 
@@ -157,7 +157,7 @@ public abstract class TestDataHelper {
         }
     }
 
-    private void loadSong(IMap<String, Song> songMap) {
+    private static void loadSong(IMap<String, Song> songMap) {
         for (int i = 0; i < TestData.bestSongs.length; i++) {
             Song song = new Song();
 
@@ -168,7 +168,7 @@ public abstract class TestDataHelper {
         }
     }
 
-    private void loadCities(IMap<String, City> cityMap) {
+    private static void loadCities(IMap<String, City> cityMap) {
         for (int i = 0; i < TestData.newYorkCities.length; i++) {
             City city = new City();
 

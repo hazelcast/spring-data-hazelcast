@@ -18,6 +18,7 @@ package org.springframework.data.hazelcast.repository.query;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.hazelcast.repository.HazelcastRepository;
 import org.springframework.data.keyvalue.core.IterableConverter;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
@@ -256,6 +257,7 @@ public class HazelcastPartTreeQuery
      * @param parameters Possibly empty list of query parameters
      * @return A ready-to-use query
      */
+    @Override
     protected KeyValueQuery<?> prepareQuery(Object[] parameters) {
         PartTree tree = null;
 

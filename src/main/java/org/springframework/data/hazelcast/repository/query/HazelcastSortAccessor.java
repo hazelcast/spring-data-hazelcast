@@ -43,16 +43,17 @@ public class HazelcastSortAccessor
      * Sort on a sequence of fields, possibly none.
      * </P>
      *
-     * @param query If not null, will contain one of more {@link Sort.Order} objects.
+     * @param query If not null, will contain one of more {@link org.springframework.data.domain.Sort.Order} objects.
      * @return A sequence of comparators or {@code null}
      */
+    @Override
     public Comparator<Entry<?, ?>> resolve(KeyValueQuery<?> query) {
 
         if (query == null || query.getSort() == Sort.unsorted()) {
             return null;
         }
 
-        Comparator hazelcastPropertyComparator = null;
+        Comparator<Entry<?, ?>> hazelcastPropertyComparator = null;
 
         for (Order order : query.getSort()) {
 

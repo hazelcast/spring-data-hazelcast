@@ -19,6 +19,7 @@ package org.springframework.data.hazelcast.topology;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
+import jakarta.annotation.Resource;
 import org.junit.Before;
 import org.junit.Test;
 import test.utils.TestConstants;
@@ -26,12 +27,10 @@ import test.utils.TestDataHelper;
 import test.utils.domain.Person;
 import test.utils.repository.standard.PersonRepository;
 
-import jakarta.annotation.Resource;
-
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * <p>
@@ -58,6 +57,7 @@ public abstract class AbstractTopologyIT
     @Resource
     private PersonRepository personRepository;
 
+    @Override
     @Before
     public void setUp() {
         super.setUp();

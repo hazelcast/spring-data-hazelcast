@@ -68,6 +68,7 @@ public class HazelcastPropertyComparator
      * @param o2 Another entry in the map
      * @return Comparison result
      */
+    @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public int compare(Entry<?, ?> o1, Entry<?, ?> o2) {
 

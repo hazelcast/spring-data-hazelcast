@@ -66,10 +66,10 @@ public class HazelcastQueryEngine
         Assert.notNull(adapter, "Adapter must not be 'null'.");
 
         Predicate<?, ?> predicateToUse = criteria;
-        @SuppressWarnings({"unchecked", "rawtypes"}) Comparator<Entry> sortToUse = ((Comparator<Entry>) (Comparator) sort);
+        @SuppressWarnings({"unchecked", "rawtypes"}) Comparator<Entry> sortToUse = ((Comparator) sort);
 
         if (rows > 0) {
-            PagingPredicate pp = new PagingPredicateImpl(predicateToUse, sortToUse, rows);
+            PagingPredicate<?, ?> pp = new PagingPredicateImpl(predicateToUse, sortToUse, rows);
             long x = offset / rows;
             while (x > 0) {
                 pp.nextPage();

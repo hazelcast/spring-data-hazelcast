@@ -17,6 +17,7 @@
 package test.utils.repository.custom;
 
 import test.utils.domain.Movie;
+import test.utils.domain.MyTitle;
 
 import java.util.List;
 
