@@ -125,7 +125,7 @@ public class HazelcastSortAccessorTest {
 
         @Override
         public int hashCode() {
-            return Arrays.hashCode(new Object[]{this.foo, this.bar});
+            return Objects.hash(this.foo, this.bar);
         }
 
         @Override
