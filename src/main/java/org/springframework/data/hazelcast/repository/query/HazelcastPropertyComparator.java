@@ -41,8 +41,8 @@ import java.util.Map.Entry;
  *
  * @author Neil Stevenson
  */
-public class HazelcastPropertyComparator
-        implements Comparator<Entry<?, ?>>, Serializable {
+public class HazelcastPropertyComparator<K, V>
+        implements Comparator<Entry<K, V>>, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -70,10 +70,8 @@ public class HazelcastPropertyComparator
      */
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public int compare(Entry<?, ?> o1, Entry<?, ?> o2) {
-
+    public int compare(Entry<K, V> o1, Entry<K, V> o2) {
         try {
-
             Object o1Field = this.extractValue(o1.getValue());
             Object o2Field = this.extractValue(o2.getValue());
 
@@ -182,13 +180,6 @@ public class HazelcastPropertyComparator
     /**
      * A resolved accessor together with the type it was resolved against.
      */
-    private static final class ResolvedAccessor {
-        private final Class<?> type;
-        private final Object member;
-
-        ResolvedAccessor(Class<?> type, Object member) {
-            this.type = type;
-            this.member = member;
-        }
+    private record ResolvedAccessor(Class<?> type, Object member) {
     }
 }

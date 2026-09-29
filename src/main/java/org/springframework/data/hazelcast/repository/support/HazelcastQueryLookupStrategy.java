@@ -16,6 +16,7 @@
 package org.springframework.data.hazelcast.repository.support;
 
 import com.hazelcast.core.HazelcastInstance;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.hazelcast.repository.query.HazelcastPartTreeQuery;
 import org.springframework.data.hazelcast.repository.query.HazelcastQueryCreator;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
@@ -28,7 +29,6 @@ import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.ValueExpressionDelegate;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.util.Assert;
-import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory;
 
 import java.lang.reflect.Method;
 
@@ -53,7 +53,7 @@ public class HazelcastQueryLookupStrategy
      * Required constructor, capturing arguments for use in {@link #resolveQuery}.
      * </P>
      * <p>
-     * Assertions copied from {@link KeyValueRepositoryFactory.KeyValueQueryLookupStrategy} which this class essentially
+     * Assertions copied from {@code KeyValueRepositoryFactory.KeyValueQueryLookupStrategy} which this class essentially
      * duplicates.
      * </P>
      *
@@ -92,8 +92,10 @@ public class HazelcastQueryLookupStrategy
      * @return A mechanism for querying Hazelcast repositories
      */
     @Override
-    public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, ProjectionFactory projectionFactory,
-                                        NamedQueries namedQueries) {
+    @NonNull
+    public RepositoryQuery resolveQuery(@NonNull Method method, @NonNull RepositoryMetadata metadata,
+                                        @NonNull ProjectionFactory projectionFactory,
+                                        @NonNull NamedQueries namedQueries) {
 
         HazelcastQueryMethod queryMethod = new HazelcastQueryMethod(method, metadata, projectionFactory);
 

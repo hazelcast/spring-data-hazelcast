@@ -78,8 +78,8 @@ public class GeoPredicate<K, V>
 
     /**
      * This method users Haversine formula to calculate the distance between two points
-     * Formula is explained here - https://www.movable-type.co.uk/scripts/gis-faq-5.1.html
-     * Sample Java code is here - https://rosettacode.org/wiki/Haversine_formula#Java
+     * Formula is explained <a href="https://www.movable-type.co.uk/scripts/gis-faq-5.1.html">here</a>
+     * Sample Java code is <a href="https://rosettacode.org/wiki/Haversine_formula#Java">here</a>
      * @param lat1 - Latitude of first point.
      * @param lng1 - Longitude of first point.
      * @param lat2 - Latitude of second point.

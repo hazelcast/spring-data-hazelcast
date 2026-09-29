@@ -17,7 +17,10 @@ package org.springframework.data.hazelcast;
 
 import com.hazelcast.query.PagingPredicate;
 import com.hazelcast.query.Predicate;
+import com.hazelcast.query.Predicates;
 import com.hazelcast.query.impl.predicates.PagingPredicateImpl;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.hazelcast.repository.query.HazelcastCriteriaAccessor;
 import org.springframework.data.hazelcast.repository.query.HazelcastSortAccessor;
 import org.springframework.data.keyvalue.core.QueryEngine;
@@ -36,11 +39,11 @@ import java.util.Map.Entry;
  * @author Neil Stevenson
  * @author Viacheslav Petriaiev
  */
-public class HazelcastQueryEngine
-        extends QueryEngine<HazelcastKeyValueAdapter, Predicate<?, ?>, Comparator<Entry<?, ?>>> {
+public class HazelcastQueryEngine<K, V>
+        extends QueryEngine<HazelcastKeyValueAdapter<K, V>, Predicate<K, V>, Comparator<Entry<K, V>>> {
 
     public HazelcastQueryEngine() {
-        super(new HazelcastCriteriaAccessor(), new HazelcastSortAccessor());
+        super(new HazelcastCriteriaAccessor<>(), new HazelcastSortAccessor<>());
     }
 
     /**
@@ -59,17 +62,19 @@ public class HazelcastQueryEngine
      * @return Results from Hazelcast
      */
     @Override
-    public Collection<?> execute(final Predicate<?, ?> criteria, final Comparator<Entry<?, ?>> sort, final long offset,
-                                 final int rows, final String keyspace) {
+    @NonNull
+    public Collection<?> execute(final @Nullable Predicate<K, V> criteria,
+                                 final @Nullable Comparator<Entry<K, V>> sort,
+                                 final long offset,
+                                 final int rows, final @Nullable String keyspace) {
 
-        final HazelcastKeyValueAdapter adapter = getAdapter();
+        final HazelcastKeyValueAdapter<K, V> adapter = getAdapter();
         Assert.notNull(adapter, "Adapter must not be 'null'.");
 
-        Predicate<?, ?> predicateToUse = criteria;
-        @SuppressWarnings({"unchecked", "rawtypes"}) Comparator<Entry> sortToUse = ((Comparator) sort);
+        Predicate<K, V> predicateToUse = criteria;
 
         if (rows > 0) {
-            PagingPredicate<?, ?> pp = new PagingPredicateImpl(predicateToUse, sortToUse, rows);
+            PagingPredicate<K, V> pp = Predicates.pagingPredicate(predicateToUse, sort, rows);
             long x = offset / rows;
             while (x > 0) {
                 pp.nextPage();
@@ -78,8 +83,8 @@ public class HazelcastQueryEngine
             predicateToUse = pp;
 
         } else {
-            if (sortToUse != null) {
-                predicateToUse = new PagingPredicateImpl(predicateToUse, sortToUse, Integer.MAX_VALUE);
+            if (sort != null) {
+                predicateToUse = new PagingPredicateImpl<>(predicateToUse, sort, Integer.MAX_VALUE);
             }
         }
 
@@ -101,8 +106,9 @@ public class HazelcastQueryEngine
      * @return Results from Hazelcast
      */
     @Override
-    public long count(final Predicate<?, ?> criteria, final String keyspace) {
-        final HazelcastKeyValueAdapter adapter = getAdapter();
+    @SuppressWarnings("unchecked")
+    public long count(final Predicate<K, V> criteria, final @Nullable String keyspace) {
+        final HazelcastKeyValueAdapter<K, V> adapter = getAdapter();
         Assert.notNull(adapter, "Adapter must not be 'null'.");
         return adapter.getMap(keyspace).keySet((Predicate<Object, Object>) criteria).size();
     }
