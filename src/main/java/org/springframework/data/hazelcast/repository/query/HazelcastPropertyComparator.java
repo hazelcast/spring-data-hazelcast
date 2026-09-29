@@ -148,7 +148,8 @@ public class HazelcastPropertyComparator
                 Field field = klass.getDeclaredField(this.attributeName);
                 field.setAccessible(true);
                 return this.rememberAccessor(targetType, field);
-            } catch (NoSuchFieldException ignore) {}
+            } catch (NoSuchFieldException ignore) {
+            }
         }
 
         throw new NoSuchFieldException(String.format("No attribute '%s' on '%s'", this.attributeName, targetType));
@@ -168,7 +169,8 @@ public class HazelcastPropertyComparator
                     return descriptor.getReadMethod();
                 }
             }
-        } catch (IntrospectionException ignore) {}
+        } catch (IntrospectionException ignore) {
+        }
         return null;
     }
 

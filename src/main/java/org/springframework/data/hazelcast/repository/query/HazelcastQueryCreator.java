@@ -228,7 +228,8 @@ public class HazelcastQueryCreator
         };
     }
 
-    private static Predicate<?, ?> fromLikeVariant(Type type, boolean ignoreCase, String property, Iterator<Comparable<?>> iterator) {
+    private static Predicate<?, ?> fromLikeVariant(Type type, boolean ignoreCase, String property,
+            Iterator<Comparable<?>> iterator) {
         String likeExpression = iterator.next().toString();
         likeExpression = switch (type) {
             case CONTAINING, NOT_CONTAINING -> String.join("", "%", likeExpression, "%");

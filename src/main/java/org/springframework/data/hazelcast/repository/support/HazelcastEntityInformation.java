@@ -15,6 +15,7 @@
  */
 package org.springframework.data.hazelcast.repository.support;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mapping.MappingException;
 import org.springframework.data.mapping.PersistentEntity;
@@ -26,6 +27,7 @@ import org.springframework.data.repository.core.support.PersistentEntityInformat
  *
  * @author Gokhan Oner
  */
+@SuppressFBWarnings(value = "CT_CONSTRUCTOR_THROW")
 class HazelcastEntityInformation<T, ID>
         extends PersistentEntityInformation<T, ID> {
 
