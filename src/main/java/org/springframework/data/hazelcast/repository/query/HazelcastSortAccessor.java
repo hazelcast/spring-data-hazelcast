@@ -15,6 +15,7 @@
  */
 package org.springframework.data.hazelcast.repository.query;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.NullHandling;
 import org.springframework.data.domain.Sort.Order;
@@ -35,8 +36,8 @@ import java.util.Map.Entry;
  *
  * @author Neil Stevenson
  */
-public class HazelcastSortAccessor
-        implements SortAccessor<Comparator<Entry<?, ?>>> {
+public class HazelcastSortAccessor<K, V>
+        implements SortAccessor<Comparator<Entry<K, V>>> {
 
     /**
      * <p>
@@ -47,16 +48,15 @@ public class HazelcastSortAccessor
      * @return A sequence of comparators or {@code null}
      */
     @Override
-    public Comparator<Entry<?, ?>> resolve(KeyValueQuery<?> query) {
+    public Comparator<Entry<K, V>> resolve(@Nullable KeyValueQuery<?> query) {
 
         if (query == null || query.getSort() == Sort.unsorted()) {
             return null;
         }
 
-        Comparator<Entry<?, ?>> hazelcastPropertyComparator = null;
+        Comparator<Entry<K, V>> hazelcastPropertyComparator = null;
 
         for (Order order : query.getSort()) {
-
             if (order.getProperty().indexOf('.') > -1) {
                 throw new UnsupportedOperationException("Embedded fields not implemented: " + order);
             }
@@ -70,11 +70,10 @@ public class HazelcastSortAccessor
             }
 
             if (hazelcastPropertyComparator == null) {
-                hazelcastPropertyComparator = new HazelcastPropertyComparator(order.getProperty(),
-                        order.isAscending());
+                hazelcastPropertyComparator = new HazelcastPropertyComparator<>(order.getProperty(), order.isAscending());
             } else {
                 hazelcastPropertyComparator = hazelcastPropertyComparator.thenComparing(
-                        new HazelcastPropertyComparator(order.getProperty(),
+                        new HazelcastPropertyComparator<>(order.getProperty(),
                         order.isAscending()));
             }
         }

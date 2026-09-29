@@ -31,13 +31,13 @@ import java.util.Map.Entry;
  * @author Neil Stevenson
  * @author Viacheslav Petriaiev
  */
-public class HazelcastKeyValueAdapter
+public class HazelcastKeyValueAdapter<K, V>
         extends AbstractKeyValueAdapter {
 
     private HazelcastInstance hzInstance;
 
     public HazelcastKeyValueAdapter(HazelcastInstance hzInstance) {
-        super(new HazelcastQueryEngine());
+        super(new HazelcastQueryEngine<>());
         Assert.notNull(hzInstance, "hzInstance must not be 'null'.");
         this.hzInstance = hzInstance;
     }

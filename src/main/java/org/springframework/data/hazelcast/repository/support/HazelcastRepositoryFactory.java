@@ -16,6 +16,8 @@
 package org.springframework.data.hazelcast.repository.support;
 
 import com.hazelcast.core.HazelcastInstance;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.hazelcast.repository.HazelcastRepository;
 import org.springframework.data.hazelcast.repository.query.HazelcastPartTreeQuery;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
@@ -53,13 +55,6 @@ public class HazelcastRepositoryFactory
     private final Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
     private final HazelcastInstance hazelcastInstance;
 
-    /* Mirror functionality of super, to ensure private
-     * fields are set.
-     */
-    public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations, HazelcastInstance hazelcastInstance) {
-        this(keyValueOperations, DEFAULT_QUERY_CREATOR, hazelcastInstance);
-    }
-
     /* Capture KeyValueOperations and QueryCreator objects after passing to super.
      */
     public HazelcastRepositoryFactory(KeyValueOperations keyValueOperations,
@@ -76,18 +71,21 @@ public class HazelcastRepositoryFactory
     /**
      * <p>
      * Ensure the mechanism for query evaluation is Hazelcast specific, as the original
-     * {@link KeyValueRepositoryFactory.KeyValueQueryLookupStrategy} does not function correctly for Hazelcast.
+     * {@code KeyValueRepositoryFactory.KeyValueQueryLookupStrategy} does not function correctly for Hazelcast.
      * </P>
      */
     @Override
-    protected Optional<QueryLookupStrategy> getQueryLookupStrategy(QueryLookupStrategy.Key key,
-                                                            ValueExpressionDelegate valueExpressionDelegate) {
+    @NonNull
+    protected Optional<QueryLookupStrategy> getQueryLookupStrategy(QueryLookupStrategy.@Nullable Key key,
+                                                                   @NonNull ValueExpressionDelegate valueExpressionDelegate) {
         return Optional.of(new HazelcastQueryLookupStrategy(key, valueExpressionDelegate, keyValueOperations, queryCreator,
                 hazelcastInstance));
     }
 
+    @NonNull
     @Override
-    public <T, ID> EntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
+    public <T, ID> EntityInformation<T, ID> getEntityInformation(@NonNull Class<T> domainClass) {
+        //noinspection unchecked
         PersistentEntity<T, ?> entity = (PersistentEntity<T, ?>) keyValueOperations.getMappingContext()
                                                                                    .getPersistentEntity(domainClass);
         Assert.notNull(entity, "Entity must not be 'null'.");

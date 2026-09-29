@@ -18,6 +18,8 @@ package org.springframework.data.hazelcast.repository.query;
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.Predicates;
 import com.hazelcast.query.impl.predicates.PagingPredicateImpl;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.core.PropertyPath;
 import org.springframework.data.domain.Sort;
@@ -89,8 +91,9 @@ public class HazelcastQueryCreator
      *                          #create(org.springframework.data.repository.query.parser.Part, java.util.Iterator)
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
+    @NonNull
     @Override
-    protected Predicate<?, ?> create(Part part, Iterator<Object> iterator) {
+    protected Predicate<?, ?> create(@NonNull Part part, @NonNull Iterator<Object> iterator) {
         return from(part, (Iterator) iterator);
     }
 
@@ -101,7 +104,8 @@ public class HazelcastQueryCreator
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    protected Predicate<?, ?> and(Part part, Predicate<?, ?> base, Iterator<Object> iterator) {
+    @NonNull
+    protected Predicate<?, ?> and(@NonNull Part part, @Nullable Predicate<?, ?> base, @NonNull Iterator<Object> iterator) {
         Predicate<?, ?> criteria = from(part, (Iterator) iterator);
         return Predicates.and(base, criteria);
     }
@@ -112,7 +116,8 @@ public class HazelcastQueryCreator
      *                                                       #or(java.lang.Object, java.lang.Object)
      */
     @Override
-    protected Predicate<?, ?> or(Predicate<?, ?> base, Predicate<?, ?> criteria) {
+    @NonNull
+    protected Predicate<?, ?> or(@Nullable Predicate<?, ?> base, @Nullable Predicate<?, ?> criteria) {
         return Predicates.or(base, criteria);
     }
 
@@ -122,7 +127,8 @@ public class HazelcastQueryCreator
      *                                                       #complete(java.lang.Object, org.springframework.data.domain.Sort)
      */
     @Override
-    protected KeyValueQuery<Predicate<?, ?>> complete(Predicate<?, ?> criteria, Sort sort) {
+    @NonNull
+    protected KeyValueQuery<Predicate<?, ?>> complete(@Nullable Predicate<?, ?> criteria, @Nullable Sort sort) {
 
         KeyValueQuery<Predicate<?, ?>> keyValueQuery;
 
@@ -145,7 +151,7 @@ public class HazelcastQueryCreator
      * the former being embedded in the chain.
      *
      */
-    private static Predicate<?, ?> from(Part part, Iterator<Comparable<?>> iterator) {
+    private static Predicate<?, ?> from(@NonNull Part part, @NonNull Iterator<Comparable<?>> iterator) {
         String property = part.getProperty().toDotPath();
         Type type = part.getType();
         boolean ignoreCase = ifIgnoreCase(part);
@@ -272,6 +278,7 @@ public class HazelcastQueryCreator
     private static Comparable<?>[] collectToArray(Type type, Iterator<Comparable<?>> iterator) {
         Object item = iterator.next();
         Assert.state(isCollection(item), String.format("%s requires collection of values", type));
+        //noinspection unchecked
         Collection<Comparable<?>> itemcol = (Collection<Comparable<?>>) item;
         return itemcol.toArray(new Comparable<?>[0]);
     }

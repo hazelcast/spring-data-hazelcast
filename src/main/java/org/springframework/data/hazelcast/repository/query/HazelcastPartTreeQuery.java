@@ -15,6 +15,8 @@
  */
 package org.springframework.data.hazelcast.repository.query;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
@@ -101,8 +103,8 @@ public class HazelcastPartTreeQuery
      * @return Query result
      */
     @Override
-    public Object execute(Object[] parameters) {
-
+    @Nullable
+    public Object execute(@NonNull Object @NonNull[] parameters) {
         KeyValueQuery<?> query = prepareQuery(parameters);
 
         if (this.isCount) {
@@ -217,7 +219,7 @@ public class HazelcastPartTreeQuery
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     private Object executePageSliceQuery(final Object[] parameters, final KeyValueQuery<?> query, final QueryMethod queryMethod) {
-        long totalElements = -1;
+        long totalElements;
 
         int indexOfPageRequest = queryMethod.getParameters().getPageableIndex();
         Pageable pageRequest = (Pageable) parameters[indexOfPageRequest];
@@ -258,7 +260,8 @@ public class HazelcastPartTreeQuery
      * @return A ready-to-use query
      */
     @Override
-    protected KeyValueQuery<?> prepareQuery(Object[] parameters) {
+    @NonNull
+    protected KeyValueQuery<?> prepareQuery(@NonNull Object @NonNull[] parameters) {
         PartTree tree = null;
 
         if (this.queryMethod.getParameters().getNumberOfParameters() > 0) {

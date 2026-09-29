@@ -17,6 +17,7 @@ package org.springframework.data.hazelcast.repository.query;
 
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.impl.predicates.PagingPredicateImpl;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.keyvalue.core.CriteriaAccessor;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
 
@@ -28,16 +29,16 @@ import org.springframework.data.keyvalue.core.query.KeyValueQuery;
  * @author Neil Stevenson
  * @author Viacheslav Petriaiev
  */
-public class HazelcastCriteriaAccessor
-        implements CriteriaAccessor<Predicate<?, ?>> {
+public class HazelcastCriteriaAccessor<K, V>
+        implements CriteriaAccessor<Predicate<K, V>> {
 
     /**
      * @param query A query in Spring form
      * @return The same in Hazelcast form
      */
     @Override
-    public Predicate<?, ?> resolve(KeyValueQuery<?> query) {
-
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Predicate<K, V> resolve(@Nullable KeyValueQuery<?> query) {
         if (query == null) {
             return null;
         }
@@ -47,14 +48,13 @@ public class HazelcastCriteriaAccessor
             return null;
         }
 
-        if (criteria instanceof PagingPredicateImpl) {
-            PagingPredicateImpl pagingPredicate = (PagingPredicateImpl) criteria;
+        if (criteria instanceof PagingPredicateImpl pagingPredicate) {
             query.limit(pagingPredicate.getPageSize());
             return pagingPredicate.getPredicate();
         }
 
         if (criteria instanceof Predicate) {
-            return (Predicate<?, ?>) criteria;
+            return (Predicate<K, V>) criteria;
         }
 
         throw new UnsupportedOperationException(query.toString());
