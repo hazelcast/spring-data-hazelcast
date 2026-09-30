@@ -75,11 +75,8 @@ public class HazelcastQueryEngine<K, V>
 
         Predicate<K, V> predicateToUse = criteria;
 
-        Comparator<Entry<K, V>> sortToUse = sort;
+        Comparator<Entry<K, V>> sortToUse = sort == null ? noOrder() : sort;
         if (rows > 0) {
-            if (sortToUse == null) {
-                sortToUse = noOrder();
-            }
             PagingPredicate<K, V> pp = Predicates.pagingPredicate(predicateToUse, sortToUse, rows);
             long x = offset / rows;
             while (x > 0) {
@@ -89,7 +86,7 @@ public class HazelcastQueryEngine<K, V>
             predicateToUse = pp;
 
         } else {
-            if (sortToUse != null) {
+            if (predicateToUse != null) {
                 predicateToUse = new PagingPredicateImpl<>(predicateToUse, sortToUse, Integer.MAX_VALUE);
             }
         }
