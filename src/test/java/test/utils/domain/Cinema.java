@@ -1,6 +1,5 @@
 package test.utils.domain;
 
-import org.apache.commons.math3.geometry.Point;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.keyvalue.annotation.KeySpace;
 import test.utils.TestConstants;
