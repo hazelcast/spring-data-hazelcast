@@ -15,21 +15,25 @@
  */
 package org.springframework.data.hazelcast;
 
+import com.hazelcast.map.IMap;
 import com.hazelcast.query.PagingPredicate;
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.Predicates;
 import com.hazelcast.query.impl.predicates.PagingPredicateImpl;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.springframework.data.hazelcast.repository.DefaultOrderComparator;
 import org.springframework.data.hazelcast.repository.query.HazelcastCriteriaAccessor;
 import org.springframework.data.hazelcast.repository.query.HazelcastSortAccessor;
 import org.springframework.data.keyvalue.core.QueryEngine;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * <p>
@@ -44,7 +48,6 @@ import java.util.Map.Entry;
  */
 public class HazelcastQueryEngine<K, V>
         extends QueryEngine<HazelcastKeyValueAdapter, Predicate<K, V>, Comparator<Entry<K, V>>> {
-
 
     public HazelcastQueryEngine() {
         super(new HazelcastCriteriaAccessor<>(), new HazelcastSortAccessor<>());
@@ -70,29 +73,60 @@ public class HazelcastQueryEngine<K, V>
     public Collection<?> execute(final @Nullable Predicate<K, V> criteria,
                                  final @Nullable Comparator<Entry<K, V>> sort,
                                  final long offset,
-                                 final int rows, final @Nullable String keyspace) {
+                                 final int rows,
+                                 final @Nullable String keyspace) {
+        return execute(criteria, sort, offset, rows, keyspace, false);
+    }
+
+    /**
+     * <p>
+     * Same as {@link #execute(Predicate, Comparator, long, int, String)}, but knows the entity type. A page without
+     * a sort order over entities that are not {@link Comparable} is read by key, so the entities do not have to be
+     * comparable and the members need no class from this module.
+     * </P>
+     */
+    @Override
+    @NonNull
+    @SuppressWarnings("unchecked")
+    public <T> Collection<T> execute(final @Nullable Predicate<K, V> criteria,
+                                     final @Nullable Comparator<Entry<K, V>> sort,
+                                     final long offset,
+                                     final int rows,
+                                     final @Nullable String keyspace,
+                                     final @Nullable Class<T> type) {
+        boolean pageByKey = type != null && !Comparable.class.isAssignableFrom(type);
+        return (Collection<T>) execute(criteria, sort, offset, rows, keyspace, pageByKey);
+    }
+
+    private Collection<?> execute(final @Nullable Predicate<K, V> criteria,
+                                  final @Nullable Comparator<Entry<K, V>> sort,
+                                  final long offset,
+                                  final int rows,
+                                  final @Nullable String keyspace,
+                                  final boolean pageByKey) {
 
         final HazelcastKeyValueAdapter adapter = getAdapter();
         Assert.notNull(adapter, "Adapter must not be 'null'.");
 
         Predicate<K, V> predicateToUse = criteria;
 
-        Comparator<Entry<K, V>> sortToUse = sort;
         if (rows > 0) {
-            if (sortToUse == null) {
-                sortToUse = new DefaultOrderComparator<>();
-            }
-            PagingPredicate<K, V> pp = Predicates.pagingPredicate(predicateToUse, sortToUse, rows);
+            PagingPredicate<K, V> pp = Predicates.pagingPredicate(predicateToUse, sort, rows);
             long x = offset / rows;
             while (x > 0) {
                 pp.nextPage();
                 x--;
             }
+            if (sort == null && pageByKey) {
+                // Without a comparator Hazelcast orders a values() page by the values, which then
+                // must be Comparable. A keySet() page is ordered by the keys instead.
+                return valuesOrderedByKey(adapter.getMap(keyspace), pp);
+            }
             predicateToUse = pp;
 
         } else {
-            if (sortToUse != null) {
-                predicateToUse = new PagingPredicateImpl<>(predicateToUse, sortToUse, Integer.MAX_VALUE);
+            if (sort != null) {
+                predicateToUse = new PagingPredicateImpl<>(predicateToUse, sort, Integer.MAX_VALUE);
             }
         }
 
@@ -101,6 +135,20 @@ public class HazelcastQueryEngine<K, V>
         } else {
             return adapter.getMap(keyspace).values((Predicate<Object, Object>) predicateToUse);
         }
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static List<Object> valuesOrderedByKey(IMap<Object, Object> map, PagingPredicate page) {
+        Set<Object> keys = map.keySet(page);
+        Map<Object, Object> values = map.getAll(keys);
+        List<Object> result = new ArrayList<>(keys.size());
+        for (Object key : keys) {
+            Object value = values.get(key);
+            if (value != null) {
+                result.add(value);
+            }
+        }
+        return result;
     }
 
     /**
