@@ -58,7 +58,6 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
@@ -348,11 +347,10 @@ public class QueryIT
         emilJannings.setLastname("Jannings");
         this.personMap.put(emilJannings.getId(), emilJannings);
 
-        Object result = this.personRepository.findFirstIdByOrderById();
+        Person result = this.personRepository.findFirstIdByOrderById();
 
         assertThat("First Winner", result, notNullValue());
-        assertThat("Person", result, instanceOf(Person.class));
-        assertThat("Emil Jannings", ((Person) result).getId(), equalTo("1928"));
+        assertThat("Emil Jannings", result.getId(), equalTo("1928"));
     }
 
     // First by descending == Max
@@ -370,11 +368,10 @@ public class QueryIT
         jamesCagney.setLastname("Cagney");
         this.personMap.put(jamesCagney.getId(), jamesCagney);
 
-        Object result = this.personRepository.findFirstIdByFirstnameOrderByIdDesc("James");
+        Person result = this.personRepository.findFirstIdByFirstnameOrderByIdDesc("James");
 
         assertThat("Last Winner", result, notNullValue());
-        assertThat("Person", result, instanceOf(Person.class));
-        assertThat("James Cagney", ((Person) result).getId(), equalTo("1942"));
+        assertThat("James Cagney", result.getId(), equalTo("1942"));
     }
 
     @SuppressWarnings("unchecked")
@@ -962,9 +959,7 @@ public class QueryIT
 
         try (Stream<Person> matches = this.personRepository.findFirst4By()) {
 
-            matches.forEach(match -> {
-                count.incrementAndGet();
-            });
+            matches.forEach(match -> count.incrementAndGet());
         }
 
         assertThat("Any four", count.get(), equalTo(4));

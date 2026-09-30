@@ -133,6 +133,7 @@ public class HazelcastQueryEngine<K, V>
         if (predicateToUse == null) {
             return adapter.getMap(keyspace).values();
         } else {
+            //noinspection unchecked
             return adapter.getMap(keyspace).values((Predicate<Object, Object>) predicateToUse);
         }
     }

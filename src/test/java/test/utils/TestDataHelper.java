@@ -102,7 +102,7 @@ public abstract class TestDataHelper {
         this.cinemaMap = this.hazelcastInstance.getMap(TestConstants.CINEMA_MAP_NAME);
         loadCinemas(this.cinemaMap);
 
-        checkMapsNotEmpty("setUp");
+        checkMapsNotEmpty();
 
         /* As Hazelcast will create objects on demand, check no more are present
          * than should be.
@@ -120,10 +120,10 @@ public abstract class TestDataHelper {
         }
     }
 
-    private void checkMapsNotEmpty(String phase) {
+    private void checkMapsNotEmpty() {
         for (String mapName : TestConstants.OSCAR_MAP_NAMES) {
             IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
-            assertThat(phase + "(): Test data has been loaded into '" + iMap.getName() + "'", iMap.size(), greaterThan(0));
+            assertThat("Test data has been loaded into '" + iMap.getName() + "'", iMap.size(), greaterThan(0));
         }
     }
 

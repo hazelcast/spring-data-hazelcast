@@ -69,10 +69,8 @@ public abstract class AbstractTopologyIT
     public void setUp() {
         super.setUp();
 
-        HazelcastInstance hazelcastServer = null;
-
         // Look for any instance apart from Spring's one
-        hazelcastServer = Hazelcast.getHazelcastInstanceByName(TestConstants.SERVER_INSTANCE_NAME);
+        HazelcastInstance hazelcastServer = Hazelcast.getHazelcastInstanceByName(TestConstants.SERVER_INSTANCE_NAME);
 
         assertThat("Server found", hazelcastServer, notNullValue());
         this.server_personMap = hazelcastServer.getMap(TestConstants.PERSON_MAP_NAME);
