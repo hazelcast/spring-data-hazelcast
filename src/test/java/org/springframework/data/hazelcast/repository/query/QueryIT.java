@@ -809,7 +809,7 @@ public class QueryIT
     }
 
     @Test
-    public void findTop3Cinemas() {
+    public void cinemaFindFirst3ByCityName() {
         Cinema cinema1 = new Cinema("1", "Big Cinema 1", "Wrocław");
         Cinema cinema2 = new Cinema("2", "Big Cinema 2", "Wrocław");
         Cinema cinema3 = new Cinema("3", "Big Cinema 3", "Wrocław");
@@ -823,6 +823,23 @@ public class QueryIT
         Assertions.assertThat(matches)
                   .extracting(Cinema::getCityName)
                   .containsOnly("Wrocław", "Wrocław", "Wrocław");
+    }
+
+    @Test
+    public void cinemaFindFirst3ByCityNameOrderById() {
+        Cinema cinema1 = new Cinema("1", "Big Cinema 1", "Wrocław");
+        Cinema cinema2 = new Cinema("2", "Big Cinema 2", "Wrocław");
+        Cinema cinema3 = new Cinema("3", "Big Cinema 3", "Wrocław");
+        Cinema cinema4 = new Cinema("4", "Big Cinema 4", "Kraków");
+        this.cinemaMap.put(cinema1.getId(), cinema1);
+        this.cinemaMap.put(cinema2.getId(), cinema2);
+        this.cinemaMap.put(cinema3.getId(), cinema3);
+        this.cinemaMap.put(cinema4.getId(), cinema4);
+
+        List<Cinema> matches = this.cinemaRepository.findFirst3ByCityNameOrderById("Wrocław");
+        Assertions.assertThat(matches)
+                  .extracting(Cinema::getId)
+                  .containsExactly("1", "2", "3");
     }
 
     @Test

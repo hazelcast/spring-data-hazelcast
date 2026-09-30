@@ -11,6 +11,7 @@ import java.util.List;
 public interface CinemaRepository
     extends HazelcastRepository<Cinema, String> {
 
+    public List<Cinema> findFirst3ByCityNameOrderById(String cityName);
     public List<Cinema> findFirst3ByCityName(String cityName);
     public boolean existsByCityName(String cityName);
 }
