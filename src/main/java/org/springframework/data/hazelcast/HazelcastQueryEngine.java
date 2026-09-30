@@ -28,6 +28,7 @@ import org.springframework.util.Assert;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -41,6 +42,7 @@ import java.util.Map.Entry;
  */
 public class HazelcastQueryEngine<K, V>
         extends QueryEngine<HazelcastKeyValueAdapter<K, V>, Predicate<K, V>, Comparator<Entry<K, V>>> {
+
 
     public HazelcastQueryEngine() {
         super(new HazelcastCriteriaAccessor<>(), new HazelcastSortAccessor<>());
@@ -73,8 +75,12 @@ public class HazelcastQueryEngine<K, V>
 
         Predicate<K, V> predicateToUse = criteria;
 
+        Comparator<Entry<K, V>> sortToUse = sort;
         if (rows > 0) {
-            PagingPredicate<K, V> pp = Predicates.pagingPredicate(predicateToUse, sort, rows);
+            if (sortToUse == null) {
+                sortToUse = noOrder();
+            }
+            PagingPredicate<K, V> pp = Predicates.pagingPredicate(predicateToUse, sortToUse, rows);
             long x = offset / rows;
             while (x > 0) {
                 pp.nextPage();
@@ -83,8 +89,8 @@ public class HazelcastQueryEngine<K, V>
             predicateToUse = pp;
 
         } else {
-            if (sort != null) {
-                predicateToUse = new PagingPredicateImpl<>(predicateToUse, sort, Integer.MAX_VALUE);
+            if (sortToUse != null) {
+                predicateToUse = new PagingPredicateImpl<>(predicateToUse, sortToUse, Integer.MAX_VALUE);
             }
         }
 
@@ -93,7 +99,10 @@ public class HazelcastQueryEngine<K, V>
         } else {
             return adapter.getMap(keyspace).values((Predicate<Object, Object>) predicateToUse);
         }
+    }
 
+    private static <K, V> Comparator<Map.Entry<K, V>> noOrder() {
+        return (v1, v2) -> 0;
     }
 
     /**
