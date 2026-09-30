@@ -31,7 +31,7 @@ import java.util.Map.Entry;
  * @author Neil Stevenson
  * @author Viacheslav Petriaiev
  */
-public class HazelcastKeyValueAdapter<K, V>
+public class HazelcastKeyValueAdapter
         extends AbstractKeyValueAdapter {
 
     private HazelcastInstance hzInstance;

@@ -43,7 +43,7 @@ import java.util.Map.Entry;
  * @author Viacheslav Petriaiev
  */
 public class HazelcastQueryEngine<K, V>
-        extends QueryEngine<HazelcastKeyValueAdapter<K, V>, Predicate<K, V>, Comparator<Entry<K, V>>> {
+        extends QueryEngine<HazelcastKeyValueAdapter, Predicate<K, V>, Comparator<Entry<K, V>>> {
 
 
     public HazelcastQueryEngine() {
@@ -72,7 +72,7 @@ public class HazelcastQueryEngine<K, V>
                                  final long offset,
                                  final int rows, final @Nullable String keyspace) {
 
-        final HazelcastKeyValueAdapter<K, V> adapter = getAdapter();
+        final HazelcastKeyValueAdapter adapter = getAdapter();
         Assert.notNull(adapter, "Adapter must not be 'null'.");
 
         Predicate<K, V> predicateToUse = criteria;
@@ -115,7 +115,7 @@ public class HazelcastQueryEngine<K, V>
     @Override
     @SuppressWarnings("unchecked")
     public long count(final Predicate<K, V> criteria, final @Nullable String keyspace) {
-        final HazelcastKeyValueAdapter<K, V> adapter = getAdapter();
+        final HazelcastKeyValueAdapter adapter = getAdapter();
         Assert.notNull(adapter, "Adapter must not be 'null'.");
         return adapter.getMap(keyspace).keySet((Predicate<Object, Object>) criteria).size();
     }

@@ -34,6 +34,8 @@ import java.util.Map.Entry;
  * cluster. Also, do not wish to assume anything other than Hazelcast classes are available on remote nodes.
  * </P>
  *
+ * @param <K> key type
+ * @param <V> value type
  * @author Neil Stevenson
  */
 public class HazelcastSortAccessor<K, V>
