@@ -35,12 +35,14 @@ import java.util.Map.Entry;
  * Implementation of {@code findBy*()} and {@code countBy*{}} queries.
  * </P>
  *
+ * @param <K> key type
+ * @param <V> value type
  * @author Christoph Strobl
  * @author Neil Stevenson
  * @author Viacheslav Petriaiev
  */
 public class HazelcastQueryEngine<K, V>
-        extends QueryEngine<HazelcastKeyValueAdapter<K, V>, Predicate<K, V>, Comparator<Entry<K, V>>> {
+        extends QueryEngine<HazelcastKeyValueAdapter, Predicate<K, V>, Comparator<Entry<K, V>>> {
 
     public HazelcastQueryEngine() {
         super(new HazelcastCriteriaAccessor<>(), new HazelcastSortAccessor<>());
@@ -68,7 +70,7 @@ public class HazelcastQueryEngine<K, V>
                                  final long offset,
                                  final int rows, final @Nullable String keyspace) {
 
-        final HazelcastKeyValueAdapter<K, V> adapter = getAdapter();
+        final HazelcastKeyValueAdapter adapter = getAdapter();
         Assert.notNull(adapter, "Adapter must not be 'null'.");
 
         Predicate<K, V> predicateToUse = criteria;
@@ -108,7 +110,7 @@ public class HazelcastQueryEngine<K, V>
     @Override
     @SuppressWarnings("unchecked")
     public long count(final Predicate<K, V> criteria, final @Nullable String keyspace) {
-        final HazelcastKeyValueAdapter<K, V> adapter = getAdapter();
+        final HazelcastKeyValueAdapter adapter = getAdapter();
         Assert.notNull(adapter, "Adapter must not be 'null'.");
         return adapter.getMap(keyspace).keySet((Predicate<Object, Object>) criteria).size();
     }

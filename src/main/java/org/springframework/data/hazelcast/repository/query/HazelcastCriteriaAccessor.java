@@ -26,6 +26,8 @@ import org.springframework.data.keyvalue.core.query.KeyValueQuery;
  * Provide a mechanism to convert the abstract query into the direct implementation in Hazelcast.
  * </P>
  *
+ * @param <K> key type
+ * @param <V> value type
  * @author Neil Stevenson
  * @author Viacheslav Petriaiev
  */

@@ -39,6 +39,8 @@ import java.util.Map.Entry;
  * rejects nested paths before a comparator is ever built.
  * </P>
  *
+ * @param <K> key type
+ * @param <V> value type
  * @author Neil Stevenson
  */
 public class HazelcastPropertyComparator<K, V>
