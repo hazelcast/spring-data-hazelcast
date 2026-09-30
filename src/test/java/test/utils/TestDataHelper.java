@@ -100,6 +100,7 @@ public abstract class TestDataHelper {
         loadCities(this.cityMap);
 
         this.cinemaMap = this.hazelcastInstance.getMap(TestConstants.CINEMA_MAP_NAME);
+        loadCinemas(this.cinemaMap);
 
         checkMapsNotEmpty("setUp");
 
@@ -183,6 +184,17 @@ public abstract class TestDataHelper {
 
             cityMap.put(city.getId(), city);
         }
+    }
+
+    protected static void loadCinemas(IMap<String, Cinema> cinemaMap) {
+        Cinema cinema1 = new Cinema("1", "Big Cinema 1", "Wrocław");
+        Cinema cinema2 = new Cinema("2", "Big Cinema 2", "Wrocław");
+        Cinema cinema3 = new Cinema("3", "Big Cinema 3", "Wrocław");
+        Cinema cinema4 = new Cinema("4", "Big Cinema 4", "Kraków");
+        cinemaMap.put(cinema1.getId(), cinema1);
+        cinemaMap.put(cinema2.getId(), cinema2);
+        cinemaMap.put(cinema3.getId(), cinema3);
+        cinemaMap.put(cinema4.getId(), cinema4);
     }
 
     @After
