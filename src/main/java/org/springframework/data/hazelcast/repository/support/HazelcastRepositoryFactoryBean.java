@@ -87,9 +87,10 @@ public class HazelcastRepositoryFactoryBean<T extends Repository<S, ID>, S, ID e
      */
     @NonNull
     @Override
-    protected KeyValueRepositoryFactory createRepositoryFactory(@Nullable KeyValueOperations operations,
-                                                                @Nullable Class<? extends AbstractQueryCreator<?, ?>> queryCreator,
-                                                                @Nullable Class<? extends RepositoryQuery> repositoryQueryType) {
+    protected KeyValueRepositoryFactory createRepositoryFactory(
+        @Nullable KeyValueOperations operations,
+        @Nullable Class<? extends AbstractQueryCreator<?, ?>> queryCreator,
+        @Nullable Class<? extends RepositoryQuery> repositoryQueryType) {
         Assert.state(hazelcastInstance != null, "HazelcastInstance must be set");
 
         return new HazelcastRepositoryFactory(operations, queryCreator, hazelcastInstance);
