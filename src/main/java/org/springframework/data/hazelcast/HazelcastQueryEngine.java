@@ -29,7 +29,6 @@ import org.springframework.util.Assert;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -37,6 +36,8 @@ import java.util.Map.Entry;
  * Implementation of {@code findBy*()} and {@code countBy*{}} queries.
  * </P>
  *
+ * @param <K> key type
+ * @param <V> value type
  * @author Christoph Strobl
  * @author Neil Stevenson
  * @author Viacheslav Petriaiev
