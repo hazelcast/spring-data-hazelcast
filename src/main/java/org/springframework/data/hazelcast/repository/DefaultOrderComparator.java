@@ -15,6 +15,11 @@
  */
 package org.springframework.data.hazelcast.repository;
 
+import com.hazelcast.nio.ObjectDataInput;
+import com.hazelcast.nio.ObjectDataOutput;
+import com.hazelcast.nio.serialization.DataSerializable;
+
+import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Comparator;
@@ -26,9 +31,7 @@ import java.util.Map;
  * @param <V> value type
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class DefaultOrderComparator<K, V> implements Comparator<Map.Entry<K, V>>, Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class DefaultOrderComparator<K, V> implements Comparator<Map.Entry<K, V>>, DataSerializable {
 
     @Override
     public int compare(Map.Entry<K, V> v1, Map.Entry<K, V> v2) {
@@ -36,5 +39,13 @@ public class DefaultOrderComparator<K, V> implements Comparator<Map.Entry<K, V>>
             return v1c.compareTo(v2c);
         }
         return 0;
+    }
+
+    @Override
+    public void writeData(ObjectDataOutput out) throws IOException {
+    }
+
+    @Override
+    public void readData(ObjectDataInput in) throws IOException {
     }
 }
