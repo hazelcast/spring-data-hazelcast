@@ -35,6 +35,8 @@ public class TestConstants {
     public static final String PERSON_MAP_NAME = "Actors";
     public static final String SONG_MAP_NAME = Song.class.getCanonicalName();
     public static final String CITY_MAP_NAME = "Cities";
+    public static final String CINEMA_MAP_NAME = "Cinemas";
 
-    public static final String[] OSCAR_MAP_NAMES = {MAKEUP_MAP_NAME, MOVIE_MAP_NAME, PERSON_MAP_NAME, SONG_MAP_NAME, CITY_MAP_NAME};
+    public static final String[] OSCAR_MAP_NAMES = {MAKEUP_MAP_NAME, MOVIE_MAP_NAME, PERSON_MAP_NAME,
+                                                    SONG_MAP_NAME, CITY_MAP_NAME, CINEMA_MAP_NAME};
 }

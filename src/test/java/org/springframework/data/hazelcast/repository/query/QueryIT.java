@@ -17,6 +17,7 @@
 package org.springframework.data.hazelcast.repository.query;
 
 import jakarta.annotation.Resource;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,8 +31,10 @@ import org.springframework.data.geo.Point;
 import org.springframework.test.context.ActiveProfiles;
 import test.utils.TestConstants;
 import test.utils.TestDataHelper;
+import test.utils.domain.Cinema;
 import test.utils.domain.City;
 import test.utils.domain.Person;
+import test.utils.repository.standard.CinemaRepository;
 import test.utils.repository.standard.CityRepository;
 import test.utils.repository.standard.PersonRepository;
 
@@ -87,6 +90,8 @@ public class QueryIT
 
     @Resource
     private CityRepository cityRepository;
+    @Resource
+    private CinemaRepository cinemaRepository;
 
     // Count methods
     @Override
@@ -102,6 +107,8 @@ public class QueryIT
         this.songMap = this.hazelcastInstance.getMap(TestConstants.SONG_MAP_NAME);
 
         this.cityMap = this.hazelcastInstance.getMap(TestConstants.CITY_MAP_NAME);
+
+        this.cinemaMap = this.hazelcastInstance.getMap(TestConstants.CINEMA_MAP_NAME);
 
         checkMapsEmpty("setUp");
     }
@@ -797,6 +804,23 @@ public class QueryIT
         assertThat("Second, 1992, Pacino", matches.get(1).getFirstname(), equalTo("Al"));
         assertThat("Third, 1957, Guinness", matches.get(2).getFirstname(), equalTo("Alec"));
         assertThat("Three matches", matches.size(), equalTo(3));
+    }
+
+    @Test
+    public void findTop3Cinemas() {
+        Cinema cinema1 = new Cinema("1", "Big Cinema 1", "Wrocław");
+        Cinema cinema2 = new Cinema("2", "Big Cinema 2", "Wrocław");
+        Cinema cinema3 = new Cinema("3", "Big Cinema 3", "Wrocław");
+        Cinema cinema4 = new Cinema("4", "Big Cinema 4", "Kraków");
+        this.cinemaMap.put(cinema1.getId(), cinema1);
+        this.cinemaMap.put(cinema2.getId(), cinema2);
+        this.cinemaMap.put(cinema3.getId(), cinema3);
+        this.cinemaMap.put(cinema4.getId(), cinema4);
+
+        List<Cinema> matches = this.cinemaRepository.findFirst3ByCityName("Wrocław");
+        Assertions.assertThat(matches)
+                  .extracting(Cinema::getCityName)
+                  .containsOnly("Wrocław", "Wrocław", "Wrocław");
     }
 
     @Test

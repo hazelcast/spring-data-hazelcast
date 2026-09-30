@@ -30,6 +30,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import test.utils.domain.Cinema;
 import test.utils.domain.City;
 import test.utils.domain.Makeup;
 import test.utils.domain.Movie;
@@ -72,6 +73,7 @@ public abstract class TestDataHelper {
     protected IMap<String, Person> personMap;
     protected IMap<String, Song> songMap;
     protected IMap<String, City> cityMap;
+    protected IMap<String, Cinema> cinemaMap;
 
     /* Use Hazelcast directly, minimise reliance on Spring as the object is
      * to test Spring encapsulation of Hazelcast.
@@ -96,6 +98,8 @@ public abstract class TestDataHelper {
         
         this.cityMap = this.hazelcastInstance.getMap(TestConstants.CITY_MAP_NAME);
         loadCities(this.cityMap);
+
+        this.cinemaMap = this.hazelcastInstance.getMap(TestConstants.CINEMA_MAP_NAME);
 
         checkMapsNotEmpty("setUp");
 
