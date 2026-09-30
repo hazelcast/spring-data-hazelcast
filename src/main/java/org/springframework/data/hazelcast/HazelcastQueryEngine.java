@@ -21,6 +21,7 @@ import com.hazelcast.query.Predicates;
 import com.hazelcast.query.impl.predicates.PagingPredicateImpl;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.springframework.data.hazelcast.repository.DefaultOrderComparator;
 import org.springframework.data.hazelcast.repository.query.HazelcastCriteriaAccessor;
 import org.springframework.data.hazelcast.repository.query.HazelcastSortAccessor;
 import org.springframework.data.keyvalue.core.QueryEngine;
@@ -78,7 +79,7 @@ public class HazelcastQueryEngine<K, V>
         Comparator<Entry<K, V>> sortToUse = sort;
         if (rows > 0) {
             if (sortToUse == null) {
-                sortToUse = defaultOrder();
+                sortToUse = new DefaultOrderComparator<>();
             }
             PagingPredicate<K, V> pp = Predicates.pagingPredicate(predicateToUse, sortToUse, rows);
             long x = offset / rows;
@@ -99,16 +100,6 @@ public class HazelcastQueryEngine<K, V>
         } else {
             return adapter.getMap(keyspace).values((Predicate<Object, Object>) predicateToUse);
         }
-    }
-
-    @SuppressWarnings("rawtypes")
-    private static <K, V> Comparator<Map.Entry<K, V>> defaultOrder() {
-        return (v1, v2) ->  {
-            if (v1.getValue() instanceof Comparable v1c &&  v2.getValue() instanceof Comparable v2c) {
-                return v1c.compareTo(v2c);
-            }
-            return 0;
-        };
     }
 
     /**
