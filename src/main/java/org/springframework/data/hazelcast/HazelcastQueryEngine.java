@@ -75,8 +75,11 @@ public class HazelcastQueryEngine<K, V>
 
         Predicate<K, V> predicateToUse = criteria;
 
-        Comparator<Entry<K, V>> sortToUse = sort == null ? noOrder() : sort;
+        Comparator<Entry<K, V>> sortToUse = sort;
         if (rows > 0) {
+            if (sortToUse == null) {
+                sortToUse = defaultOrder();
+            }
             PagingPredicate<K, V> pp = Predicates.pagingPredicate(predicateToUse, sortToUse, rows);
             long x = offset / rows;
             while (x > 0) {
@@ -86,7 +89,7 @@ public class HazelcastQueryEngine<K, V>
             predicateToUse = pp;
 
         } else {
-            if (predicateToUse != null) {
+            if (sortToUse != null) {
                 predicateToUse = new PagingPredicateImpl<>(predicateToUse, sortToUse, Integer.MAX_VALUE);
             }
         }
@@ -98,8 +101,14 @@ public class HazelcastQueryEngine<K, V>
         }
     }
 
-    private static <K, V> Comparator<Map.Entry<K, V>> noOrder() {
-        return (v1, v2) -> 0;
+    @SuppressWarnings("rawtypes")
+    private static <K, V> Comparator<Map.Entry<K, V>> defaultOrder() {
+        return (v1, v2) ->  {
+            if (v1.getValue() instanceof Comparable v1c &&  v2.getValue() instanceof Comparable v2c) {
+                return v1c.compareTo(v2c);
+            }
+            return 0;
+        };
     }
 
     /**
