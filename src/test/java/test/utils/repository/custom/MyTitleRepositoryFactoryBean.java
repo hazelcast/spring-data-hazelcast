@@ -17,13 +17,14 @@
 package test.utils.repository.custom;
 
 import com.hazelcast.core.HazelcastInstance;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.hazelcast.repository.support.HazelcastRepositoryFactoryBean;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.io.Serializable;
 
 /**
@@ -55,9 +56,9 @@ public class MyTitleRepositoryFactoryBean<T extends Repository<S, ID>, S, ID ext
      * .springframework.data.keyvalue.core.KeyValueOperations, java.lang.Class, java.lang.Class)
      */
     @Override
-    protected MyTitleRepositoryFactory createRepositoryFactory(KeyValueOperations operations,
-                                                               Class<? extends AbstractQueryCreator<?, ?>> queryCreator,
-                                                               Class<? extends RepositoryQuery> repositoryQueryType) {
+    protected @NonNull MyTitleRepositoryFactory createRepositoryFactory(KeyValueOperations operations,
+                                                                        Class<? extends AbstractQueryCreator<?, ?>> queryCreator,
+                                                                        Class<? extends RepositoryQuery> repositoryQueryType) {
 
         return new MyTitleRepositoryFactory(operations, queryCreator, hazelcastInstance);
     }

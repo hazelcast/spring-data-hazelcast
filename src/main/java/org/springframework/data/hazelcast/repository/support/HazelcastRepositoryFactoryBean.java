@@ -16,8 +16,13 @@
 package org.springframework.data.hazelcast.repository.support;
 
 import com.hazelcast.core.HazelcastInstance;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.hazelcast.repository.HazelcastRepository;
+import org.springframework.data.hazelcast.repository.query.HazelcastPartTreeQuery;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
+import org.springframework.data.keyvalue.repository.KeyValueRepository;
 import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory;
 import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean;
 import org.springframework.data.repository.Repository;
@@ -77,15 +82,15 @@ public class HazelcastRepositoryFactoryBean<T extends Repository<S, ID>, S, ID e
      * More details are in {@link HazelcastRepositoryFactory}.
      * </P>
      *
-     * @param KeyValueOperations
-     * @param Query                Creator
-     * @param RepositoryQueryType, not used
+     * @param repositoryQueryType not used
      * @return A {@link HazelcastRepositoryFactory} that creates {@link HazelcastRepository} instances.
      */
+    @NonNull
     @Override
-    protected KeyValueRepositoryFactory createRepositoryFactory(KeyValueOperations operations,
-                                                                Class<? extends AbstractQueryCreator<?, ?>> queryCreator,
-                                                                Class<? extends RepositoryQuery> repositoryQueryType) {
+    protected KeyValueRepositoryFactory createRepositoryFactory(
+        @Nullable KeyValueOperations operations,
+        @Nullable Class<? extends AbstractQueryCreator<?, ?>> queryCreator,
+        @Nullable Class<? extends RepositoryQuery> repositoryQueryType) {
         Assert.state(hazelcastInstance != null, "HazelcastInstance must be set");
 
         return new HazelcastRepositoryFactory(operations, queryCreator, hazelcastInstance);

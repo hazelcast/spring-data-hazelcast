@@ -18,6 +18,8 @@ package org.springframework.data.hazelcast.repository.support;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import com.hazelcast.query.impl.predicates.SqlPredicate;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 
@@ -41,18 +43,20 @@ public class StringBasedHazelcastRepositoryQuery
     }
 
     @Override
-    public Object execute(Object[] parameters) {
+    public Object execute(@Nullable Object @Nullable[] parameters) {
+        assert parameters != null : "parameters must not be null";
         String queryStringTemplate = queryMethod.getAnnotatedQuery();
         String queryString = String.format(queryStringTemplate, formatParameters(parameters));
         SqlPredicate sqlPredicate = new SqlPredicate(queryString);
+        //noinspection unchecked
         return getMap(keySpace).values(sqlPredicate);
     }
 
-    private Object[] formatParameters(Object[] parameters) {
+    private static Object[] formatParameters(Object[] parameters) {
         Object[] result = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
-            if (parameters[i] instanceof Collection) {
-                result[i] = formatCollection((Collection) parameters[i]);
+            if (parameters[i] instanceof Collection<?> c) {
+                result[i] = formatCollection(c);
             } else {
                 result[i] = parameters[i];
             }
@@ -64,10 +68,11 @@ public class StringBasedHazelcastRepositoryQuery
         return String.format("(%s)", collection.stream().map(Object::toString).collect(Collectors.joining(",")));
     }
 
-    private IMap getMap(String keySpace) {
+    private IMap<?, ?> getMap(String keySpace) {
         return hazelcastInstance.getMap(keySpace);
     }
 
+    @NonNull
     @Override
     public QueryMethod getQueryMethod() {
         return queryMethod;

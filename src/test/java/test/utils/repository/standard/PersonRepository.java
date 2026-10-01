@@ -25,7 +25,6 @@ import org.springframework.data.hazelcast.repository.config.EnableHazelcastRepos
 import org.springframework.data.hazelcast.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.util.concurrent.ListenableFuture;
 import test.utils.domain.Person;
 
 import java.util.Collection;
@@ -189,7 +188,7 @@ public interface PersonRepository
     CompletableFuture<Person> findOneByLastname(String lastname);
 
     @Async
-    ListenableFuture<List<Person>> findByLastname(String lastname);
+    CompletableFuture<List<Person>> findByLastname(String lastname);
     
     //distinct methods
     public Long countDistinctByFirstname(String firstname);

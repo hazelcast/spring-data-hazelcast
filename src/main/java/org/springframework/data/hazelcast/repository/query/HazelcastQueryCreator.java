@@ -18,14 +18,16 @@ package org.springframework.data.hazelcast.repository.query;
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.Predicates;
 import com.hazelcast.query.impl.predicates.PagingPredicateImpl;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.core.PropertyPath;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.geo.Circle;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
-import org.springframework.data.mapping.PropertyPath;
 import org.springframework.data.repository.query.ParameterAccessor;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.data.repository.query.parser.Part;
@@ -89,9 +91,10 @@ public class HazelcastQueryCreator
      *                          #create(org.springframework.data.repository.query.parser.Part, java.util.Iterator)
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
+    @NonNull
     @Override
-    protected Predicate<?, ?> create(Part part, Iterator<Object> iterator) {
-        return this.from(part, (Iterator<Comparable<?>>) (Iterator) iterator);
+    protected Predicate<?, ?> create(@NonNull Part part, @NonNull Iterator<Object> iterator) {
+        return from(part, (Iterator) iterator);
     }
 
     /*
@@ -101,8 +104,9 @@ public class HazelcastQueryCreator
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    protected Predicate<?, ?> and(Part part, Predicate<?, ?> base, Iterator<Object> iterator) {
-        Predicate<?, ?> criteria = this.from(part, (Iterator<Comparable<?>>) (Iterator) iterator);
+    @NonNull
+    protected Predicate<?, ?> and(@NonNull Part part, @Nullable Predicate<?, ?> base, @NonNull Iterator<Object> iterator) {
+        Predicate<?, ?> criteria = from(part, (Iterator) iterator);
         return Predicates.and(base, criteria);
     }
 
@@ -112,7 +116,8 @@ public class HazelcastQueryCreator
      *                                                       #or(java.lang.Object, java.lang.Object)
      */
     @Override
-    protected Predicate<?, ?> or(Predicate<?, ?> base, Predicate<?, ?> criteria) {
+    @NonNull
+    protected Predicate<?, ?> or(@Nullable Predicate<?, ?> base, @Nullable Predicate<?, ?> criteria) {
         return Predicates.or(base, criteria);
     }
 
@@ -122,14 +127,15 @@ public class HazelcastQueryCreator
      *                                                       #complete(java.lang.Object, org.springframework.data.domain.Sort)
      */
     @Override
-    protected KeyValueQuery<Predicate<?, ?>> complete(Predicate<?, ?> criteria, Sort sort) {
+    @NonNull
+    protected KeyValueQuery<Predicate<?, ?>> complete(@Nullable Predicate<?, ?> criteria, @Nullable Sort sort) {
 
         KeyValueQuery<Predicate<?, ?>> keyValueQuery;
 
         if (this.limit == 0) {
             keyValueQuery = new KeyValueQuery<>(criteria);
         } else {
-            keyValueQuery = new KeyValueQuery<Predicate<?, ?>>(new PagingPredicateImpl(criteria, this.limit));
+            keyValueQuery = new KeyValueQuery<>(new PagingPredicateImpl<>(criteria, this.limit));
         }
 
         if (sort != null) {
@@ -145,232 +151,181 @@ public class HazelcastQueryCreator
      * the former being embedded in the chain.
      *
      */
-    private Predicate<?, ?> from(Part part, Iterator<Comparable<?>> iterator) {
+    private static Predicate<?, ?> from(@NonNull Part part, @NonNull Iterator<Comparable<?>> iterator) {
         String property = part.getProperty().toDotPath();
         Type type = part.getType();
         boolean ignoreCase = ifIgnoreCase(part);
 
-        switch (type) {
-            case AFTER:
-            case GREATER_THAN:
-            case GREATER_THAN_EQUAL:
-            case BEFORE:
-            case LESS_THAN:
-            case LESS_THAN_EQUAL:
-            case BETWEEN:
-                return fromInequalityVariant(type, property, iterator);
-            case IS_NULL:
-            case IS_NOT_NULL:
-                return fromNullVariant(type, property);
-            case IN:
-            case NOT_IN:
-                return fromCollectionVariant(type, property, iterator);
-            case CONTAINING:
-            case NOT_CONTAINING:
-            case STARTING_WITH:
-            case ENDING_WITH:
-            case LIKE:
-            case NOT_LIKE:
-                return fromLikeVariant(type, ignoreCase, property, iterator);
-            case TRUE:
-            case FALSE:
-                return fromBooleanVariant(type, property);
-            case SIMPLE_PROPERTY:
-            case NEGATING_SIMPLE_PROPERTY:
-                return fromEqualityVariant(type, ignoreCase, property, iterator);
-            case REGEX:
-                return Predicates.regex(property, iterator.next().toString());
-            case IS_EMPTY:
-            case IS_NOT_EMPTY:
-                return fromEmptyVariant(type, property);
-            /* case EXISTS:*/
-            case NEAR:
-            case WITHIN:
-                return fromGeoVariant(type, property, iterator);
+        return switch (type) {
+            case AFTER, GREATER_THAN, GREATER_THAN_EQUAL, BEFORE, LESS_THAN, LESS_THAN_EQUAL, BETWEEN -> fromInequalityVariant(
+                    type, property, iterator);
+            case IS_NULL, IS_NOT_NULL -> fromNullVariant(type, property);
+            case IN, NOT_IN -> fromCollectionVariant(type, property, iterator);
+            case CONTAINING, NOT_CONTAINING, STARTING_WITH, ENDING_WITH, LIKE, NOT_LIKE -> fromLikeVariant(type, ignoreCase,
+                    property, iterator);
+            case TRUE, FALSE -> fromBooleanVariant(type, property);
+            case SIMPLE_PROPERTY, NEGATING_SIMPLE_PROPERTY -> fromEqualityVariant(type, ignoreCase, property, iterator);
+            case REGEX -> Predicates.regex(property, iterator.next()
+                    .toString());
+            case IS_EMPTY, IS_NOT_EMPTY -> fromEmptyVariant(type, property);
+            /* case EXISTS: */
+            case NEAR, WITHIN -> fromGeoVariant(type, property, iterator);
 
-            default:
-                throw new InvalidDataAccessApiUsageException(String.format("Unsupported type '%s'", type));
-        }
+            default -> throw new InvalidDataAccessApiUsageException(String.format("Unsupported type '%s'", type));
+        };
     }
 
-    private Predicate<?, ?> fromBooleanVariant(Type type, String property) {
-        switch (type) {
-            case TRUE:
-                return Predicates.equal(property, true);
-            case FALSE:
-                return Predicates.equal(property, false);
-            default:
-                throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
-        }
+    private static Predicate<?, ?> fromBooleanVariant(Type type, String property) {
+        return switch (type) {
+            case TRUE -> Predicates.equal(property, true);
+            case FALSE -> Predicates.equal(property, false);
+            default -> throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
+        };
     }
 
-    private Predicate<?, ?> fromCollectionVariant(Type type, String property, Iterator<Comparable<?>> iterator) {
-        switch (type) {
-            case IN:
-                return Predicates.in(property, collectToArray(type, iterator));
-            case NOT_IN:
-                return Predicates.not(Predicates.in(property, collectToArray(type, iterator)));
-            default:
-                throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
-        }
+    private static Predicate<?, ?> fromCollectionVariant(Type type, String property, Iterator<Comparable<?>> iterator) {
+        return switch (type) {
+            case IN -> Predicates.in(property, collectToArray(type, iterator));
+            case NOT_IN -> Predicates.not(Predicates.in(property, collectToArray(type, iterator)));
+            default -> throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
+        };
     }
 
-    private Predicate<?, ?> fromInequalityVariant(Type type, String property, Iterator<Comparable<?>> iterator) {
-        switch (type) {
-            case AFTER:
-            case GREATER_THAN:
-                return Predicates.greaterThan(property, iterator.next());
-            case GREATER_THAN_EQUAL:
-                return Predicates.greaterEqual(property, iterator.next());
-            case BEFORE:
-            case LESS_THAN:
-                return Predicates.lessThan(property, iterator.next());
-            case LESS_THAN_EQUAL:
-                return Predicates.lessEqual(property, iterator.next());
-            case BETWEEN:
-                Comparable<?> first = iterator.next();
-                Comparable<?> second = iterator.next();
-                return Predicates.between(property, first, second);
-            default:
-                throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
-        }
+    private static Predicate<?, ?> fromInequalityVariant(Type type, String property, Iterator<Comparable<?>> iterator) {
+        return switch (type) {
+            case AFTER, GREATER_THAN -> Predicates.greaterThan(property, iterator.next());
+            case GREATER_THAN_EQUAL -> Predicates.greaterEqual(property, iterator.next());
+            case BEFORE, LESS_THAN -> Predicates.lessThan(property, iterator.next());
+            case LESS_THAN_EQUAL -> Predicates.lessEqual(property, iterator.next());
+            case BETWEEN -> Predicates.between(property, iterator.next(), iterator.next());
+            default -> throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
+        };
     }
 
-    private Predicate<?, ?> fromNullVariant(Type type, String property) {
-        switch (type) {
-            case IS_NULL:
-                return Predicates.equal(property, null);
-            case IS_NOT_NULL:
-                return Predicates.notEqual(property, null);
+    private static Predicate<?, ?> fromNullVariant(Type type, String property) {
+        return switch (type) {
+            case IS_NULL -> Predicates.equal(property, null);
+            case IS_NOT_NULL -> Predicates.notEqual(property, null);
 
-            default:
-                throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
-        }
+            default -> throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
+        };
     }
 
-    private Predicate<?, ?> fromEqualityVariant(Type type, boolean ignoreCase, String property,
-                                                Iterator<Comparable<?>> iterator) {
-        switch (type) {
-            case SIMPLE_PROPERTY:
+    private static Predicate<?, ?> fromEqualityVariant(Type type, boolean ignoreCase, String property,
+            Iterator<Comparable<?>> iterator) {
+        return switch (type) {
+            case SIMPLE_PROPERTY -> {
                 if (ignoreCase) {
-                    return Predicates.ilike(property, iterator.next().toString());
+                    yield Predicates.ilike(property, iterator.next()
+                            .toString());
                 } else {
-                    return Predicates.equal(property, iterator.next());
+                    yield Predicates.equal(property, iterator.next());
                 }
-            case NEGATING_SIMPLE_PROPERTY:
+            }
+            case NEGATING_SIMPLE_PROPERTY -> {
                 if (ignoreCase) {
-                    return Predicates.not(Predicates.ilike(property, iterator.next().toString()));
+                    yield Predicates.not(Predicates.ilike(property, iterator.next()
+                            .toString()));
                 } else {
-                    return Predicates.notEqual(property, iterator.next());
+                    yield Predicates.notEqual(property, iterator.next());
                 }
-            default:
-                throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
-        }
+            }
+            default -> throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
+        };
     }
 
-    private Predicate<?, ?> fromLikeVariant(Type type, boolean ignoreCase, String property, Iterator<Comparable<?>> iterator) {
+    private static Predicate<?, ?> fromLikeVariant(Type type, boolean ignoreCase, String property,
+            Iterator<Comparable<?>> iterator) {
         String likeExpression = iterator.next().toString();
-        switch (type) {
-            case CONTAINING:
-            case NOT_CONTAINING:
-                likeExpression = String.join("", "%", likeExpression, "%");
-                break;
-            case STARTING_WITH:
-                likeExpression = String.join("", likeExpression, "%");
-                break;
-            case ENDING_WITH:
-                likeExpression = String.join("", "%", likeExpression);
-                break;
-            case LIKE:
-            case NOT_LIKE:
-                break;
-            default:
-                throw new InvalidDataAccessApiUsageException(String.format("'%s' is not supported for LIKE style query", type));
-        }
+        likeExpression = switch (type) {
+            case CONTAINING, NOT_CONTAINING -> String.join("", "%", likeExpression, "%");
+            case STARTING_WITH -> String.join("", likeExpression, "%");
+            case ENDING_WITH -> String.join("", "%", likeExpression);
+            case LIKE, NOT_LIKE -> likeExpression;
+            default -> throw new InvalidDataAccessApiUsageException(
+                    String.format("'%s' is not supported for LIKE style query", type));
+        };
 
-        Predicate likePredicate = ignoreCase ? Predicates.ilike(property, likeExpression) : Predicates
+        Predicate<?, ?> likePredicate = ignoreCase ? Predicates.ilike(property, likeExpression) : Predicates
                 .like(property, likeExpression);
         return type.equals(NOT_LIKE) || type.equals(NOT_CONTAINING) ? Predicates.not(likePredicate) : likePredicate;
     }
 
-    private boolean ifIgnoreCase(Part part) {
-        switch (part.shouldIgnoreCase()) {
-            case ALWAYS:
+    private static boolean ifIgnoreCase(Part part) {
+        return switch (part.shouldIgnoreCase()) {
+            case ALWAYS -> {
                 Assert.state(canUpperCase(part.getProperty()),
                         String.format("Unable to ignore case of %s types, the property '%s' must reference a String",
-                                part.getProperty().getType().getName(), part.getProperty().getSegment()));
-                return true;
-            case WHEN_POSSIBLE:
-                return canUpperCase(part.getProperty());
-            case NEVER:
-            default:
-                return false;
-        }
+                                part.getProperty()
+                                        .getType()
+                                        .getName(),
+                                part.getProperty()
+                                        .getSegment()));
+                yield true;
+            }
+            case WHEN_POSSIBLE -> canUpperCase(part.getProperty());
+            default -> false;
+        };
     }
 
-    private boolean canUpperCase(PropertyPath path) {
+    private static boolean canUpperCase(PropertyPath path) {
         return String.class.equals(path.getType());
     }
 
-    private boolean isCollection(Object item) {
+    private static boolean isCollection(Object item) {
         return Collection.class.isAssignableFrom(item.getClass());
     }
 
-    private Comparable<?>[] collectToArray(Type type, Iterator<Comparable<?>> iterator) {
+    private static Comparable<?>[] collectToArray(Type type, Iterator<Comparable<?>> iterator) {
         Object item = iterator.next();
         Assert.state(isCollection(item), String.format("%s requires collection of values", type));
+        //noinspection unchecked
         Collection<Comparable<?>> itemcol = (Collection<Comparable<?>>) item;
         return itemcol.toArray(new Comparable<?>[0]);
     }
 
-    private Predicate<?, ?> fromEmptyVariant(Type type, String property) {
-        switch (type) {
-            case IS_EMPTY:
-                return Predicates.equal(property, "");
-            case IS_NOT_EMPTY:
-                return Predicates.notEqual(property, "");
+    private static Predicate<?, ?> fromEmptyVariant(Type type, String property) {
+        return switch (type) {
+            case IS_EMPTY -> Predicates.equal(property, "");
+            case IS_NOT_EMPTY -> Predicates.notEqual(property, "");
 
-            default:
-                throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
-        }
+            default -> throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
+        };
     }
 
-    private Predicate<?, ?> fromGeoVariant(Type type, String property, Iterator<Comparable<?>> iterator) {
+    private static Predicate<?, ?> fromGeoVariant(Type type, String property, Iterator<Comparable<?>> iterator) {
         final Object item = iterator.next();
         Point point;
         Distance distance;
-        if (item instanceof Point) {
-            point = (Point) item;
+        if (item instanceof Point p) {
+            point = p;
             if (!iterator.hasNext()) {
                 throw new InvalidDataAccessApiUsageException(
                         "Expected to find distance value for geo query. Are you missing a parameter?");
             }
 
             Object distObject = iterator.next();
-            if (distObject instanceof Distance) {
-                distance = (Distance) distObject;
-            } else if (distObject instanceof Number) {
-                distance = new Distance(((Number) distObject).doubleValue(), Metrics.KILOMETERS);
+            if (distObject instanceof Distance d) {
+                distance = d;
+            } else if (distObject instanceof Number n) {
+                distance = new Distance(n.doubleValue(), Metrics.KILOMETERS);
             } else {
                 throw new InvalidDataAccessApiUsageException(String
                         .format("Expected to find Distance or Numeric value for geo query but was %s.",
                                 distObject.getClass()));
             }
-        } else if (item instanceof Circle) {
-            point = ((Circle) item).getCenter();
-            distance = ((Circle) item).getRadius();
+        } else if (item instanceof Circle c) {
+            point = c.getCenter();
+            distance = c.getRadius();
         } else {
             throw new InvalidDataAccessApiUsageException(
                     String.format("Expected to find a Circle or Point/Distance for geo query but was %s.", item.getClass()));
         }
 
-        switch (type) {
-            case WITHIN:
-            case NEAR:
-                return new GeoPredicate<>(property, point, distance);
+        return switch (type) {
+            case WITHIN, NEAR -> new GeoPredicate<>(property, point, distance);
 
-            default:
-                throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
-        }
+            default -> throw new InvalidDataAccessApiUsageException(String.format("Logic error for '%s' in query", type));
+        };
     }
 }

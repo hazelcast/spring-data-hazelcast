@@ -1,28 +1,40 @@
 name: build
 on:
-  push:
+  pull_request:
     paths-ignore:
       - '**.md'
 
 jobs:
+  get-hazelcast-versions:
+    runs-on: ubuntu-slim
+    outputs:
+      versions: ${{ steps.versions.outputs.versions }}
+    steps:
+      - id: get-maintenance-versions
+        uses: hazelcast/hazelcast/.github/actions/get-supported-maintenance-versions@master
+      - id: versions
+        run: |
+          echo "versions=$(jq --compact-output 'map(. | tostring + ".0")' <<< '${{ steps.get-maintenance-versions.outputs.versions }}')" >> ${GITHUB_OUTPUT}
+
   build:
     runs-on: ubuntu-latest
+    needs: get-hazelcast-versions
     strategy:
       matrix:
-        java: [ '8' ]
-        hazelcast: [ '4.0.3', '4.1' ]
+        java: [ '17', '21' ]
+        hazelcast: ${{ fromJSON(needs.get-hazelcast-versions.outputs.versions) }}
         architecture: [ 'x64' ]
     name: Build with JDK ${{ matrix.java }} and Hazelcast ${{ matrix.hazelcast }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
           architecture: ${{ matrix.architecture }}
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}

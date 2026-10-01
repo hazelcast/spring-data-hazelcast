@@ -16,14 +16,17 @@
 package org.springframework.data.hazelcast.repository.support;
 
 import com.hazelcast.core.HazelcastInstance;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.hazelcast.repository.query.HazelcastPartTreeQuery;
+import org.springframework.data.hazelcast.repository.query.HazelcastQueryCreator;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
+import org.springframework.data.keyvalue.repository.query.KeyValuePartTreeQuery;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryLookupStrategy;
-import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider;
 import org.springframework.data.repository.query.RepositoryQuery;
+import org.springframework.data.repository.query.ValueExpressionDelegate;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.util.Assert;
 
@@ -40,7 +43,7 @@ import java.lang.reflect.Method;
 public class HazelcastQueryLookupStrategy
         implements QueryLookupStrategy {
 
-    private final QueryMethodEvaluationContextProvider evaluationContextProvider;
+    private final ValueExpressionDelegate valueExpressionDelegate;
     private final KeyValueOperations keyValueOperations;
     private final Class<? extends AbstractQueryCreator<?, ?>> queryCreator;
     private final HazelcastInstance hazelcastInstance;
@@ -50,28 +53,28 @@ public class HazelcastQueryLookupStrategy
      * Required constructor, capturing arguments for use in {@link #resolveQuery}.
      * </P>
      * <p>
-     * Assertions copied from {@link KayValueRepositoryFactory.KeyValueQUeryLookupStrategy} which this class essentially
+     * Assertions copied from {@code KeyValueRepositoryFactory.KeyValueQueryLookupStrategy} which this class essentially
      * duplicates.
      * </P>
      *
      * @param key                       Not used
-     * @param evaluationContextProvider For evaluation of query expressions
+     * @param valueExpressionDelegate   For evaluation of query expressions
      * @param keyValueOperations        Bean to use for Key/Value operations on Hazelcast repos
      * @param queryCreator              Likely to be {@link HazelcastQueryCreator}
      * @param hazelcastInstance         Instance of Hazelcast
      */
     public HazelcastQueryLookupStrategy(QueryLookupStrategy.Key key,
-                                        QueryMethodEvaluationContextProvider evaluationContextProvider,
+                                        ValueExpressionDelegate valueExpressionDelegate,
                                         KeyValueOperations keyValueOperations,
                                         Class<? extends AbstractQueryCreator<?, ?>> queryCreator,
                                         HazelcastInstance hazelcastInstance) {
 
-        Assert.notNull(evaluationContextProvider, "EvaluationContextProvider must not be null!");
+        Assert.notNull(valueExpressionDelegate, "ValueExpressionDelegate must not be null!");
         Assert.notNull(keyValueOperations, "KeyValueOperations must not be null!");
         Assert.notNull(queryCreator, "Query creator type must not be null!");
         Assert.notNull(hazelcastInstance, "HazelcastInstance must not be null!");
 
-        this.evaluationContextProvider = evaluationContextProvider;
+        this.valueExpressionDelegate = valueExpressionDelegate;
         this.keyValueOperations = keyValueOperations;
         this.queryCreator = queryCreator;
         this.hazelcastInstance = hazelcastInstance;
@@ -82,14 +85,17 @@ public class HazelcastQueryLookupStrategy
      * Use {@link HazelcastPartTreeQuery} for resolving queries against Hazelcast repositories.
      * </P>
      *
-     * @param Method,             the query method
-     * @param RepositoryMetadata, not used
-     * @param ProjectionFactory,  not used
-     * @param NamedQueries,       not used
+     * @param method              the query method
+     * @param metadata            not used
+     * @param projectionFactory   not used
+     * @param namedQueries        not used
      * @return A mechanism for querying Hazelcast repositories
      */
-    public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, ProjectionFactory projectionFactory,
-                                        NamedQueries namedQueries) {
+    @Override
+    @NonNull
+    public RepositoryQuery resolveQuery(@NonNull Method method, @NonNull RepositoryMetadata metadata,
+                                        @NonNull ProjectionFactory projectionFactory,
+                                        @NonNull NamedQueries namedQueries) {
 
         HazelcastQueryMethod queryMethod = new HazelcastQueryMethod(method, metadata, projectionFactory);
 
@@ -97,7 +103,7 @@ public class HazelcastQueryLookupStrategy
             return new StringBasedHazelcastRepositoryQuery(queryMethod, hazelcastInstance);
         }
 
-        return new HazelcastPartTreeQuery(queryMethod, evaluationContextProvider, this.keyValueOperations, this.queryCreator);
+        return new HazelcastPartTreeQuery(queryMethod, valueExpressionDelegate, this.keyValueOperations, this.queryCreator);
     }
 
 }

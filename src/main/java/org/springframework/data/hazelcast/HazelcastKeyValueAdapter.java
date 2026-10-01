@@ -37,7 +37,7 @@ public class HazelcastKeyValueAdapter
     private HazelcastInstance hzInstance;
 
     public HazelcastKeyValueAdapter(HazelcastInstance hzInstance) {
-        super(new HazelcastQueryEngine());
+        super(new HazelcastQueryEngine<>());
         Assert.notNull(hzInstance, "hzInstance must not be 'null'.");
         this.hzInstance = hzInstance;
     }
@@ -70,7 +70,7 @@ public class HazelcastKeyValueAdapter
     }
 
     @Override
-    public Iterable<?> getAllOf(String keyspace) {
+    public Iterable<Object> getAllOf(String keyspace) {
         return getMap(keyspace).values();
     }
 

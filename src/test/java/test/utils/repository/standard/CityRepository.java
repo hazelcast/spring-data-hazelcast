@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.geo.Circle;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Point;
-import org.springframework.data.geo.Shape;
 import org.springframework.data.hazelcast.repository.HazelcastRepository;
 
 import test.utils.domain.City;

@@ -18,7 +18,7 @@
 
     <groupId>com.hazelcast</groupId>
     <artifactId>spring-data-hazelcast</artifactId>
-    <version>2.4.1-SNAPSHOT</version>
+    <version>4.1.0-SNAPSHOT</version>
 
     <name>Spring Data Hazelcast</name>
     <description>Spring Data module for Hazelcast repositories.</description>
@@ -26,23 +26,23 @@
     <parent>
         <groupId>org.springframework.data.build</groupId>
         <artifactId>spring-data-parent</artifactId>
-        <version>2.5.6</version>
+        <version>4.1.1</version>
     </parent>
 
     <properties>
         <dist.key>DATAHC</dist.key>
         <java-module-name>spring.data.hazelcast</java-module-name>
+        <jdk.version>17</jdk.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hazelcast.version>5.3.2</hazelcast.version>
-        <springdata.keyvalue.version>2.5.6</springdata.keyvalue.version>
+        <hazelcast.version>5.7.0</hazelcast.version>
+        <springdata.keyvalue.version>4.1.1</springdata.keyvalue.version>
         <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
-        <maven.sonar.plugin.version>3.3.0.603</maven.sonar.plugin.version>
-        <maven.jacoco.plugin.version>0.8.11</maven.jacoco.plugin.version>
+        <maven.sonar.plugin.version>4.0.0.4121</maven.sonar.plugin.version>
+        <maven.jacoco.plugin.version>0.8.15</maven.jacoco.plugin.version>
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-keyvalue</artifactId>
@@ -56,9 +56,15 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <version>1.3.2</version>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>3.0.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -68,6 +74,13 @@
             <version>1.3</version>
             <scope>test</scope>
         </dependency>
+
+		<dependency>
+		  <groupId>com.github.spotbugs</groupId>
+		  <artifactId>spotbugs-annotations</artifactId>
+		  <version>4.10.4</version>
+		  <optional>true</optional>
+		</dependency>
     </dependencies>
 
     <build>
@@ -75,7 +88,7 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <release>11</release>
+                    <release>${jdk.version}</release>
                 </configuration>
             </plugin>
 
@@ -85,7 +98,6 @@
             <!-- otherwise overrides.                                                      -->
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.22.2</version>
                 <configuration>
                     <failIfNoTests>true</failIfNoTests>
                     <includes>
@@ -131,15 +143,6 @@
                 <artifactId>maven-assembly-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>wagon-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.asciidoctor</groupId>
-                <artifactId>asciidoctor-maven-plugin</artifactId>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
@@ -155,7 +158,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration combine.self="override">
-                    <source>1.8</source>
                     <additionalJOptions>
                         <additionalJOption>-Xdoclint:none</additionalJOption>
                     </additionalJOptions>
@@ -169,61 +171,42 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <!--  Checkstyle file copied from https://github.com/hazelcast/hazelcast/tree/master/checkstyle -->
+                    <failOnViolation>true</failOnViolation>
+                    <configLocation>${project.basedir}/checkstyle/checkstyle.xml</configLocation>
+                    <propertyExpansion>main.basedir=${project.basedir}</propertyExpansion>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.10.4.1</version>
+                <configuration>
+                    <excludeFilterFile>spotbugs-excludes.xml</excludeFilterFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <profiles>
-        <profile>
-            <id>checkstyle</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-checkstyle-plugin</artifactId>
-                        <version>3.3.1</version>
-                        <configuration>
-                            <!--  Checkstyle file copied from https://github.com/hazelcast/hazelcast/tree/master/checkstyle -->
-                            <failOnViolation>true</failOnViolation>
-                            <configLocation>${project.basedir}/checkstyle/checkstyle.xml</configLocation>
-                            <propertyExpansion>main.basedir=${project.basedir}</propertyExpansion>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                </plugins>
-            </build>
-
-        </profile>
-        <profile>
-            <id>findbugs</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>findbugs-maven-plugin</artifactId>
-                        <version>3.0.5</version>
-                        <configuration>
-                            <failOnError>true</failOnError>
-                        </configuration>
-
-                        <executions>
-                            <execution>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
         <profile>
             <id>release</id>
             <properties>
@@ -276,7 +259,7 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.13</version>
+                        <version>1.7.0</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>release-repository</serverId>
@@ -305,7 +288,7 @@
                     </plugin>
                     <plugin>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.22.2</version>
+                        <version>3.6.0</version>
                         <configuration>
                             <failIfNoTests>true</failIfNoTests>
                             <includes>

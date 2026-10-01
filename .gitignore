@@ -192,3 +192,4 @@ modules.xml
 .idea/misc.xml 
 *.ipr
 .idea
+.checkstyle
