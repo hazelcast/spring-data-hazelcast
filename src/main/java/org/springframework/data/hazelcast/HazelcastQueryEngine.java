@@ -16,6 +16,7 @@
 package org.springframework.data.hazelcast;
 
 import com.hazelcast.function.ComparatorEx;
+import com.hazelcast.function.Functions;
 import com.hazelcast.query.PagingPredicate;
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.Predicates;
@@ -29,6 +30,7 @@ import org.springframework.util.Assert;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -77,8 +79,8 @@ public class HazelcastQueryEngine<K, V>
     /**
      * <p>
      * Same as {@link #execute(Predicate, Comparator, long, int, String)}, but knows the entity type. A page without
-     * a sort order over entities that are not {@link Comparable} is read using
-     * {@link com.hazelcast.function.ComparatorEx#nullsLast(Comparator)}.
+     * a sort order over entities that are not {@link Comparable} is read  in a deterministic, but effectively unspecified way
+     * (using {@link com.hazelcast.function.ComparatorEx#nullsLast(Comparator)}).
      * </P>
      */
     @Override
