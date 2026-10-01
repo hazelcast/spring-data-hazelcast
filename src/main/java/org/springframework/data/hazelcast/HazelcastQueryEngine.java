@@ -109,7 +109,8 @@ public class HazelcastQueryEngine<K, V>
 
         if (sort == null && notComparable) {
             // Without a comparator Hazelcast orders a values() page by the values, which then
-            // must be Comparable. A keySet() page is ordered by the keys instead.
+            // must be Comparable. Setting own comparator that doesn't use Comparable elements
+            // solves this issue.
             sortToUse = ComparatorEx.nullsLast(null);
         }
         if (rows > 0) {
