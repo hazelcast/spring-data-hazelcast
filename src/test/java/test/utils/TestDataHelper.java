@@ -192,7 +192,7 @@ public abstract class TestDataHelper {
                   new Cinema("2", "Big Cinema 2", "Wroclaw"),
                   new Cinema("3", "Big Cinema 3", "Wroclaw"),
                   new Cinema("4", "Big Cinema 4", "Krakow"))
-            .forEach(c -> cinemaMap.put(c.getId(), c));
+            .forEach(c -> cinemaMap.put(c.id(), c));
     }
 
     @After

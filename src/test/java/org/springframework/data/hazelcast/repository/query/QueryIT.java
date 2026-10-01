@@ -810,7 +810,7 @@ public class QueryIT
         loadCinemas(this.cinemaMap);
         List<Cinema> matches = this.cinemaRepository.findFirst3ByCityName("Wroclaw");
         Assertions.assertThat(matches)
-                  .extracting(Cinema::getCityName)
+                  .extracting(Cinema::cityName)
                   .containsOnly("Wroclaw", "Wroclaw", "Wroclaw");
     }
 
@@ -819,7 +819,7 @@ public class QueryIT
         loadCinemas(this.cinemaMap);
         List<Cinema> matches = this.cinemaRepository.findFirst3ByCityNameOrderById("Wroclaw");
         Assertions.assertThat(matches)
-                  .extracting(Cinema::getId)
+                  .extracting(Cinema::id)
                   .containsExactly("1", "2", "3");
     }
 
