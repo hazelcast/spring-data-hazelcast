@@ -122,7 +122,7 @@ public class HazelcastPartTreeQuery
         }
 
         if (this.isExists) {
-            return keyValueOperations.count(query, queryMethod.getEntityInformation().getJavaType()) > 0;
+            return keyValueOperations.exists(query, queryMethod.getEntityInformation().getJavaType());
         }
 
         if (queryMethod.isPageQuery() || queryMethod.isSliceQuery()) {
