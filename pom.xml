@@ -37,8 +37,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <hazelcast.version>5.7.0</hazelcast.version>
         <springdata.keyvalue.version>4.1.1</springdata.keyvalue.version>
-        <maven.gpg.plugin.version>3.0.1</maven.gpg.plugin.version>
-        <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
         <maven.sonar.plugin.version>4.0.0.4121</maven.sonar.plugin.version>
         <maven.jacoco.plugin.version>0.8.15</maven.jacoco.plugin.version>
     </properties>
@@ -218,7 +216,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>${maven.gpg.plugin.version}</version>
+                        <version>3.2.8</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -233,7 +231,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${maven.javadoc.plugin.version}</version>
+                        <version>3.12.0</version>
                         <configuration>
                             <javaApiLinks>
                                 <property>
