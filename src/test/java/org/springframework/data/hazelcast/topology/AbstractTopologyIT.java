@@ -111,7 +111,7 @@ public abstract class AbstractTopologyIT
     @Test
     public void existsByCityNameDoesNotThrow() {
         loadCinemas(this.cinemaMap);
-        assertTrue(this.cinemaRepository.existsByCityName("Wrocław"));
+        assertTrue(this.cinemaRepository.existsByCityName("Wroclaw"));
         assertFalse(this.cinemaRepository.existsByCityName("Warszawa"));
     }
 
