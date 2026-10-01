@@ -256,14 +256,21 @@
                     </plugin>
 
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.7.0</version>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.11.0</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>release-repository</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <!-- server id comes from settings.xml -->
+                            <publishingServerId>release-repository</publishingServerId>
+                            <!--
+                            wait until the artifacts are actually published automatically using 'autoPublish'.
+                            the default is `validated` which would then require manual publishing
+                            -->
+                            <waitUntil>published</waitUntil>
+                            <autoPublish>true</autoPublish>
+                            <checksums>required</checksums>
+                            <deploymentName>${project.artifactId}</deploymentName>
                         </configuration>
                     </plugin>
                 </plugins>
