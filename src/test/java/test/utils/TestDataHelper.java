@@ -30,6 +30,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import test.utils.domain.Cinema;
 import test.utils.domain.City;
 import test.utils.domain.Makeup;
 import test.utils.domain.Movie;
@@ -37,6 +38,7 @@ import test.utils.domain.Person;
 import test.utils.domain.Song;
 
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -72,6 +74,7 @@ public abstract class TestDataHelper {
     protected IMap<String, Person> personMap;
     protected IMap<String, Song> songMap;
     protected IMap<String, City> cityMap;
+    protected IMap<String, Cinema> cinemaMap;
 
     /* Use Hazelcast directly, minimise reliance on Spring as the object is
      * to test Spring encapsulation of Hazelcast.
@@ -97,7 +100,10 @@ public abstract class TestDataHelper {
         this.cityMap = this.hazelcastInstance.getMap(TestConstants.CITY_MAP_NAME);
         loadCities(this.cityMap);
 
-        checkMapsNotEmpty("setUp");
+        this.cinemaMap = this.hazelcastInstance.getMap(TestConstants.CINEMA_MAP_NAME);
+        loadCinemas(this.cinemaMap);
+
+        checkMapsNotEmpty();
 
         /* As Hazelcast will create objects on demand, check no more are present
          * than should be.
@@ -115,10 +121,10 @@ public abstract class TestDataHelper {
         }
     }
 
-    private void checkMapsNotEmpty(String phase) {
+    private void checkMapsNotEmpty() {
         for (String mapName : TestConstants.OSCAR_MAP_NAMES) {
             IMap<String, ?> iMap = this.hazelcastInstance.getMap(mapName);
-            assertThat(phase + "(): Test data has been loaded into '" + iMap.getName() + "'", iMap.size(), greaterThan(0));
+            assertThat("Test data has been loaded into '" + iMap.getName() + "'", iMap.size(), greaterThan(0));
         }
     }
 
@@ -179,6 +185,14 @@ public abstract class TestDataHelper {
 
             cityMap.put(city.getId(), city);
         }
+    }
+
+    protected static void loadCinemas(IMap<String, Cinema> cinemaMap) {
+        Stream.of(new Cinema("1", "Big Cinema 1", "Wroclaw"),
+                  new Cinema("2", "Big Cinema 2", "Wroclaw"),
+                  new Cinema("3", "Big Cinema 3", "Wroclaw"),
+                  new Cinema("4", "Big Cinema 4", "Krakow"))
+            .forEach(c -> cinemaMap.put(c.id(), c));
     }
 
     @After
