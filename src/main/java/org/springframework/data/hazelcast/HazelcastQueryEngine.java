@@ -44,6 +44,7 @@ import java.util.Map.Entry;
  * @author Neil Stevenson
  * @author Viacheslav Petriaiev
  */
+@SuppressWarnings("unchecked")
 public class HazelcastQueryEngine<K, V>
         extends QueryEngine<HazelcastKeyValueAdapter, Predicate<K, V>, Comparator<Entry<K, V>>> {
 
@@ -79,8 +80,7 @@ public class HazelcastQueryEngine<K, V>
     /**
      * <p>
      * Same as {@link #execute(Predicate, Comparator, long, int, String)}, but knows the entity type. A page without
-     * a sort order over entities that are not {@link Comparable} is read  in a deterministic, but effectively unspecified way
-     * (using {@link com.hazelcast.function.ComparatorEx#nullsLast(Comparator)}).
+     * a sort order over entities that are not {@link Comparable} is read using sorting by key values.
      * </P>
      */
     @Override
@@ -107,13 +107,13 @@ public class HazelcastQueryEngine<K, V>
         Assert.notNull(adapter, "Adapter must not be 'null'.");
 
         Predicate<K, V> predicateToUse = criteria;
-        Comparator<Entry<K, V>> sortToUse = sort;
+        Comparator sortToUse = sort;
 
         if (sort == null && notComparable) {
             // Without a comparator Hazelcast orders a values() page by the values, which then
             // must be Comparable. Setting own comparator that doesn't use Comparable elements
             // solves this issue.
-            sortToUse = ComparatorEx.nullsLast(null);
+            sortToUse = ComparatorEx.comparing(Functions.entryKey());
         }
         if (rows > 0) {
             PagingPredicate<K, V> pp = Predicates.pagingPredicate(predicateToUse, sortToUse, rows);
