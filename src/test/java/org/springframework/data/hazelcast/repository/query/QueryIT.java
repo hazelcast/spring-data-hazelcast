@@ -808,16 +808,16 @@ public class QueryIT
     @Test
     public void cinemaFindFirst3ByCityName() {
         loadCinemas(this.cinemaMap);
-        List<Cinema> matches = this.cinemaRepository.findFirst3ByCityName("Wrocław");
+        List<Cinema> matches = this.cinemaRepository.findFirst3ByCityName("Wroclaw");
         Assertions.assertThat(matches)
                   .extracting(Cinema::getCityName)
-                  .containsOnly("Wrocław", "Wrocław", "Wrocław");
+                  .containsOnly("Wroclaw", "Wroclaw", "Wroclaw");
     }
 
     @Test
     public void cinemaFindFirst3ByCityNameOrderById() {
         loadCinemas(this.cinemaMap);
-        List<Cinema> matches = this.cinemaRepository.findFirst3ByCityNameOrderById("Wrocław");
+        List<Cinema> matches = this.cinemaRepository.findFirst3ByCityNameOrderById("Wroclaw");
         Assertions.assertThat(matches)
                   .extracting(Cinema::getId)
                   .containsExactly("1", "2", "3");
@@ -826,7 +826,7 @@ public class QueryIT
     @Test
     public void existsByCityName() {
         loadCinemas(this.cinemaMap);
-        assertTrue(this.cinemaRepository.existsByCityName("Wrocław"));
+        assertTrue(this.cinemaRepository.existsByCityName("Wroclaw"));
         assertFalse(this.cinemaRepository.existsByCityName("Warszawa"));
     }
 
