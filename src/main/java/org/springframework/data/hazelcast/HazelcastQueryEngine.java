@@ -77,8 +77,8 @@ public class HazelcastQueryEngine<K, V>
     /**
      * <p>
      * Same as {@link #execute(Predicate, Comparator, long, int, String)}, but knows the entity type. A page without
-     * a sort order over entities that are not {@link Comparable} is read by key, so the entities do not have to be
-     * comparable and the members need no class from this module.
+     * a sort order over entities that are not {@link Comparable} is read using
+     * {@link com.hazelcast.function.ComparatorEx#nullsLast(Comparator)}.
      * </P>
      */
     @Override
