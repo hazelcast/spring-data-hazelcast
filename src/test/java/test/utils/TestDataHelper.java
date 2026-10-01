@@ -38,6 +38,7 @@ import test.utils.domain.Person;
 import test.utils.domain.Song;
 
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -187,14 +188,11 @@ public abstract class TestDataHelper {
     }
 
     protected static void loadCinemas(IMap<String, Cinema> cinemaMap) {
-        Cinema cinema1 = new Cinema("1", "Big Cinema 1", "Wrocław");
-        Cinema cinema2 = new Cinema("2", "Big Cinema 2", "Wrocław");
-        Cinema cinema3 = new Cinema("3", "Big Cinema 3", "Wrocław");
-        Cinema cinema4 = new Cinema("4", "Big Cinema 4", "Kraków");
-        cinemaMap.put(cinema1.getId(), cinema1);
-        cinemaMap.put(cinema2.getId(), cinema2);
-        cinemaMap.put(cinema3.getId(), cinema3);
-        cinemaMap.put(cinema4.getId(), cinema4);
+        Stream.of(new Cinema("1", "Big Cinema 1", "Wroclaw"),
+                  new Cinema("2", "Big Cinema 2", "Wroclaw"),
+                  new Cinema("3", "Big Cinema 3", "Wroclaw"),
+                  new Cinema("4", "Big Cinema 4", "Krakow"))
+            .forEach(c -> cinemaMap.put(c.getId(), c));
     }
 
     @After
