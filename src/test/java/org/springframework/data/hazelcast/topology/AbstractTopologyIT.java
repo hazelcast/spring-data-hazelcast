@@ -19,19 +19,22 @@ package org.springframework.data.hazelcast.topology;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
+import jakarta.annotation.Resource;
 import org.junit.Before;
 import org.junit.Test;
 import test.utils.TestConstants;
 import test.utils.TestDataHelper;
+import test.utils.domain.Cinema;
 import test.utils.domain.Person;
+import test.utils.repository.standard.CinemaRepository;
 import test.utils.repository.standard.PersonRepository;
 
-import javax.annotation.Resource;
-
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * <p>
@@ -54,21 +57,24 @@ public abstract class AbstractTopologyIT
 
     // From the server that isn't Spring's Hazelcast instance
     protected IMap<String, Person> server_personMap = null;
+    protected IMap<String, Cinema> server_cinemaMap = null;
 
     @Resource
     private PersonRepository personRepository;
+    @Resource
+    private CinemaRepository cinemaRepository;
 
+    @Override
     @Before
     public void setUp() {
         super.setUp();
 
-        HazelcastInstance hazelcastServer = null;
-
         // Look for any instance apart from Spring's one
-        hazelcastServer = Hazelcast.getHazelcastInstanceByName(TestConstants.SERVER_INSTANCE_NAME);
+        HazelcastInstance hazelcastServer = Hazelcast.getHazelcastInstanceByName(TestConstants.SERVER_INSTANCE_NAME);
 
         assertThat("Server found", hazelcastServer, notNullValue());
         this.server_personMap = hazelcastServer.getMap(TestConstants.PERSON_MAP_NAME);
+        this.server_cinemaMap = hazelcastServer.getMap(TestConstants.CINEMA_MAP_NAME);
     }
 
     /* Data manipulated via the other instance should be visible
@@ -100,6 +106,13 @@ public abstract class AbstractTopologyIT
         this.personRepository.deleteById(NINETEEN_FIFTY_SEVEN);
 
         assertThat("Obi-Wan has vanished", this.server_personMap.containsKey(NINETEEN_FIFTY_SEVEN), equalTo(false));
+    }
+
+    @Test
+    public void existsByCityNameDoesNotThrow() {
+        loadCinemas(this.cinemaMap);
+        assertTrue(this.cinemaRepository.existsByCityName("Wroclaw"));
+        assertFalse(this.cinemaRepository.existsByCityName("Warszawa"));
     }
 
 }

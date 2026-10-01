@@ -16,9 +16,9 @@
 
 package org.springframework.data.hazelcast.repository.query;
 
-import org.junit.Rule;
+import jakarta.annotation.Resource;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,15 +29,15 @@ import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.util.concurrent.ListenableFuture;
 import test.utils.TestConstants;
 import test.utils.TestDataHelper;
+import test.utils.domain.Cinema;
 import test.utils.domain.City;
 import test.utils.domain.Person;
+import test.utils.repository.standard.CinemaRepository;
 import test.utils.repository.standard.CityRepository;
 import test.utils.repository.standard.PersonRepository;
 
-import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -57,14 +58,14 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * <p>
@@ -85,13 +86,13 @@ public class QueryIT
     private static final int SIZE_1 = 1;
     private static final int SIZE_3 = 3;
     private static final int SIZE_5 = 5;
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
     @Resource
     private PersonRepository personRepository;
 
     @Resource
     private CityRepository cityRepository;
+    @Resource
+    private CinemaRepository cinemaRepository;
 
     // Count methods
     @Override
@@ -107,6 +108,8 @@ public class QueryIT
         this.songMap = this.hazelcastInstance.getMap(TestConstants.SONG_MAP_NAME);
 
         this.cityMap = this.hazelcastInstance.getMap(TestConstants.CITY_MAP_NAME);
+
+        this.cinemaMap = this.hazelcastInstance.getMap(TestConstants.CINEMA_MAP_NAME);
 
         checkMapsEmpty("setUp");
     }
@@ -344,11 +347,10 @@ public class QueryIT
         emilJannings.setLastname("Jannings");
         this.personMap.put(emilJannings.getId(), emilJannings);
 
-        Object result = this.personRepository.findFirstIdByOrderById();
+        Person result = this.personRepository.findFirstIdByOrderById();
 
         assertThat("First Winner", result, notNullValue());
-        assertThat("Person", result, instanceOf(Person.class));
-        assertThat("Emil Jannings", ((Person) result).getId(), equalTo("1928"));
+        assertThat("Emil Jannings", result.getId(), equalTo("1928"));
     }
 
     // First by descending == Max
@@ -366,11 +368,10 @@ public class QueryIT
         jamesCagney.setLastname("Cagney");
         this.personMap.put(jamesCagney.getId(), jamesCagney);
 
-        Object result = this.personRepository.findFirstIdByFirstnameOrderByIdDesc("James");
+        Person result = this.personRepository.findFirstIdByFirstnameOrderByIdDesc("James");
 
         assertThat("Last Winner", result, notNullValue());
-        assertThat("Person", result, instanceOf(Person.class));
-        assertThat("James Cagney", ((Person) result).getId(), equalTo("1942"));
+        assertThat("James Cagney", result.getId(), equalTo("1942"));
     }
 
     @SuppressWarnings("unchecked")
@@ -805,6 +806,31 @@ public class QueryIT
     }
 
     @Test
+    public void cinemaFindFirst3ByCityName() {
+        loadCinemas(this.cinemaMap);
+        List<Cinema> matches = this.cinemaRepository.findFirst3ByCityName("Wroclaw");
+        Assertions.assertThat(matches)
+                  .extracting(Cinema::cityName)
+                  .containsOnly("Wroclaw", "Wroclaw", "Wroclaw");
+    }
+
+    @Test
+    public void cinemaFindFirst3ByCityNameOrderById() {
+        loadCinemas(this.cinemaMap);
+        List<Cinema> matches = this.cinemaRepository.findFirst3ByCityNameOrderById("Wroclaw");
+        Assertions.assertThat(matches)
+                  .extracting(Cinema::id)
+                  .containsExactly("1", "2", "3");
+    }
+
+    @Test
+    public void existsByCityName() {
+        loadCinemas(this.cinemaMap);
+        assertTrue(this.cinemaRepository.existsByCityName("Wroclaw"));
+        assertFalse(this.cinemaRepository.existsByCityName("Warszawa"));
+    }
+
+    @Test
     public void findFirst30ByOrderByFirstnameDescLastnameAsc() {
         Person alecGuinness = new Person();
         alecGuinness.setId("2000");
@@ -933,9 +959,7 @@ public class QueryIT
 
         try (Stream<Person> matches = this.personRepository.findFirst4By()) {
 
-            matches.forEach(match -> {
-                count.incrementAndGet();
-            });
+            matches.forEach(match -> count.incrementAndGet());
         }
 
         assertThat("Any four", count.get(), equalTo(4));
@@ -1521,7 +1545,7 @@ public class QueryIT
     }
 
     @Test
-    public void findByLastnameListenableFuture()
+    public void findByLastnameCompletableFuture()
             throws Exception {
         // given
         String lastname = "Porter";
@@ -1535,7 +1559,7 @@ public class QueryIT
         this.personRepository.save(person2);
 
         // when
-        ListenableFuture<List<Person>> result = this.personRepository.findByLastname(lastname);
+        CompletableFuture<List<Person>> result = this.personRepository.findByLastname(lastname);
 
         // then
         assertThat(result.get(), containsInAnyOrder(person1, person2));

@@ -15,9 +15,14 @@
  */
 package org.springframework.data.hazelcast;
 
+import com.hazelcast.function.ComparatorEx;
+import com.hazelcast.function.Functions;
 import com.hazelcast.query.PagingPredicate;
 import com.hazelcast.query.Predicate;
+import com.hazelcast.query.Predicates;
 import com.hazelcast.query.impl.predicates.PagingPredicateImpl;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.hazelcast.repository.query.HazelcastCriteriaAccessor;
 import org.springframework.data.hazelcast.repository.query.HazelcastSortAccessor;
 import org.springframework.data.keyvalue.core.QueryEngine;
@@ -32,15 +37,18 @@ import java.util.Map.Entry;
  * Implementation of {@code findBy*()} and {@code countBy*{}} queries.
  * </P>
  *
+ * @param <K> key type
+ * @param <V> value type
  * @author Christoph Strobl
  * @author Neil Stevenson
  * @author Viacheslav Petriaiev
  */
-public class HazelcastQueryEngine
-        extends QueryEngine<HazelcastKeyValueAdapter, Predicate<?, ?>, Comparator<Entry<?, ?>>> {
+@SuppressWarnings("unchecked")
+public class HazelcastQueryEngine<K, V>
+        extends QueryEngine<HazelcastKeyValueAdapter, Predicate<K, V>, Comparator<Entry<K, V>>> {
 
     public HazelcastQueryEngine() {
-        super(new HazelcastCriteriaAccessor(), new HazelcastSortAccessor());
+        super(new HazelcastCriteriaAccessor<>(), new HazelcastSortAccessor<>());
     }
 
     /**
@@ -59,17 +67,55 @@ public class HazelcastQueryEngine
      * @return Results from Hazelcast
      */
     @Override
-    public Collection<?> execute(final Predicate<?, ?> criteria, final Comparator<Entry<?, ?>> sort, final long offset,
-                                 final int rows, final String keyspace) {
+    @NonNull
+    public Collection<?> execute(final @Nullable Predicate<K, V> criteria,
+                                 final @Nullable Comparator<Entry<K, V>> sort,
+                                 final long offset,
+                                 final int rows,
+                                 final @Nullable String keyspace) {
+        return execute(criteria, sort, offset, rows, keyspace, false);
+    }
+
+    /**
+     * <p>
+     * Same as {@link #execute(Predicate, Comparator, long, int, String)}, but knows the entity type. A page without
+     * a sort order over entities that are not {@link Comparable} is read using sorting by key values.
+     * </P>
+     */
+    @Override
+    @NonNull
+    @SuppressWarnings("unchecked")
+    public <T> Collection<T> execute(final @Nullable Predicate<K, V> criteria,
+                                     final @Nullable Comparator<Entry<K, V>> sort,
+                                     final long offset,
+                                     final int rows,
+                                     final @Nullable String keyspace,
+                                     final @Nullable Class<T> type) {
+        boolean pageByKey = type != null && !Comparable.class.isAssignableFrom(type);
+        return (Collection<T>) execute(criteria, sort, offset, rows, keyspace, pageByKey);
+    }
+
+    private Collection<?> execute(final @Nullable Predicate<K, V> criteria,
+                                  final @Nullable Comparator<Entry<K, V>> sort,
+                                  final long offset,
+                                  final int rows,
+                                  final @Nullable String keyspace,
+                                  final boolean notComparable) {
 
         final HazelcastKeyValueAdapter adapter = getAdapter();
         Assert.notNull(adapter, "Adapter must not be 'null'.");
 
-        Predicate<?, ?> predicateToUse = criteria;
-        @SuppressWarnings({"unchecked", "rawtypes"}) Comparator<Entry> sortToUse = ((Comparator<Entry>) (Comparator) sort);
+        Predicate<K, V> predicateToUse = criteria;
+        Comparator sortToUse = sort;
 
+        if (sort == null && notComparable) {
+            // Without a comparator Hazelcast orders a values() page by the values, which then
+            // must be Comparable. Setting own comparator that doesn't use Comparable elements
+            // solves this issue.
+            sortToUse = ComparatorEx.comparing(Functions.entryKey());
+        }
         if (rows > 0) {
-            PagingPredicate pp = new PagingPredicateImpl(predicateToUse, sortToUse, rows);
+            PagingPredicate<K, V> pp = Predicates.pagingPredicate(predicateToUse, sortToUse, rows);
             long x = offset / rows;
             while (x > 0) {
                 pp.nextPage();
@@ -78,17 +124,17 @@ public class HazelcastQueryEngine
             predicateToUse = pp;
 
         } else {
-            if (sortToUse != null) {
-                predicateToUse = new PagingPredicateImpl(predicateToUse, sortToUse, Integer.MAX_VALUE);
+            if (sort != null) {
+                predicateToUse = new PagingPredicateImpl<>(predicateToUse, sortToUse, Integer.MAX_VALUE);
             }
         }
 
         if (predicateToUse == null) {
             return adapter.getMap(keyspace).values();
         } else {
+            //noinspection unchecked
             return adapter.getMap(keyspace).values((Predicate<Object, Object>) predicateToUse);
         }
-
     }
 
     /**
@@ -101,7 +147,8 @@ public class HazelcastQueryEngine
      * @return Results from Hazelcast
      */
     @Override
-    public long count(final Predicate<?, ?> criteria, final String keyspace) {
+    @SuppressWarnings("unchecked")
+    public long count(final Predicate<K, V> criteria, final @Nullable String keyspace) {
         final HazelcastKeyValueAdapter adapter = getAdapter();
         Assert.notNull(adapter, "Adapter must not be 'null'.");
         return adapter.getMap(keyspace).keySet((Predicate<Object, Object>) criteria).size();

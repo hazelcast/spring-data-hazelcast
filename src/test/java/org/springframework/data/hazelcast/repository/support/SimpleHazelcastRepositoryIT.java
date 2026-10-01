@@ -26,8 +26,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.repository.core.support.PersistentEntityInformation;
 import org.springframework.test.context.ActiveProfiles;
-import test.utils.TestData;
 import test.utils.TestConstants;
+import test.utils.TestData;
 import test.utils.TestDataHelper;
 import test.utils.domain.Makeup;
 
@@ -37,13 +37,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * <p>

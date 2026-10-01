@@ -15,10 +15,12 @@
  */
 package org.springframework.data.hazelcast.repository.query;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.hazelcast.repository.HazelcastRepository;
 import org.springframework.data.keyvalue.core.IterableConverter;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.core.query.KeyValueQuery;
@@ -27,8 +29,8 @@ import org.springframework.data.repository.query.Parameter;
 import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.QueryMethod;
-import org.springframework.data.repository.query.QueryMethodEvaluationContextProvider;
 import org.springframework.data.repository.query.RepositoryQuery;
+import org.springframework.data.repository.query.ValueExpressionDelegate;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
@@ -75,14 +77,14 @@ public class HazelcastPartTreeQuery
      * </P>
      *
      * @param queryMethod                Method defined in {@code HazelcastRepository}
-     * @param evaluationContextProvider  Not used
+     * @param valueExpressionDelegate    Not used
      * @param keyValueOperations         Interface to Hazelcast
      * @param queryCreator               Not used
      */
-    public HazelcastPartTreeQuery(QueryMethod queryMethod, QueryMethodEvaluationContextProvider evaluationContextProvider,
+    public HazelcastPartTreeQuery(QueryMethod queryMethod, ValueExpressionDelegate valueExpressionDelegate,
                                   KeyValueOperations keyValueOperations,
                                   Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
-        super(queryMethod, evaluationContextProvider, keyValueOperations, queryCreator);
+        super(queryMethod, valueExpressionDelegate, keyValueOperations, queryCreator);
         this.queryMethod = queryMethod;
         this.keyValueOperations = keyValueOperations;
 
@@ -101,8 +103,8 @@ public class HazelcastPartTreeQuery
      * @return Query result
      */
     @Override
-    public Object execute(Object[] parameters) {
-
+    @Nullable
+    public Object execute(@NonNull Object @NonNull[] parameters) {
         KeyValueQuery<?> query = prepareQuery(parameters);
 
         if (this.isCount) {
@@ -120,10 +122,7 @@ public class HazelcastPartTreeQuery
         }
 
         if (this.isExists) {
-            query.setOffset(0);
-            query.setRows(1);
-            final Iterable<?> result = this.keyValueOperations.find(query, queryMethod.getEntityInformation().getJavaType());
-            return result.iterator().hasNext();
+            return keyValueOperations.exists(query, queryMethod.getEntityInformation().getJavaType());
         }
 
         if (queryMethod.isPageQuery() || queryMethod.isSliceQuery()) {
@@ -217,7 +216,7 @@ public class HazelcastPartTreeQuery
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     private Object executePageSliceQuery(final Object[] parameters, final KeyValueQuery<?> query, final QueryMethod queryMethod) {
-        long totalElements = -1;
+        long totalElements;
 
         int indexOfPageRequest = queryMethod.getParameters().getPageableIndex();
         Pageable pageRequest = (Pageable) parameters[indexOfPageRequest];
@@ -257,7 +256,9 @@ public class HazelcastPartTreeQuery
      * @param parameters Possibly empty list of query parameters
      * @return A ready-to-use query
      */
-    protected KeyValueQuery<?> prepareQuery(Object[] parameters) {
+    @Override
+    @NonNull
+    protected KeyValueQuery<?> prepareQuery(@NonNull Object @NonNull[] parameters) {
         PartTree tree = null;
 
         if (this.queryMethod.getParameters().getNumberOfParameters() > 0) {
@@ -277,7 +278,7 @@ public class HazelcastPartTreeQuery
 
         KeyValueQuery<?> query = createQuery(accessor);
 
-        if (accessor.getPageable() != Pageable.unpaged()) {
+        if (accessor.getPageable().isPaged()) {
             query.setOffset(accessor.getPageable().getOffset());
             query.setRows(accessor.getPageable().getPageSize());
         } else {
@@ -285,7 +286,7 @@ public class HazelcastPartTreeQuery
             query.setRows(-1);
         }
 
-        if (accessor.getSort() != Sort.unsorted()) {
+        if (accessor.getSort().isSorted()) {
             query.setSort(accessor.getSort());
         }
 

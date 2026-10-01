@@ -1,7 +1,7 @@
 # Spring Data Hazelcast
 
 <a href="https://github.com/hazelcast/spring-data-hazelcast/actions?query=event%3Apush+branch%3Amaster"><img alt="GitHub Actions status" src="https://github.com/hazelcast/spring-data-hazelcast/workflows/build/badge.svg"></a>
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.hazelcast/spring-data-hazelcast/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.hazelcast/spring-data-hazelcast) 
+[![Maven Central](https://maven-badges.sml.io/maven-central/com.hazelcast/spring-data-hazelcast/badge.svg)](https://maven-badges.sml.io/maven-central/com.hazelcast/spring-data-hazelcast) 
 
 The primary goal of the [Spring Data](http://projects.spring.io/spring-data/) is to make it easier to build Spring-powered applications that use new data access technologies. This module provides integration with [Hazelcast](http://hazelcast.com).
 
@@ -28,6 +28,17 @@ dependencies {
     compile 'com.hazelcast:spring-data-hazelcast:${version}'
 }
 ```
+
+# Requirements
+
+| Spring Data Hazelcast | Spring Boot | Spring Data | Hazelcast | Java |
+|-----------------------|-------------|-------------|-----------|------|
+| 2.4.x                 | 3.x         | 2021.x      | 4.x - 5.x | 11+  |
+| 4.1.x                 | 4.x         | 2026.0.x    | 5.6 - 5.7 | 17+  |
+
+Spring Data Commons relocated `PropertyPath` to `org.springframework.data.core` in the release
+train shipped with Spring Boot 4, so a single artifact cannot serve both baselines. Applications
+staying on Spring Boot 3.x must stay on the 2.4.x line.
 
 # Usage
 

@@ -15,6 +15,7 @@
  */
 package org.springframework.data.hazelcast.repository.query;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.NullHandling;
 import org.springframework.data.domain.Sort.Order;
@@ -33,29 +34,31 @@ import java.util.Map.Entry;
  * cluster. Also, do not wish to assume anything other than Hazelcast classes are available on remote nodes.
  * </P>
  *
+ * @param <K> key type
+ * @param <V> value type
  * @author Neil Stevenson
  */
-public class HazelcastSortAccessor
-        implements SortAccessor<Comparator<Entry<?, ?>>> {
+public class HazelcastSortAccessor<K, V>
+        implements SortAccessor<Comparator<Entry<K, V>>> {
 
     /**
      * <p>
      * Sort on a sequence of fields, possibly none.
      * </P>
      *
-     * @param query If not null, will contain one of more {@link Sort.Order} objects.
+     * @param query If not null, will contain one of more {@link org.springframework.data.domain.Sort.Order} objects.
      * @return A sequence of comparators or {@code null}
      */
-    public Comparator<Entry<?, ?>> resolve(KeyValueQuery<?> query) {
+    @Override
+    public Comparator<Entry<K, V>> resolve(@Nullable KeyValueQuery<?> query) {
 
         if (query == null || query.getSort() == Sort.unsorted()) {
             return null;
         }
 
-        Comparator hazelcastPropertyComparator = null;
+        Comparator<Entry<K, V>> hazelcastPropertyComparator = null;
 
         for (Order order : query.getSort()) {
-
             if (order.getProperty().indexOf('.') > -1) {
                 throw new UnsupportedOperationException("Embedded fields not implemented: " + order);
             }
@@ -69,11 +72,10 @@ public class HazelcastSortAccessor
             }
 
             if (hazelcastPropertyComparator == null) {
-                hazelcastPropertyComparator = new HazelcastPropertyComparator(order.getProperty(),
-                        order.isAscending());
+                hazelcastPropertyComparator = new HazelcastPropertyComparator<>(order.getProperty(), order.isAscending());
             } else {
                 hazelcastPropertyComparator = hazelcastPropertyComparator.thenComparing(
-                        new HazelcastPropertyComparator(order.getProperty(),
+                        new HazelcastPropertyComparator<>(order.getProperty(),
                         order.isAscending()));
             }
         }
