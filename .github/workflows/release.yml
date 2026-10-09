@@ -3,9 +3,9 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      next-version:
+      next-snapshot-version:
         required: false
-        description: 'Override next development version (e.g. if current version in master is 5.0-SNAPSHOT, the "next-version" should be 5.1-SNAPSHOT). If not set then the version will be calculated by maven versions plugin'
+        description: 'See https://github.com/hazelcast/maven-release-tooling/blob/main/release/action.yml'
 
 jobs:
   release:
@@ -27,7 +27,7 @@ jobs:
 
       - uses: hazelcast/maven-release-tooling/deploy@main
         with:
-          next-version: ${{ inputs.next-version }}
+          next-snapshot-version: ${{ inputs.next-snapshot-version }}
         env:
           MAVEN_ARGS: --activate-profiles release
           MAVEN_USERNAME: ${{ secrets.SONATYPE_OSS_USERNAME }}
