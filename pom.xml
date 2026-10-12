@@ -18,7 +18,7 @@
 
     <groupId>com.hazelcast</groupId>
     <artifactId>spring-data-hazelcast</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.1.0</version>
 
     <name>Spring Data Hazelcast</name>
     <description>Spring Data module for Hazelcast repositories.</description>
