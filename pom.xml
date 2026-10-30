@@ -38,7 +38,7 @@
         <hazelcast.version>5.7.0</hazelcast.version>
         <springdata.keyvalue.version>4.1.2</springdata.keyvalue.version>
         <maven.sonar.plugin.version>4.0.0.4121</maven.sonar.plugin.version>
-        <maven.jacoco.plugin.version>0.8.15</maven.jacoco.plugin.version>
+        <maven.jacoco.plugin.version>0.8.16</maven.jacoco.plugin.version>
     </properties>
 
     <dependencies>
